@@ -11,6 +11,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import static net.cst.keycloak.audit.model.Constants.*;
+
 /**
  * Event Listener Implementation for auditing Keycloak events
  *
@@ -22,11 +24,6 @@ public class LoginEventListenerProvider implements EventListenerProvider {
 
     private final KeycloakSession session;
     private final RealmProvider model;
-    private final static String USER_EVENT_PREFIX = "aud_usr";
-    private final static String CLIENT_EVENT_PREFIX = "aud_cls";
-    private final static String ADMIN_EVENT_PREFIX = "aud_adm";
-
-    private final static String LAST_LOGIN_INFIX = "last-login";
 
     public LoginEventListenerProvider(KeycloakSession session) {
         this.session = session;
@@ -45,7 +42,7 @@ public class LoginEventListenerProvider implements EventListenerProvider {
                 // Use current server time for login event
                 OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
-                user.setSingleAttribute(USER_EVENT_PREFIX + "_" + LAST_LOGIN_INFIX + "_" + event.getClientId(), loginTimeS);
+                user.setSingleAttribute(USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value() + "_" + event.getClientId(), loginTimeS);
             }
         }
         if (EventType.CLIENT_LOGIN.equals(event.getType())) {
@@ -57,7 +54,7 @@ public class LoginEventListenerProvider implements EventListenerProvider {
                 // Use current server time for login event
                 OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
-                client.setAttribute(CLIENT_EVENT_PREFIX + "_" + LAST_LOGIN_INFIX, loginTimeS);
+                client.setAttribute(CLIENT_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value(), loginTimeS);
             }
         }
 

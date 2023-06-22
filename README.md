@@ -37,5 +37,10 @@ The Keycloak server will now be available on <http://localhost:8080>. You can lo
 
 ## Deploy into a standalone keycloak server
 
-Copy the built artifact from `deployment/target/auditor-module-for-keycloak.ear` into the directory `${keycloak.home}/standalone/deployments` of a keycloak server.  
+1. Copy the built artifact from `deployment/target/auditor-module-for-keycloak.ear` into the directory `${keycloak.home}/standalone/deployments` of a keycloak server.  
 **NOTE:** For Quarkus, just use the the jar at `./spi/target/keycloak-auditor-spi.jar`
+2. Enable event listener:
+
+![](.docs/keycloak-realm-event-config-step1.png)
+
+![](.docs/keycloak-realm-event-config-step2.png)

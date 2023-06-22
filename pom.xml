@@ -86,7 +86,7 @@
         <version.hamcrest>2.2</version.hamcrest>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>3.12.4</mockito.version>
-        <h2.version>2.1.210</h2.version>
+        <h2.version>2.1.214</h2.version>
 
         <!-- plugin versions -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>

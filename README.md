@@ -3,14 +3,6 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ContinuousSecurityTooling_keycloak-auditor&metric=coverage)](https://sonarcloud.io/dashboard?id=ContinuousSecurityTooling_keycloak-auditor)
 [![Known Vulnerabilities](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor/badge.svg)](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor)
 
-- [Keycloak Auditor](#keycloak-auditor)
-  - [Setup](#setup)
-  - [Deploy into a standalone keycloak server](#deploy-into-a-standalone-keycloak-server)
-  - [Development](#development)
-    - [Local Keycloak server](#local-keycloak-server)
-  - [Testing](#testing)
-    - [Performance Tests](#performance-tests)
-
 # Keycloak Auditor
 
 A Keycloak module to store audit data for user logins as attributes:
@@ -32,6 +24,7 @@ Prerequisites:
 * Docker
 
 Build and start:
+
 ```bash
 # Build the extension
 mvn clean package -DskipTests

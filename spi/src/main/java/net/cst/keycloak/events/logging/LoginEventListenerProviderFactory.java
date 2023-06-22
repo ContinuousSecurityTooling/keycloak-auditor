@@ -5,6 +5,12 @@ import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
+/**
+ * Event Listener Factory
+ *
+ * @author : mreinhardt
+ * @created : 22.06.23
+ **/
 public class LoginEventListenerProviderFactory implements EventListenerProviderFactory {
 
     @Override

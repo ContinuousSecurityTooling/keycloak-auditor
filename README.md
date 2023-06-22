@@ -42,8 +42,7 @@ docker-compose up -d
 
 The Keycloak server will now be available on <http://localhost:8080>. You can log into the Administration Console using “**admin**” as both username and password.
 
-
 ## Deploy into a standalone keycloak server
 
 Copy the built artifact from `deployment/target/auditor-module-for-keycloak.ear` into the directory `${keycloak.home}/standalone/deployments` of a keycloak server.  
-**NOTE:** *For Quarkus, just use the the jar at `./spi/target/keycloak-auditor-spi.jar` *
+**NOTE:** For Quarkus, just use the the jar at `./spi/target/keycloak-auditor-spi.jar`

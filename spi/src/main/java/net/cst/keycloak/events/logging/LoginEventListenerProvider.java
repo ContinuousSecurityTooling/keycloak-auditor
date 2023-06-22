@@ -11,6 +11,12 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Event Listener Implementation for auditing Keycloak events
+ *
+ * @author : mreinhardt
+ * @created : 22.06.23
+ **/
 @Slf4j
 public class LoginEventListenerProvider implements EventListenerProvider {
 

@@ -71,7 +71,7 @@
         </sonar.coverage.jacoco.xmlReportPaths>
 
         <!-- logging dependencies -->
-        <log4j2.version>2.17.2</log4j2.version>
+        <log4j2.version>2.20.0</log4j2.version>
         <slf4j.version>1.7.33</slf4j.version>
 
         <!-- dependencies: compile and runtime -->

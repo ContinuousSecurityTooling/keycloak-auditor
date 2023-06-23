@@ -90,7 +90,7 @@
         <h2.version>2.1.214</h2.version>
 
         <!-- plugin versions -->
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-versions-plugin.version>2.16.0</maven-versions-plugin.version>
         <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
         <maven-ear-plugin.version>3.1.0</maven-ear-plugin.version>

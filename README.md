@@ -9,11 +9,21 @@ A Keycloak module to store audit data for user logins as attributes:
 
 ![](.docs/example_user-auditing.png)
 
-The module is currently a Proof-of-Concept and has not yet been tested in production use cases.
+The last logins will be saved as JSON as user attribute:
+
+```
+{
+  "kcLogin": "2023-06-29T10:52:40.485088378Z",
+  "clientLogins": {
+    "account-console": "2023-06-29T10:52:40.485088378Z",
+  "account-console": "2023-06-29T10:58:05.075059792Z"
+  }
+}
+```
 
 All events created by this listener follow a schema:
 
-`aud_<resource-type>_<audit-event>`:`<timestamp>`
+`aud_<resource-type>_<audit-event>`:`<JSON_STRING>`
 
 Audit events for user append also the client id of the used client.
 

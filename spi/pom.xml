@@ -5,7 +5,7 @@
   <parent>
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>spi</artifactId>
@@ -78,6 +78,12 @@
       <scope>provided</scope>
       <version>2.2</version>
     </dependency>
+    <!-- deserialize Java 8 date time types e.g OffsetDateTime -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.15.2</version>
+    </dependency>
 
     <!-- Crypto Dependencies -->
 
@@ -141,6 +147,8 @@
           <jsonLibrary>jackson2</jsonLibrary>
           <classes>
             <class>net.cst.keycloak.audit.model.Constants</class>
+            <class>net.cst.keycloak.audit.model.ClientLoginDetails</class>
+            <class>net.cst.keycloak.audit.model.UserLoginDetails</class>
           </classes>
           <outputFileType>implementationFile</outputFileType>
           <outputKind>module</outputKind>

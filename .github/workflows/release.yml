@@ -5,8 +5,8 @@ on:
     types: [created]
 
 jobs:
-  deploy:
-    name: Deploy Package
+  deploy_mvn:
+    name: Deploy Maven Package
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -17,7 +17,16 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Publish package
+      - name: Publish mvn package
         run: mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: cd sdk && npm run clean && npm run build
+      - name: Publish npm package
+        run: cd sdk && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -20,12 +20,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-
+    - uses: actions/setup-node@v3
     - name: Set up JDK ${{ matrix.java }}
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.java }}
-
     - name: Cache .m2
       uses: actions/cache@v1
       with:
@@ -33,10 +32,11 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-
     - name: Build
-      run: ./mvnw clean verify -U
-
+      run: |
+        ./mvnw clean verify -U
+        cd sdk && npm run clean && npm run build
+  
   Sonar:
     name: Analysis
     runs-on: ubuntu-latest

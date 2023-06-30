@@ -1,0 +1,35 @@
+{
+  "name": "@continuoussecuritytooling/keycloak-auditor-type",
+  "version": "0.2.0",
+  "description": "Auditing Tools for Keycloak",
+  "typings": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist/* && npm i",
+    "build": "tsc",
+    "test": "eslint . && jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ContinuousSecurityTooling/keycloak-auditor.git"
+  },
+  "author": "Martin Reinhardt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues"
+  },
+  "homepage": "https://github.com/ContinuousSecurityTooling/keycloak-auditor#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/node": "^20.1.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "eslint": "^8.40.0",
+    "jest": "^29.5.0",
+    "jest-extended": "^4.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
+  }
+}

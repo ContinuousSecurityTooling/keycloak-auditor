@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "Node16",
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outFile": "dist/index.d",
+    "lib": ["dom", "es2017"]
+  },
+  "exclude": [
+    "dist",
+    "test"
+  ]
+}

@@ -25,6 +25,8 @@ All events created by this listener follow a schema:
 
 `aud_<resource-type>_<audit-event>`:`<JSON_STRING>`
 
+You can also use the Typings [NPM package](https://www.npmjs.com/package/@continuoussecuritytooling/keycloak-auditor) to parse it
+
 Audit events for user append also the client id of the used client.
 
 ## Setup

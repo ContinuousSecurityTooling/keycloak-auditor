@@ -4,7 +4,7 @@
 
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
     <name>Auditing Tooling for Keycloak Server</name>
     <packaging>pom</packaging>
 

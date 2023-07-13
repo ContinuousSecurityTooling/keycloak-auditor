@@ -3,7 +3,8 @@
   "extends": [
     "config:base",":dependencyDashboard"
   ],
-  "prCreation": "not-pending",
+  "automerge": true,
+  "platformAutomerge": true,
   "packageRules": [
     {
       "description": "Automerge non-major updates",

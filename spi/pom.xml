@@ -85,14 +85,6 @@
       <version>2.15.2</version>
     </dependency>
 
-    <!-- Crypto Dependencies -->
-
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.70</version>
-    </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

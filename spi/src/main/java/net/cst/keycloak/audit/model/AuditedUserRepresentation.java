@@ -1,6 +1,22 @@
-package net.cst.keycloak.audit.model;/**
+package net.cst.keycloak.audit.model;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.keycloak.representations.idm.UserRepresentation;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
  * @author : mreinhardt
  * @created : 13.07.23
  **/
- public class AuditedUserRepresentation {
+@Getter
+@Setter
+public class AuditedUserRepresentation extends UserRepresentation {
+
+    private String lastLogin;
+
+    private Map<String, String> clientLogins = new HashMap<>();
+
 }

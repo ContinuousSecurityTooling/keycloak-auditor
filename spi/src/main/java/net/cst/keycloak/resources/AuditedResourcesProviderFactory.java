@@ -1,4 +1,4 @@
-package net.cst.keycloak.services.resources;
+package net.cst.keycloak.resources;
 
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;

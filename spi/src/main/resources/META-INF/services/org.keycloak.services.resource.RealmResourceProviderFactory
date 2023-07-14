@@ -1,1 +1,1 @@
-net.cst.keycloak.services.resources.AuditedResourcesProviderFactory
+net.cst.keycloak.resources.AuditedResourcesProviderFactory

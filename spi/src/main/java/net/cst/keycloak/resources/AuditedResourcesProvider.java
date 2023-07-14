@@ -1,4 +1,4 @@
-package net.cst.keycloak.services.resources;
+package net.cst.keycloak.resources;
 
 import lombok.RequiredArgsConstructor;
 import org.keycloak.models.KeycloakSession;
@@ -15,7 +15,7 @@ public class AuditedResourcesProvider implements RealmResourceProvider {
 
     @Override
     public Object getResource() {
-        return this;
+        return new AuditEndpoint(session);
     }
 
     @Override

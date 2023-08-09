@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.3.1...v0.4.0) (2023-08-09)
+
+
+### Features
+
+* **Keycloak:** Make SPI working with KC 22 ([a176bb3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a176bb3af51c241bd58146651b3ef9084b59294c))
+
+
+
 ## [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.3.0...v0.3.1) (2023-08-09)
 
 

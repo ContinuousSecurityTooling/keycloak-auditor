@@ -5,7 +5,7 @@
   <parent>
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.4.0</version>
   </parent>
 
   <artifactId>spi</artifactId>

@@ -1,3 +1,17 @@
+## [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.3.0...v0.3.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* **Keycloak:** Make EAR working in Keycloak Legacy ([c73fb0c](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/c73fb0c9e2008230ed3003842ca631eee680c437))
+
+
+### Features
+
+* **Keycloak:** Update Keycloak version for dev-setup ([db640ac](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/db640ac4c994e7d0620223a0dee2ddacbc2af76a))
+
+
+
 # [0.3.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.2.1...v0.3.0) (2023-08-09)
 
 

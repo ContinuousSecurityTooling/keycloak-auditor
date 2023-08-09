@@ -1,4 +1,18 @@
-## 0.2.1 (2023-07-03)
+# [](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.2.1...v) (2023-08-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2 ([338aaba](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/338aaba2c84b1635112edad269235fd5fb9d9000))
+
+
+### Features
+
+* Use flat user attributes and aggregate via custom rest endpoint ([2618843](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/2618843aeb909113b4892988651384116f4065c5))
+
+
+
+## [0.2.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/fceae7576defe53fa529a824ddb44c7c3855fde2...v0.2.1) (2023-07-03)
 
 
 ### Bug Fixes

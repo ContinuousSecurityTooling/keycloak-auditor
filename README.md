@@ -78,9 +78,10 @@ The Keycloak server will now be available on <http://localhost:8080>. You can lo
 >**NOTE**:
 > Instead of building yourself, you can pick the latest release JAR.
 
-
-1. Copy the built artifact from `deployment/target/auditor-module-for-keycloak.ear` into the directory `${keycloak.home}/standalone/deployments` of a keycloak server.  
-**NOTE:** For Quarkus, just use the the jar at `./spi/target/keycloak-auditor-spi.jar`
+1. Copy the JAR from [releases](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/latest) to `/opt/keycloak/providers` (Keycloak>=22)
+> **NOTE:**
+For Keycloak 20 & 21 use the SPI JAR from [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/tag/v0.3.1)
+For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/tag/v0.3.1) and copy it to `opt/jboss/keycloak/standalone/deployments/`
 2. Enable event listener:
 
 ![](.docs/keycloak-realm-event-config-step1.png)

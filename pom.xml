@@ -4,7 +4,7 @@
 
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>0.3.1</version>
+    <version>0.4.0</version>
     <name>Auditing Tooling for Keycloak Server</name>
     <packaging>pom</packaging>
 
@@ -83,7 +83,7 @@
 
         <!-- dependencies: compile and runtime -->
         <lombok.version>1.18.28</lombok.version>
-        <keycloak.version>21.1.2</keycloak.version>
+        <keycloak.version>22.0.1</keycloak.version>
         <resteasy.version>3.15.6.Final</resteasy.version>
         <sun-javax-activation.version>1.2.0</sun-javax-activation.version>
         <javax-activation.version>1.1.1</javax-activation.version>

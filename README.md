@@ -13,8 +13,10 @@ All events created by this listener follow a schema:
 
 To retrieve the login data structure you can use a custom endpoint extensions via Keycloak Admin API:
 ```
-curl http://localhost:8080/realms/master/auditing/users
+curl ... http://localhost:8080/realms/master/auditing/users
 ```
+
+See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 
 ![](.docs/example_user-auditing.png)
 
@@ -49,8 +51,8 @@ curl http://localhost:8080/realms/master/auditing/users
 ]
 ```
 
->**NOTE**: 
-> 
+>**NOTE**:
+>
 > The regular Keycloak ADMIN API Authentication is used.
 
 ## Setup

@@ -63,10 +63,9 @@ public class LoginEventListenerProvider implements EventListenerProvider {
 
     }
 
-
     @Override
     public void onEvent(AdminEvent adminEvent, boolean b) {
-
+        // Nothing to do
     }
 
     @Override

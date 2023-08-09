@@ -8,6 +8,7 @@
         <dependencies>
             <module name="org.keycloak.keycloak-core"/>
             <module name="org.keycloak.keycloak-server-spi"/>
+            <module name="org.jodd.jodd-util"/>
         </dependencies>
     </module>
-</jboss-deployment-structure>   
+</jboss-deployment-structure>

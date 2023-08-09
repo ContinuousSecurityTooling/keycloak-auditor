@@ -35,7 +35,7 @@ public class LoginEventListenerProviderFactory implements EventListenerProviderF
 
     @Override
     public String getId() {
-        return "login-event-listener";
+        return "kc-auditor";
     }
 
 }

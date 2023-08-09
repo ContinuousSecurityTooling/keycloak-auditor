@@ -1,4 +1,4 @@
-# [](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.2.1...v) (2023-08-09)
+# [0.3.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.2.1...v0.3.0) (2023-08-09)
 
 
 ### Bug Fixes
@@ -38,6 +38,3 @@
 ### BREAKING CHANGES
 
 * **Storage:** This structural change is not backwards compatible
-
-
-

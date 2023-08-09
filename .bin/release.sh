@@ -5,5 +5,5 @@ mvn gitflow:release-start && \
  git add CHANGELOG.md && \
  git commit -m "Changelog" && \
  mvn gitflow:release-finish -DnoDeploy=true && \
- git push origin master && git push --tags && \
+ git push origin main && git push --tags && \
  git checkout develop

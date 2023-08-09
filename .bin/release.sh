@@ -11,7 +11,7 @@ EOF
 conventional-changelog -p angular -i CHANGELOG.md -s -c config.json && \
  rm config.json
  git add CHANGELOG.md && \
- git commit -m "Changelog"
+ git commit -m "chore: Changelog for $version"
 # Finish release
 ./mvnw gitflow:release-finish -DnoDeploy=true && \
  git push origin main && git push --tags && \

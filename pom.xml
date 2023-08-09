@@ -67,7 +67,7 @@
         <encoding>UTF-8</encoding>
         <surefireArgLine></surefireArgLine>
 
-        <java.version>11</java.version>
+        <java.version>17</java.version>
 
         <sonar.projectKey>ContinuousSecurityTooling_keycloak-auditor</sonar.projectKey>
         <sonar.organization>continuoussecuritytooling</sonar.organization>

@@ -58,7 +58,7 @@ See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 ## Setup
 
 Prerequisites:
-* JDK 11+
+* JDK 17+
 * Docker
 
 Build and start:

@@ -16,6 +16,8 @@ To retrieve the login data structure you can use a custom endpoint extensions vi
 curl ... http://localhost:8080/realms/master/auditing/users
 ```
 
+For further automated reporting, you can use [keycloak-reporter](https://github.com/ContinuousSecurityTooling/keycloak-reporter) additionally.
+
 See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 
 ![](.docs/example_user-auditing.png)

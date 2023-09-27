@@ -63,7 +63,9 @@ class LoginEventListenerProviderTest {
         UserModel user = buildUser(event.getUserId());
         when(userProvider.getUserById(realmModel, event.getUserId())).thenReturn(user);
         provider.onEvent(event);
+        assertTrue(user.getAttributes().size() == 2);
         assertNotNull(user.getAttributes().get("aud_usr_last-login"));
+        assertNotNull(user.getAttributes().get("aud_usr_last-login_" + event.getClientId()));
     }
 
     @Test
@@ -81,6 +83,7 @@ class LoginEventListenerProviderTest {
         ClientModel client = buildClient(event.getClientId());
         when(clientProvider.getClientByClientId(realmModel, event.getClientId())).thenReturn(client);
         provider.onEvent(event);
+        assertTrue(client.getAttributes().size() == 1);
         assertNotNull(client.getAttributes().get("aud_cls_last-login"));
     }
 }

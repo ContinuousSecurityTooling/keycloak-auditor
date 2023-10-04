@@ -1,13 +1,9 @@
 name: CI
 
 on:
+  pull_request:
   merge_group:
   push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
-  schedule:
-    - cron: '0 0 * * WED'
 
 jobs:
   Build:
@@ -16,14 +12,15 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest ]
-        java: [ 11 ]
+        java: [ 17 ]
 
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
+        distribution: 'temurin'
         java-version: ${{ matrix.java }}
     - name: Cache .m2
       uses: actions/cache@v3
@@ -36,7 +33,34 @@ jobs:
       run: |
         ./mvnw clean verify -U
         cd sdk && npm run clean && npm run build
+
+  End2End:
+    name: 'End2End Test on JDK ${{ matrix.java }} and ${{ matrix.os }}'
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        java: [ 17 ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Use Node.js'
+        uses: actions/setup-node@v3
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: ' ${{ matrix.java }}'
+      - name: Build
+        run: |
+          ./mvnw clean verify -U
+      - name: Start Keycloak server
+        run: |
+          cd sdk
+          npm ci
+          npm run end2end:start-server &
   
+      - name: Run end2end tests
+        run: sdk/.bin/run-end2tests.sh 
   Sonar:
     name: Analysis
     runs-on: ubuntu-latest
@@ -47,10 +71,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Set up JDK
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'temurin'
+          java-version: 17
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:

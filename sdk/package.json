@@ -7,7 +7,9 @@
   "scripts": {
     "clean": "rm -rf dist/* && npm i",
     "build": "tsc",
-    "test": "eslint . && jest"
+    "test": "eslint . && jest",
+    "end2end:start-server": ".bin/start-server.mjs -Dkeycloak.profile.feature.account_api=disabled -Dkeycloak.profile.feature.account2=disabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=e2e/fixtures/auth-utils/test-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING",
+    "end2end:test": "node e2e/spec/users.js"
   },
   "repository": {
     "type": "git",
@@ -19,16 +21,19 @@
     "url": "https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues"
   },
   "homepage": "https://github.com/ContinuousSecurityTooling/keycloak-auditor#readme",
-  "dependencies": {
-  },
   "devDependencies": {
+    "@octokit/rest": "^20.0.2",
     "@types/jest": "^29.5.1",
     "@types/node": "^20.1.5",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "eslint": "^8.40.0",
+    "gunzip-maybe": "^1.4.2",
     "jest": "^29.5.0",
     "jest-extended": "^4.0.0",
+    "node-fetch": "^3.3.2",
+    "tape": "^5.7.0",
+    "tar-fs": "^3.0.4",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
   }

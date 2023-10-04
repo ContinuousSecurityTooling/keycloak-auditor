@@ -10,6 +10,7 @@ import static net.cst.keycloak.events.logging.util.ClientModelHelper.buildClient
 import static net.cst.keycloak.events.logging.util.EventHelper.buildClientLoginEvent;
 import static net.cst.keycloak.events.logging.util.EventHelper.buildUserLoginEvent;
 import static net.cst.keycloak.events.logging.util.UserModelHelper.buildUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -63,7 +64,9 @@ class LoginEventListenerProviderTest {
         UserModel user = buildUser(event.getUserId());
         when(userProvider.getUserById(realmModel, event.getUserId())).thenReturn(user);
         provider.onEvent(event);
+        assertEquals(user.getAttributes().size(), 2);
         assertNotNull(user.getAttributes().get("aud_usr_last-login"));
+        assertNotNull(user.getAttributes().get("aud_usr_last-login_" + event.getClientId()));
     }
 
     @Test
@@ -81,6 +84,7 @@ class LoginEventListenerProviderTest {
         ClientModel client = buildClient(event.getClientId());
         when(clientProvider.getClientByClientId(realmModel, event.getClientId())).thenReturn(client);
         provider.onEvent(event);
+        assertEquals(client.getAttributes().size(), 1);
         assertNotNull(client.getAttributes().get("aud_cls_last-login"));
     }
 }

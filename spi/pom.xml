@@ -139,6 +139,7 @@
   </dependencies>
 
   <build>
+    <finalName>keycloak-auditor-spi</finalName>
     <plugins>
       <plugin>
         <groupId>cz.habarta.typescript-generator</groupId>

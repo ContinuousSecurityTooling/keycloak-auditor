@@ -26,7 +26,6 @@
   </dependencies>
 
   <build>
-    <finalName>auditor-module-for-keycloak</finalName>
 
     <plugins>
       <plugin>

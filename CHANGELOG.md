@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.4.0...v0.4.1) (2023-10-04)
+
+
+### Features
+
+* **Testing:** Adding end2end testing ([0c79def](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/0c79defdebc02e6610a0782d10df8c9ce551efba))
+
+
+
 # [0.4.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.3.1...v0.4.0) (2023-08-09)
 
 

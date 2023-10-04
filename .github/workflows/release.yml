@@ -21,6 +21,14 @@ jobs:
         run: mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release latest version
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          asset_name: keycloak-auditor-spi.jar
+          file: spi/target/keycloak-auditor-spi.jar
+          tag: ${{ github.ref }}
+          overwrite: true
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'

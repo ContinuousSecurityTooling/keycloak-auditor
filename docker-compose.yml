@@ -13,16 +13,18 @@ services:
     volumes:
       - .etc/docker/dump.sql:/docker-entrypoint-initdb.d/dump.sql
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 30s
       interval: 30s
       timeout: 10s
       retries: 5
 
   keycloak:
     container_name: keycloak
-    image: quay.io/keycloak/keycloak:22.0.1
+    image: quay.io/keycloak/keycloak:22.0.4
+    #command: -v start --import-realm
     # export command
-    #entrypoint: /opt/keycloak/bin/kc.sh export --file /exports/export.json
+    #entrypoint: /opt/keycloak/bin/kc.sh export --file /data/test-realm.json
     entrypoint: /opt/keycloak/bin/kc.sh start-dev
     depends_on:
       - mysql
@@ -33,7 +35,7 @@ services:
       - maildev
     volumes:
       # export command
-      #- ./spi/src/test/resources/test-realm.json:/exports/export.json
+      - ./sdk/e2e/fixtures/auth-utils/test-realm.json:/data/test-realm.json
       - ./spi/target/keycloak-auditor-spi.jar:/opt/keycloak/providers/keycloak-auditor-spi.jar
     environment:
       KC_DB: mysql

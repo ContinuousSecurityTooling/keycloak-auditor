@@ -42,6 +42,7 @@ testem.log
 /e2e/*.js
 /e2e/*.map
 /public
+sdk/tmp
 
 # System Files
 .DS_Store

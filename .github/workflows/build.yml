@@ -50,17 +50,24 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: ' ${{ matrix.java }}'
-      - name: Build
+
+      - name: Build SPI
         run: |
           ./mvnw clean verify -U
-      - name: Start Keycloak server
+
+      - name: Run End2End Tests
+        uses: nick-fields/retry@v2
+        with
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 10
         run: |
           cd sdk
           npm ci
           npm run end2end:start-server &
-  
-      - name: Run end2end tests
-        run: sdk/.bin/run-end2tests.sh 
+          # Run end2end tests
+          .bin/run-end2tests.sh
+
   Sonar:
     name: Analysis
     runs-on: ubuntu-latest

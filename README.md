@@ -93,3 +93,11 @@ For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/Continuou
 3. To use the REST endpoint (e.g. `http://localhost:8080/master/realms/${KEYCLOAK_REALM}/auditing/users`) create a client which uses client credentials grant
    * `full scope` needed for the client
    * Realm Role Mapping neeeded
+
+
+
+
+## Configuration
+
+* `AUD_DISABLE_EXTERNAL_ACCESS` - To disable API being externally accessible to a cluster. Set the environment variable 'AUD_DISABLE_EXTERNAL_ACCESS'. Once set enable the header 'X-Forwarded-Host' on your proxy. This is enabled by default on HA Proxy on Openshift.
+* `KC_AUD_DISABLE_ROLE_CHECK` - To disable realm access check set value to `true`. Defaults to `false`

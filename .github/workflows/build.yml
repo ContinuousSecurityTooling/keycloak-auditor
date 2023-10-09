@@ -11,45 +11,45 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest ]
-        java: [ 17 ]
+        os: [macos-latest, ubuntu-latest]
+        java: [17]
 
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v3
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: ${{ matrix.java }}
-    - name: Cache .m2
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-    - name: Build
-      run: |
-        ./mvnw clean verify -U
-        cd sdk && npm run clean && npm run build
-
-  End2End:
-    name: 'End2End Test on JDK ${{ matrix.java }} and ${{ matrix.os }}'
-    runs-on: '${{ matrix.os }}'
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-        java: [ 17 ]
     steps:
       - uses: actions/checkout@v4
-      - name: 'Use Node.js'
+      - uses: actions/setup-node@v3
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.java }}
+      - name: Cache .m2
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build
+        run: |
+          ./mvnw clean verify -U
+          cd sdk && npm run clean && npm run build
+
+  End2End:
+    name: "End2End Test on JDK ${{ matrix.java }} and ${{ matrix.os }}"
+    runs-on: "${{ matrix.os }}"
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        java: [17]
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Use Node.js"
         uses: actions/setup-node@v3
       - name: Install Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
-          java-version: ' ${{ matrix.java }}'
+          distribution: "temurin" # See 'Supported distributions' for available options
+          java-version: " ${{ matrix.java }}"
 
       - name: Build SPI
         run: |
@@ -57,16 +57,16 @@ jobs:
 
       - name: Run End2End Tests
         uses: nick-fields/retry@v2
-        with
+        with:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 10
-        run: |
-          cd sdk
-          npm ci
-          npm run end2end:start-server &
-          # Run end2end tests
-          .bin/run-end2tests.sh
+          command: |
+            cd sdk
+            npm ci
+            npm run end2end:start-server &
+            # Run end2end tests
+            .bin/run-end2tests.sh
 
   Sonar:
     name: Analysis
@@ -77,11 +77,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: "temurin"
           java-version: 17
       - name: Cache SonarCloud packages
         uses: actions/cache@v3

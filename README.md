@@ -89,3 +89,7 @@ For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/Continuou
 ![](.docs/keycloak-realm-event-config-step1.png)
 
 ![](.docs/keycloak-realm-event-config-step2.png)
+
+3. To use the REST endpoint (e.g. `http://localhost:8080/master/realms/${KEYCLOAK_REALM}/auditing/users`) create a client which uses client credentials grant
+   * `full scope` needed for the client
+   * Realm Role Mapping neeeded

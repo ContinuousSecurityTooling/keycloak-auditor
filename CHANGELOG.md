@@ -1,3 +1,21 @@
+# [0.5.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.4.1...v0.5.0) (2023-10-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v22.0.4 ([ab805c2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/ab805c281994ba6f129650627b09649f4dc2a47a))
+* **deps:** update dependency org.projectlombok:lombok to v1.18.30 ([752c344](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/752c344112b89d7e2c5c6f83f8fba8077f271237))
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.9 ([af3065d](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/af3065d9f69616af1c906fdf73ef1e4419907cc5))
+
+
+### Features
+
+* **Config:** Adding config via var env ([d03e931](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/d03e931c132294e01c1e1b07d8824a4409a364ca)), closes [#46](https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues/46)
+* **Config:** Finalize configuration options ([8d28232](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/8d282325a90be5613e12a2ed3019dbd99c8a659c)), closes [#46](https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues/46)
+* **SDK:** Update npm typing SDK ([67a0c0a](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/67a0c0a462d28ef991135265f3ffb0b9e2625410))
+
+
+
 ## [0.4.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.4.0...v0.4.1) (2023-10-04)
 
 

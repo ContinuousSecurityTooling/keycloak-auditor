@@ -35,12 +35,12 @@ jobs:
           cd sdk && npm run clean && npm run build
 
   End2End:
-    name: "End2End Test on JDK ${{ matrix.java }} and ${{ matrix.os }}"
+    name: "End2End Test on Keycloak ${{ matrix.kcVersion }} and ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}"
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java: [17]
+        kcVersion: ["22.0.4", "nightly"]
     steps:
       - uses: actions/checkout@v4
       - name: "Use Node.js"
@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: "temurin" # See 'Supported distributions' for available options
-          java-version: " ${{ matrix.java }}"
+          java-version: "17"
 
       - name: Build SPI
         run: |

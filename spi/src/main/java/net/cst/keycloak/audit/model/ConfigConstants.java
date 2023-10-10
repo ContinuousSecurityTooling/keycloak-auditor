@@ -13,7 +13,7 @@ public enum ConfigConstants {
 
     @JsonValue
     private final String value;
-    @JsonValue
+    
     private final String defaultValue;
 
     private ConfigConstants(String value, String defaultValue) {

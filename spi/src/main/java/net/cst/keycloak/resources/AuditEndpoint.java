@@ -24,6 +24,7 @@ import org.keycloak.services.managers.RealmManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
 import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
@@ -65,7 +66,7 @@ public class AuditEndpoint {
         log.debug("Checking for users in realm {}", realmName);
         List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*").toList();
         log.debug("Got {} users", (long) users.size());
-        return users.stream().map(AuditEndpoint::toBriefRepresentation).collect(Collectors.toList());
+        return users.stream().map(AuditEndpoint::toBriefRepresentation).toList();
     }
 
     @Path("clients")
@@ -79,8 +80,7 @@ public class AuditEndpoint {
         log.debug("Checking for clients in realm {}", realmName);
         List<ClientModel> clients = this.keycloakSession.clients().getClientsStream(realm).toList();
         log.debug("Got {} clients", (long) clients.size());
-        return clients.stream().map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, keycloakSession)).
-                collect(Collectors.toList());
+        return clients.stream().map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, keycloakSession)).toList();
     }
 
     protected void checkAccessRights(HttpHeaders headers) {
@@ -109,7 +109,7 @@ public class AuditEndpoint {
         if (user.getAttributes() != null && user.getAttributes().get(lastLoginAttribute) != null) {
             rep.setLastLogin(user.getAttributes().get(lastLoginAttribute).get(0));
             // check client logins
-            List<String> clients = user.getAttributes().keySet().stream().filter(key -> key.startsWith(lastLoginAttribute + "_")).collect(Collectors.toList());
+            List<String> clients = user.getAttributes().keySet().stream().filter(key -> key.startsWith(lastLoginAttribute + "_")).toList();
             for (String client : clients) {
                 String clientName = client.split(lastLoginAttribute + "_")[1];
                 rep.getClientLogins().put(clientName, user.getAttributes().get(client).get(0));

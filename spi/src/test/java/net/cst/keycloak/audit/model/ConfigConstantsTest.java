@@ -26,6 +26,6 @@ class ConfigConstantsTest {
     @Test
     void testDefaultValueForRolename() {
         String roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
-        assertEquals(roleName, "admin");
+        assertEquals("admin", roleName);
     }
 }

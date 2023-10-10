@@ -8,6 +8,8 @@ import net.cst.keycloak.audit.model.ConfigConstants;
  **/
 public class ConfigHelper {
 
+    private ConfigHelper() {}
+
     public static boolean getConfigToggle(ConfigConstants config) {
         String value = System.getenv(config.value());
         if (value == null) {

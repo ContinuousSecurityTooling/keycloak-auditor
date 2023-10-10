@@ -66,14 +66,19 @@ async function downloadServer () {
 
 async function getNightlyAsset () {
   const api = new Octokit()
+  const tag = process.env.kcVersion || 'nightly';
   const release = await api.repos.getReleaseByTag({
     owner: 'keycloak',
     repo: 'keycloak',
-    tag: 'nightly'
+    tag: tag
   })
+  let assertName = `keycloak-${tag}.tar.gz`
+  if (tag == 'nightly') {
+    assertName = 'keycloak-999.0.0-SNAPSHOT.tar.gz'
+  }
 
   return release.data.assets.find(
-    ({ name }) => name === 'keycloak-999.0.0-SNAPSHOT.tar.gz'
+    ({ name }) => name === assertName
   )
 }
 

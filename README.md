@@ -94,10 +94,8 @@ For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/Continuou
    * `full scope` needed for the client
    * Realm Role Mapping neeeded
 
-
-
-
 ## Configuration
 
 * `AUD_DISABLE_EXTERNAL_ACCESS` - To disable API being externally accessible to a cluster. Set the environment variable 'AUD_DISABLE_EXTERNAL_ACCESS'. Once set enable the header 'X-Forwarded-Host' on your proxy. This is enabled by default on HA Proxy on Openshift.
 * `KC_AUD_DISABLE_ROLE_CHECK` - To disable realm access check set value to `true`. Defaults to `false`
+* `KC_AUD_DEFAULT_ROLE` - Set the role the client needs to have. Defaults to `admin`

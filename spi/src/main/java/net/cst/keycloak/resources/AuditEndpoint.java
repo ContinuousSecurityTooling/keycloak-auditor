@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.cst.keycloak.audit.model.AuditedClientRepresentation;
 import net.cst.keycloak.audit.model.AuditedUserRepresentation;
 import net.cst.keycloak.audit.model.ConfigConstants;
+import net.cst.keycloak.utils.ConfigHelper;
 import org.keycloak.authorization.util.Tokens;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
@@ -34,9 +35,11 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 @Slf4j
 public class AuditEndpoint {
 
-    private static final boolean DISABLE_EXTERNAL_ACCESS = Boolean.parseBoolean(System.getenv(ConfigConstants.DISABLE_EXTERNAL_ACCESS.value()));
+    private static final boolean DISABLE_EXTERNAL_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
 
-    private static final boolean DISABLE_ROLE_CHECK = Boolean.parseBoolean(System.getenv(ConfigConstants.DISABLE_ROLE_CHECK.value()));
+    private static final boolean DISABLE_ROLE_CHECK = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_ROLE_CHECK);
+
+    private static final String ROLE_NAME = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
 
     /**
      * the current request context
@@ -60,8 +63,7 @@ public class AuditEndpoint {
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         RealmModel realm = realmManager.getRealmByName(realmName);
         log.debug("Checking for users in realm {}", realmName);
-        List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*")
-                .collect(Collectors.toList());
+        List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*").toList();
         log.debug("Got {} users", (long) users.size());
         return users.stream().map(AuditEndpoint::toBriefRepresentation).collect(Collectors.toList());
     }
@@ -75,8 +77,7 @@ public class AuditEndpoint {
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         RealmModel realm = realmManager.getRealmByName(realmName);
         log.debug("Checking for clients in realm {}", realmName);
-        List<ClientModel> clients = this.keycloakSession.clients().getClientsStream(realm)
-                .collect(Collectors.toList());
+        List<ClientModel> clients = this.keycloakSession.clients().getClientsStream(realm).toList();
         log.debug("Got {} clients", (long) clients.size());
         return clients.stream().map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, keycloakSession)).
                 collect(Collectors.toList());
@@ -92,8 +93,9 @@ public class AuditEndpoint {
         if (this.auth == null) {
             log.error("Empty authentication details");
             throw new NotAuthorizedException("Bearer");
-        } else if (this.auth.getRealmAccess() == null && !DISABLE_ROLE_CHECK) {
-            log.error("No access to realm");
+        } else if (!DISABLE_ROLE_CHECK &&
+                this.auth.getRealmAccess() == null && this.auth.getRealmAccess().isUserInRole(ROLE_NAME)) {
+            log.error("No access to realm with auth {}", this.auth);
             throw new ForbiddenException("Don't have realm access");
         }
         log.debug("Got user with id {}", this.auth.getId());

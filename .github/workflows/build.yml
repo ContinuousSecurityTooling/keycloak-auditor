@@ -63,8 +63,6 @@ jobs:
           timeout_minutes: 10
           command: |
             cd sdk
-            npm ci
-            npm run end2end:start-server &
             # Run end2end tests
             .bin/run-end2tests.sh
 

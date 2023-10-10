@@ -24,7 +24,11 @@ await startServer()
 async function startServer () {
   await downloadServer()
 
-  console.info('Starting server…')
+  console.info('Copying kc auditor extension to server …')
+  fs.createReadStream(path.resolve(DIR_NAME, '../../spi/target/keycloak-auditor-spi.jar'))
+  .pipe(fs.createWriteStream(path.resolve(DIR_NAME, '../tmp/server/providers//keycloak-auditor-spi.jar')));
+
+  console.info('Starting server …')
 
   const args = process.argv.slice(2)
   const child = spawn(
@@ -44,7 +48,7 @@ async function startServer () {
 }
 
 async function downloadServer () {
-  const directoryExists = fs.existsSync(SERVER_DIR)
+  const directoryExists = fs.existsSync(path.join(SERVER_DIR, `bin/kc${SCRIPT_EXTENSION}`))
 
   if (directoryExists) {
     console.info('Server installation found, skipping download.')
@@ -54,6 +58,7 @@ async function downloadServer () {
   console.info('Downloading and extracting server…')
 
   const nightlyAsset = await getNightlyAsset()
+  //console.log(nightlyAsset)
   const assetStream = await getAssetAsStream(nightlyAsset)
 
   await extractTarball(assetStream, SERVER_DIR, { strip: 1 })

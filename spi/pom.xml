@@ -142,6 +142,17 @@
     <finalName>keycloak-auditor-spi</finalName>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>cz.habarta.typescript-generator</groupId>
         <artifactId>typescript-generator-maven-plugin</artifactId>
         <version>${typescript-generator-maven-plugin.version}</version>
@@ -182,13 +193,13 @@
             </goals>
             <configuration>
               <outputDirectory>${basedir}/../sdk/src</outputDirectory>
-              <resources>          
+              <resources>
                 <resource>
                   <directory>target/typescript-generator</directory>
                   <filtering>true</filtering>
                 </resource>
-              </resources>              
-            </configuration>            
+              </resources>
+            </configuration>
           </execution>
         </executions>
       </plugin>

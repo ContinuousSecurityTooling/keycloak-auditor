@@ -170,6 +170,28 @@
           </jackson2Configuration>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/../sdk/src</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>target/typescript-generator</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
       <!-- any other plugins -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

@@ -1,5 +1,6 @@
 export {
   Constants,
+  ConfigConstants,
   ClientLoginDetails,
   UserLoginDetails,
-}  from '../spi/target/typescript-generator/spi.ts';
+}  from './src/spi.ts';

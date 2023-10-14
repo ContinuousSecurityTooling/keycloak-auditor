@@ -17,6 +17,8 @@ public class AuditedUserRepresentation extends UserRepresentation {
 
     private String lastLogin;
 
+    private String realm;
+
     private Map<String, String> clientLogins = new HashMap<>();
 
 }

@@ -12,5 +12,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 @Setter
 public class AuditedClientRepresentation extends ClientRepresentation {
 
+    private String realm;
+
     private String lastLogin;
 }

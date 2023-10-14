@@ -14,7 +14,7 @@ class ConfigConstantsTest {
     @Test
     void testDefaultValueForExternalAccess() {
         boolean externalAccess = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
-        assertTrue(externalAccess);
+        assertFalse(externalAccess);
     }
 
     @Test

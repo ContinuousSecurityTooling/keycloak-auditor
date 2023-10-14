@@ -45,6 +45,7 @@ services:
       KC_DB_PASSWORD: ${MYSQL_PASSWORD}
       KEYCLOAK_ADMIN: 'admin'
       KEYCLOAK_ADMIN_PASSWORD: 'admin'
+      KC_AUD_GLOBAL_MASTER_ACCESS: 'true'
 
   maildev:
     container_name: maildev

@@ -1,3 +1,23 @@
+# [1.0.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.5.0...v1.0.0) (2023-10-14)
+
+
+### Bug Fixes
+
+* Correcting ts generator output ([4bbf8b9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/4bbf8b9ebeff7dc81f4929f578751025afe45c12))
+
+
+### Features
+
+* **Master Access:** Allow fetching of all users/clients from master realm ([a344096](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a3440961c5a5241eee7807fec436758df08d6ff6))
+* **SDK:** Fix SDK setup ([70481a6](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/70481a6da40877dcc1c09c6d3a5d6017e83fa82c))
+
+
+### BREAKING CHANGES
+
+* **Master Access:** To enable this feature set env var `KC_AUD_GLOBAL_MASTER_ACCESS` to `true`
+
+
+
 ## [0.5.1-SNAPSHOT](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.5.0...v0.5.1-SNAPSHOT) (2023-10-14)
 
 

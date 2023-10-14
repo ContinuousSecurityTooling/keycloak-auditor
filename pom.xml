@@ -4,7 +4,7 @@
 
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>0.5.0</version>
+    <version>1.0.0</version>
     <name>Auditing Tooling for Keycloak Server</name>
     <packaging>pom</packaging>
 
@@ -65,7 +65,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <encoding>UTF-8</encoding>
-        <surefireArgLine></surefireArgLine>
+        <surefire.argLine/>
 
         <java.version>17</java.version>
 
@@ -243,6 +243,12 @@
           <groupId>org.mockito</groupId>
           <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
+        <dependency>
+          <groupId>org.junit-pioneer</groupId>
+          <artifactId>junit-pioneer</artifactId>
+          <version>2.1.0</version>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -262,6 +268,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
+                    <argLine>
+                        @{surefire.argLine}  --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED
+                    </argLine>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -309,6 +322,9 @@
         				<goals>
         					<goal>prepare-agent</goal>
         				</goals>
+                        <configuration>
+                            <propertyName>surefire.argLine</propertyName>
+                        </configuration>
         			</execution>
         			<!-- attached to Maven test phase -->
         			<execution>
@@ -317,6 +333,9 @@
         				<goals>
         					<goal>report</goal>
         				</goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
         			</execution>
         		</executions>
           </plugin>

@@ -1,6 +1,7 @@
 [![CI](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml/badge.svg)](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ContinuousSecurityTooling_keycloak-auditor&metric=alert_status)](https://sonarcloud.io/dashboard?id=ContinuousSecurityTooling_keycloak-auditor)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ContinuousSecurityTooling_keycloak-auditor&metric=coverage)](https://sonarcloud.io/dashboard?id=ContinuousSecurityTooling_keycloak-auditor)
+[![npm version](https://badge.fury.io/js/@continuoussecuritytooling%2Fkeycloak-auditor.svg)](https://www.npmjs.com/package/@continuoussecuritytooling/keycloak-auditor)
 [![Known Vulnerabilities](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor/badge.svg)](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor)
 
 # Keycloak Auditor
@@ -96,6 +97,7 @@ For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/Continuou
 
 ## Configuration
 
-* `AUD_DISABLE_EXTERNAL_ACCESS` - To disable API being externally accessible to a cluster. Set the environment variable 'AUD_DISABLE_EXTERNAL_ACCESS'. Once set enable the header 'X-Forwarded-Host' on your proxy. This is enabled by default on HA Proxy on Openshift.
+* `AUD_DISABLE_EXTERNAL_ACCESS` - To disable API being externally accessible to a cluster. Set the environment variable 'AUD_DISABLE_EXTERNAL_ACCESS'. Once set enable the header 'X-Forwarded-Host' on your proxy. This is enabled by default on HA Proxy on Openshift. Defaults to `false`
 * `KC_AUD_DISABLE_ROLE_CHECK` - To disable realm access check set value to `true`. Defaults to `false`
 * `KC_AUD_DEFAULT_ROLE` - Set the role the client needs to have. Defaults to `admin`
+* `KC_AUD_GLOBAL_MASTER_ACCESS` - Enable client in master account to iterate to over realms, Default o `false.

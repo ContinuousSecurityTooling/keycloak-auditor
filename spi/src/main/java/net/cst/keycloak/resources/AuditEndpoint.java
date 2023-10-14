@@ -22,8 +22,8 @@ import org.keycloak.representations.AccessToken;
 import org.keycloak.services.managers.AppAuthManager;
 import org.keycloak.services.managers.RealmManager;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
 import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
@@ -35,11 +35,14 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 @Slf4j
 public class AuditEndpoint {
 
-    private static final boolean DISABLE_EXTERNAL_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
+    private static boolean DISABLE_EXTERNAL_ACCESS;
 
-    private static final boolean DISABLE_ROLE_CHECK = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_ROLE_CHECK);
+    private static boolean DISABLE_ROLE_CHECK;
 
-    private static final String ROLE_NAME = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
+    private static boolean GLOBAL_MASTER_ACCESS;
+
+
+    private static String ROLE_NAME;
 
     /**
      * the current request context
@@ -50,7 +53,15 @@ public class AuditEndpoint {
 
     public AuditEndpoint(KeycloakSession keycloakSession) {
         this.keycloakSession = keycloakSession;
-        this.auth = Tokens.getAccessToken(keycloakSession);
+        this.auth = Tokens.getAccessToken(this.keycloakSession);
+        this.authenticate();
+        DISABLE_EXTERNAL_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
+        DISABLE_ROLE_CHECK = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_ROLE_CHECK);
+        GLOBAL_MASTER_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.GLOBAL_MASTER_ACCESS);
+        ROLE_NAME = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
+    }
+
+    public void authenticate() {
         new AppAuthManager.BearerTokenAuthenticator(keycloakSession).authenticate();
     }
 
@@ -61,11 +72,23 @@ public class AuditEndpoint {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
-        RealmModel realm = realmManager.getRealmByName(realmName);
-        log.debug("Checking for users in realm {}", realmName);
-        List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*").toList();
+        List<AuditedUserRepresentation> users = new ArrayList<>();
+        if (GLOBAL_MASTER_ACCESS) {
+            realmManager.getSession().realms().getRealmsStream().forEach(realm
+                    -> users.addAll(readUsers(realm).stream()
+                    .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList())
+            );
+        } else users.addAll(readUsers(realmManager.getRealmByName(realmName)).stream()
+                .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realmName)).toList());
+        return users;
+    }
+
+
+    private List<UserModel> readUsers(RealmModel realm) {
+        log.debug("Checking for users in realm {}", realm.getName());
+        final List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*").toList();
         log.debug("Got {} users", (long) users.size());
-        return users.stream().map(AuditEndpoint::toBriefRepresentation).collect(Collectors.toList());
+        return users;
     }
 
     @Path("clients")
@@ -75,18 +98,29 @@ public class AuditEndpoint {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
-        RealmModel realm = realmManager.getRealmByName(realmName);
-        log.debug("Checking for clients in realm {}", realmName);
+        List<AuditedClientRepresentation> clients = new ArrayList<>();
+        if (GLOBAL_MASTER_ACCESS) {
+            realmManager.getSession().realms().getRealmsStream().forEach(realm
+                    -> clients.addAll(readClients(realm).stream()
+                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession)).toList()));
+        } else {
+            clients.addAll(readClients(realmManager.getRealmByName(realmName)).stream()
+                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession)).toList());
+        }
+        return clients;
+    }
+
+    private List<ClientModel> readClients(RealmModel realm) {
+        log.debug("Checking for clients in realm {}", realm.getName());
         List<ClientModel> clients = this.keycloakSession.clients().getClientsStream(realm).toList();
         log.debug("Got {} clients", (long) clients.size());
-        return clients.stream().map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, keycloakSession)).
-                collect(Collectors.toList());
+        return clients;
     }
 
     protected void checkAccessRights(HttpHeaders headers) {
         if (DISABLE_EXTERNAL_ACCESS) {
             if (!headers.getRequestHeader("x-forwarded-host").isEmpty()) {
-                log.info("No external access allowed");
+                log.error("No external access allowed");
                 throw new ForbiddenException();
             }
         }
@@ -101,15 +135,16 @@ public class AuditEndpoint {
         log.debug("Got user with id {}", this.auth.getId());
     }
 
-    public static AuditedUserRepresentation toBriefRepresentation(UserModel user) {
+    public static AuditedUserRepresentation toBriefRepresentation(UserModel user, String realm) {
         AuditedUserRepresentation rep = new AuditedUserRepresentation();
         BeanCopy.from(ModelToRepresentation.toBriefRepresentation(user)).to(rep).copy();
+        rep.setRealm(realm);
 
         String lastLoginAttribute = USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value();
         if (user.getAttributes() != null && user.getAttributes().get(lastLoginAttribute) != null) {
             rep.setLastLogin(user.getAttributes().get(lastLoginAttribute).get(0));
             // check client logins
-            List<String> clients = user.getAttributes().keySet().stream().filter(key -> key.startsWith(lastLoginAttribute + "_")).collect(Collectors.toList());
+            List<String> clients = user.getAttributes().keySet().stream().filter(key -> key.startsWith(lastLoginAttribute + "_")).toList();
             for (String client : clients) {
                 String clientName = client.split(lastLoginAttribute + "_")[1];
                 rep.getClientLogins().put(clientName, user.getAttributes().get(client).get(0));
@@ -122,9 +157,10 @@ public class AuditEndpoint {
         return rep;
     }
 
-    public static AuditedClientRepresentation toBriefRepresentation(ClientModel client, KeycloakSession session) {
+    public static AuditedClientRepresentation toBriefRepresentation(ClientModel client, String realm, KeycloakSession session) {
         AuditedClientRepresentation rep = new AuditedClientRepresentation();
         BeanCopy.from(ModelToRepresentation.toRepresentation(client, session)).to(rep).copy();
+        rep.setRealm(realm);
 
         String lastLoginAttribute = USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value();
         if (client.getAttributes() != null && client.getAttributes().get(lastLoginAttribute) != null) {

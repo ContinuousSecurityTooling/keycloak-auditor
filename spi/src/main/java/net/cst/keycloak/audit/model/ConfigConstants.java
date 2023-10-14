@@ -7,13 +7,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * @created : 22.06.23
  **/
 public enum ConfigConstants {
-    DISABLE_EXTERNAL_ACCESS("KC_AUD_DISABLE_EXTERNAL_ACCESS", "true"),
+    DISABLE_EXTERNAL_ACCESS("KC_AUD_DISABLE_EXTERNAL_ACCESS", "false"),
     DISABLE_ROLE_CHECK("KC_AUD_DISABLE_ROLE_CHECK", "false"),
+    GLOBAL_MASTER_ACCESS("KC_AUD_GLOBAL_MASTER_ACCESS", "false"),
     DEFAULT_ROLE("KC_AUD_DEFAULT_ROLE", "admin");
 
     @JsonValue
     private final String value;
-    
+
     private final String defaultValue;
 
     private ConfigConstants(String value, String defaultValue) {
@@ -27,4 +28,6 @@ public enum ConfigConstants {
     public final String getDefaultValue() {
         return this.defaultValue;
     }
+
+
 }

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-10-14 17:09:23.
+// Generated using typescript-generator version 3.2.1263 on 2023-10-14 17:18:31.
 
 export interface ClientLoginDetails {
     kcLogin: Date;

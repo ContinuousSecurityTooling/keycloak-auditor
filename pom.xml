@@ -65,7 +65,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <encoding>UTF-8</encoding>
-        <surefireArgLine></surefireArgLine>
+        <surefire.argLine/>
 
         <java.version>17</java.version>
 
@@ -269,9 +269,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
                     <argLine>
-                        --add-opens java.base/java.util=ALL-UNNAMED
-                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        @{surefire.argLine}  --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
@@ -321,6 +322,9 @@
         				<goals>
         					<goal>prepare-agent</goal>
         				</goals>
+                        <configuration>
+                            <propertyName>surefire.argLine</propertyName>
+                        </configuration>
         			</execution>
         			<!-- attached to Maven test phase -->
         			<execution>
@@ -329,6 +333,9 @@
         				<goals>
         					<goal>report</goal>
         				</goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
         			</execution>
         		</executions>
           </plugin>

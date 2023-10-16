@@ -2,6 +2,8 @@
 git checkout develop
 ./mvnw gitflow:release-start
 version=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+(cd sdk && npm version $version && npm i && git add package.json package-lock.json package.json)
+git commit -m "chore: Updating SDK to $version"
 # changelog config
 cat << EOF > config.json
 {

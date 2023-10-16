@@ -31,6 +31,7 @@ See example for the docker-compose setup in `.bin/read-audited-users.sh`.
         "username": "admin",
         "enabled": true,
         "emailVerified": false,
+        "realm": "master",
         "lastLogin": "2023-07-14T06:26:30.639007384Z",
         "clientLogins": {
             "security-admin-console": "2023-07-14T06:26:30.639007384Z"
@@ -45,6 +46,7 @@ See example for the docker-compose setup in `.bin/read-audited-users.sh`.
         "firstName": "Kermit",
         "lastName": "the Frog",
         "email": "kermit@example.com",
+        "realm": "master",
         "lastLogin": "2023-07-14T06:26:56.97706909Z",
         "clientLogins": {
             "security-admin-console": "2023-07-14T06:26:44.97453346Z",

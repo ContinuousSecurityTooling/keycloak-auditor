@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.0...v1.0.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **Release:** Correcting release packaging ([cb1ee68](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/cb1ee6844c851c5fbebc2d37d8597a34288c2238))
+
+
+
 # [1.0.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v0.5.0...v1.0.0) (2023-10-14)
 
 

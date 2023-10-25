@@ -40,7 +40,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        kcVersion: ["22.0.4", "nightly"]
+        kcVersion: 
+          - "21.1.2"
+          # renovate: datasource=github-tags depName=keycloak/keycloak
+          - "22.0.4"
+          - "nightly"
     steps:
       - uses: actions/checkout@v4
       - name: "Use Node.js"

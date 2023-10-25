@@ -41,9 +41,10 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         kcVersion: 
+          - "20.0.5"
           - "21.1.2"
-          # renovate: datasource=github-tags depName=keycloak/keycloak
-          - "22.0.4"
+          # renovate: datasource=docker quay.io/keycloak/keycloak
+          - "22.0.5"
           - "nightly"
     steps:
       - uses: actions/checkout@v4

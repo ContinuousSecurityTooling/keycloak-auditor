@@ -40,7 +40,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        kcVersion: 
+        kcVersion:
           - "20.0.5"
           - "21.1.2"
           # renovate: datasource=docker quay.io/keycloak/keycloak
@@ -70,6 +70,26 @@ jobs:
             cd sdk
             # Run end2end tests
             .bin/run-end2tests.sh
+
+      - name: Build Container Image for End2End Testing
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: continuoussecuritytooling/audited-keycloak
+          tags: "end2end ${{ github.sha }}"
+          containerfiles: |
+            ./Dockerfile
+
+      - name: Push To Docker Hub (Preview)
+        id: push-to-dockerhub-preview
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: registry.hub.docker.com
+          username: continuoussecuritytooling
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        if: github.ref == 'refs/heads/develop'
 
   Sonar:
     name: Analysis

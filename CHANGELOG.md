@@ -1,3 +1,12 @@
+## [1.0.2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.1...v1.0.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v22.0.5 ([7500c83](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/7500c83ffbdd3d3e6e671045e572333ecadf31fa))
+
+
+
 ## [1.0.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.0...v1.0.1) (2023-10-16)
 
 

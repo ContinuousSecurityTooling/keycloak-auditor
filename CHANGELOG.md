@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.2...v1.1.0) (2023-10-27)
+
+
+### Features
+
+* **SDK:** Adding NodeJS rest client ([d4fa162](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/d4fa162e9e05c9f83b83a2442d3af15a54d63204))
+
+
+
 ## [1.0.2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.1...v1.0.2) (2023-10-26)
 
 

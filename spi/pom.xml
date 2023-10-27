@@ -176,6 +176,8 @@
         <configuration>
           <jsonLibrary>jackson2</jsonLibrary>
           <classes>
+            <class>net.cst.keycloak.audit.model.AuditedClientRepresentation</class>
+            <class>net.cst.keycloak.audit.model.AuditedUserRepresentation</class>
             <class>net.cst.keycloak.audit.model.ConfigConstants</class>
             <class>net.cst.keycloak.audit.model.Constants</class>
             <class>net.cst.keycloak.audit.model.ClientLoginDetails</class>

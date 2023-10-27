@@ -10,5 +10,6 @@ module.exports = {
   root: true,
   rules: {
     quotes: [2, 'single', { avoidEscape: true }],
+    'comma-dangle': ['error', 'only-multiline'],
   },
 };

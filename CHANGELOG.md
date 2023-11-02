@@ -1,3 +1,14 @@
+## [1.1.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.0...v1.1.1) (2023-11-02)
+
+
+### Bug Fixes
+
+* Correcting tsc error ([38ff8a9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/38ff8a99f9361e264789920a7137679835219bf5))
+* **SDK:** Improve error handling ([0cc2b2c](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/0cc2b2c661a8c75f78ef53e33696c0907c5822d9))
+* **Security:** Resolve security finding in babel ([fa682f4](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/fa682f4feb00f6c400dd1f795e9f46784d308363))
+
+
+
 # [1.1.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.0.2...v1.1.0) (2023-10-27)
 
 

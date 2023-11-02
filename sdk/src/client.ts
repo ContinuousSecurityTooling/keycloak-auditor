@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { AuditedClientRepresentation, AuditedUserRepresentation, ClientLoginDetails, UserLoginDetails } from './spi.js';
+import { AuditedClientRepresentation, AuditedUserRepresentation } from './spi.js';
 
 export interface Credentials {
   grantType: string;
@@ -36,6 +36,11 @@ export class AuditClient {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
     ).json());
+    if (users['error']) {
+      throw new Error(
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${users['error']}`
+      );
+    }
     return users;
   }
 
@@ -45,6 +50,11 @@ export class AuditClient {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
     ).json();
+    if (clients['error']) {
+      throw new Error(
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${clients['error']}`
+      );
+    }
     return clients;
   }
 }

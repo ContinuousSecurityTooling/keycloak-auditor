@@ -18,7 +18,8 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Publish mvn package
-        run: mvn --batch-mode package -DskipTests=true
+        run: |
+          ./mvnw --batch-mode deploy -DskipTests=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release latest version
@@ -31,7 +32,7 @@ jobs:
           overwrite: true
       - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
       - run: cd sdk && npm run clean && npm run build
       - name: Publish npm package

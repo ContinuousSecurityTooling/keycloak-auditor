@@ -52,7 +52,7 @@ export class AuditClient {
     ).json();
     if (clients['error']) {
       throw new Error(
-        `Please check your client config, did you enabled the access the API endpoint? Error: ${users['error']}`
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${clients['error']}`
       );
     }
     return clients;

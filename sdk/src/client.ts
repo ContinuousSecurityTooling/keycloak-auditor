@@ -36,6 +36,11 @@ export class AuditClient {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
     ).json());
+    if (users['error']) {
+      throw new Error(
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${users['error']}`
+      );
+    }
     return users;
   }
 
@@ -45,6 +50,11 @@ export class AuditClient {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
     ).json();
+    if (clients['error']) {
+      throw new Error(
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${users['error']}`
+      );
+    }
     return clients;
   }
 }

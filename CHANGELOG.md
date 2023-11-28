@@ -1,3 +1,13 @@
+## [1.1.2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.1...v1.1.2) (2023-11-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.jodd:jodd-util to v6.2.2 ([82fe39b](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/82fe39be086faee247ac408eec9830ccabb1dda9))
+* **deps:** update dependency org.keycloak:keycloak-parent to v23 ([9d886bf](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/9d886bf091622681ad1438856774ce57769aa263))
+
+
+
 ## [1.1.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.0...v1.1.1) (2023-11-02)
 
 

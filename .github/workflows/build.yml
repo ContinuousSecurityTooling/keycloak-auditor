@@ -43,8 +43,9 @@ jobs:
         kcVersion:
           - "20.0.5"
           - "21.1.2"
-          # renovate: datasource=docker quay.io/keycloak/keycloak
           - "22.0.5"
+          # renovate: datasource=docker quay.io/keycloak/keycloak
+          - "23.0.1"
           - "nightly"
     steps:
       - uses: actions/checkout@v4

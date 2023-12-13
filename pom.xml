@@ -322,9 +322,9 @@
         				<goals>
         					<goal>prepare-agent</goal>
         				</goals>
-                        <configuration>
-                            <propertyName>surefire.argLine</propertyName>
-                        </configuration>
+                <configuration>
+                    <propertyName>surefire.argLine</propertyName>
+                </configuration>
         			</execution>
         			<!-- attached to Maven test phase -->
         			<execution>
@@ -333,35 +333,21 @@
         				<goals>
         					<goal>report</goal>
         				</goals>
-                        <configuration>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                        </configuration>
+                <configuration>
+                    <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                </configuration>
         			</execution>
         		</executions>
           </plugin>
-        </plugins>
-        <pluginManagement>
-          <plugins>
+
             <plugin>
-              <groupId>com.amashchenko.maven.plugin</groupId>
-              <artifactId>gitflow-maven-plugin</artifactId>
-              <version>${plugin.gitflow-maven.version}</version>
-              <configuration>
-                <gitFlowConfig>
-                  <productionBranch>main</productionBranch>
-                  <developmentBranch>develop</developmentBranch>
-                  <featureBranchPrefix>feature/</featureBranchPrefix>
-                  <releaseBranchPrefix>release/</releaseBranchPrefix>
-                  <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-                  <supportBranchPrefix>support/</supportBranchPrefix>
-                  <versionTagPrefix>v</versionTagPrefix>
-                  <origin>origin</origin>
-                </gitFlowConfig>
-                <keepBranch>false</keepBranch>
-              </configuration>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
             </plugin>
-          </plugins>
-        </pluginManagement>
+        </plugins>
 
     </build>
 

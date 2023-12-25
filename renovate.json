@@ -1,25 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", ":dependencyDashboard", ":rebaseStalePrs"],
-  "platformAutomerge": true,
-  "packageRules": [
-    {
-      "description": "Automatically merge minor and patch-level updates",
-      "matchUpdateTypes": ["minor", "patch", "digest"],
-      "automerge": true,
-      "automergeType": "branch"
-    }
-  ],
-  "regexManagers": [
-    {
-      "description": "Update version entries in YAML files",
-      "fileMatch": [".*y[a]?ml$"],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.*?))?(?: versioning=(?<versioning>[^\\s]+?))?\\s.+?_VERSION:\\s*(?<currentValue>.+?)\\s",
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.*?))?(?: versioning=(?<versioning>[^\\s]+?))?\\s*\"?(?<currentValue>.+?)\"?\\s"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{versioning}}{{else}}semver{{/if}}"
-    }
-  ],
-  "prHourlyLimit": 10
+  "extends": ["github>ContinuousSecurityTooling/renovate-config"]
 }

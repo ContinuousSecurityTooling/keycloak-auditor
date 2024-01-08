@@ -83,7 +83,7 @@
 
         <!-- dependencies: compile and runtime -->
         <lombok.version>1.18.30</lombok.version>
-        <keycloak.version>23.0.4</keycloak.version>
+        <keycloak.version>23.0.3</keycloak.version>
         <resteasy.version>3.15.6.Final</resteasy.version>
         <sun-javax-activation.version>1.2.0</sun-javax-activation.version>
         <javax-activation.version>1.1.1</javax-activation.version>
@@ -167,7 +167,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.10</version>
+                <version>2.0.11</version>
             </dependency>
 
             <!-- test dependencies -->

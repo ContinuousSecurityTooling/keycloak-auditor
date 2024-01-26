@@ -1,41 +1,80 @@
-name: Release
-
+name: Trigger release # You may choose a different name
+run-name: Release run ${{ github.run_number }} # Enumerates entries in the "workflow runs" view
 on:
-  release:
-    types: [created]
+  workflow_dispatch: # Only run when manually started
+    inputs:
+      release_args:
+        description: 'Arguments for gitflow:release, e.g. -DreleaseVersion=...'
+        required: false
+        type: string
 
 jobs:
-  deploy_mvn:
-    name: Deploy Maven Package
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
+  release: # Arbitrarily chosen
+    name: Release # Arbitrarily chosen
+    runs-on: ubuntu-22.04 # May also run on other kinds of distros
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          distribution: 'temurin'
-          java-version: 17
-      - name: Publish mvn package
+          fetch-depth: 0
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4 # Does also set up Maven and GPG
+        with:
+          distribution: 'temurin' # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
+          java-package: 'jdk'
+          java-version: '11'
+          check-latest: true
+          server-id: 'central'
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_PASSWORD
+          cache: 'maven'
+      - name: Prepare
         run: |
-          ./mvnw --batch-mode deploy -DskipTests=true
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --global pull.rebase true#
+          npm install -g conventional-changelog-cli
+      - name: Build release
+        run: |
+          mvn -B gitflow:release ${{ inputs.release_args }}
+          git fetch --tags
+          # Get latest tag name
+          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          version=$(echo $latestTag | sed -e "s/v//g")
+          # Checkout latest tag
+          echo checking out ${latestTag}
+          git checkout $latestTag
+          # Deploy
+          mvn deploy -DskipTests=true
+          # Build changelog
+          echo "{\"version\":\"$version\"}" > config.json
+          conventional-changelog -p angular -i CHANGELOG.md -s -c config.json
+          rm config.json
+          git stash
+          # Push changes
+          git checkout develop
+          git stash apply
+          git add CHANGELOG.md
+          git commit -m "chore: Updating changelog"
+          git checkout -b release/$version
+          git push origin $latestTag
+          git push origin release/$version
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSS_SONATYPE_USER }}
+          OSSRH_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}
+
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release latest version
-        uses: svenstaro/upload-release-action@v2
+
+      - name: Create Release
+        uses: mikepenz/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          asset_name: keycloak-auditor-spi.jar
-          file: spi/target/keycloak-auditor-spi.jar
-          tag: ${{ github.ref }}
-          overwrite: true
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: cd sdk && npm run clean && npm run build
-      - name: Publish npm package
-        run: cd sdk && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          body: ${{steps.github_release.outputs.changelog}}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5

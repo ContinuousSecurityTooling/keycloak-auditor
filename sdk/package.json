@@ -9,7 +9,7 @@
     "clean": "rm -rf dist/* && npm i",
     "build": "tsc",
     "test": "eslint . && jest",
-    "end2end:start-server": ".bin/start-server.mjs -Dkeycloak.profile.feature.account_api=disabled -Dkeycloak.profile.feature.account2=disabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=e2e/fixtures/auth-utils/test-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING",
+    "end2end:start-server": ".bin/start-server.mjs -Dkeycloak.profile.feature.account_api=enabled -Dkeycloak.profile.feature.account2=disabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=e2e/fixtures/auth-utils/test-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING",
     "end2end:test": "node e2e/spec/users.js"
   },
   "repository": {

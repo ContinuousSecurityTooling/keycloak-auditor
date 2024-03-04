@@ -1,3 +1,15 @@
+## [1.1.6](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.5...v1.1.6) (2024-03-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v23.0.5 ([6cd241e](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/6cd241e252e6b490458d319bf0372cb595468690))
+* **deps:** update dependency org.keycloak:keycloak-parent to v23.0.6 ([4557447](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/45574473494f28e9eccbfccf4161f45219e895b1))
+* **deps:** update dependency org.keycloak:keycloak-parent to v23.0.7 ([f1bab9f](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/f1bab9f71ee0c17bf6af6bee3d98d75ed73b2235))
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.12 ([bb4b8dd](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/bb4b8dd580103bb72cda6d0fbd1c3fda9d8cb60f))
+
+
+
 ## [1.1.5](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.4...v1.1.5) (2024-01-26)
 
 

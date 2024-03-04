@@ -1,6 +1,6 @@
 {
   "name": "@continuoussecuritytooling/keycloak-auditor",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Auditing Tools for Keycloak",
   "typings": "dist/index.d.ts",
   "main": "dist/index.js",
@@ -29,8 +29,8 @@
     "@octokit/rest": "^20.0.2",
     "@types/jest": "^29.5.1",
     "@types/node": "^20.1.5",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

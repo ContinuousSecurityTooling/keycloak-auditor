@@ -44,8 +44,8 @@ jobs:
           - "20.0.5"
           - "21.1.2"
           - "22.0.5"
-          # renovate: datasource=docker quay.io/keycloak/keycloak
-          - "23.0.1"
+          # renovate: datasource=docker depName=quay.io/keycloak/keycloak
+          - "23.0.7"
           - "nightly"
     steps:
       - uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
           ./mvnw clean verify -U
 
       - name: Run End2End Tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: 3
           retry_on: error

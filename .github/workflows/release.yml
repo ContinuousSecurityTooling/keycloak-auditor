@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy_mvn:
-    name: Deploy Maven Package
+    name: Deploy Packages
     runs-on: ubuntu-latest
     permissions:
       contents: write

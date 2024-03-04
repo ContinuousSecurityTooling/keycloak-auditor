@@ -44,6 +44,7 @@ jobs:
           - "20.0.5"
           - "21.1.2"
           - "22.0.5"
+          - "23.0.7"
           # renovate: datasource=docker depName=quay.io/keycloak/keycloak
           - "24.0.0"
           - "nightly"

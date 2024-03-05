@@ -20,6 +20,7 @@ import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,19 +65,23 @@ class AuditEndpointTest {
 
     protected static List<AuditedUserRepresentation> getUsersViaEndpoint() {
         HttpHeaders headers = mock(HttpHeaders.class);
-        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {{
-            put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
-        }};
+        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
+            {
+                put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
+            }
+        };
 
         RealmModel masterRealm = mock(RealmModel.class);
         RealmModel anotherRealm = mock(RealmModel.class);
         RealmProvider realmProvider = mock(RealmProvider.class);
         UserProvider userProvider = mock(UserProvider.class);
-        Stream<UserModel> usersMaster = Arrays.stream(new UserModel[]{UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2")});
-        when(userProvider.searchForUserStream(masterRealm, "*")).thenReturn(usersMaster);
-        Stream<UserModel> usersOther = Arrays.stream(new UserModel[]{UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2")});
-        when(userProvider.searchForUserStream(anotherRealm, "*")).thenReturn(usersOther);
-        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[]{masterRealm, anotherRealm}));
+        Stream<UserModel> usersMaster = Arrays
+                .stream(new UserModel[] { UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2") });
+        when(userProvider.searchForUserStream(masterRealm, Map.of(UserModel.SEARCH, "*"))).thenReturn(usersMaster);
+        Stream<UserModel> usersOther = Arrays
+                .stream(new UserModel[] { UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2") });
+        when(userProvider.searchForUserStream(anotherRealm, Map.of(UserModel.SEARCH, "*"))).thenReturn(usersOther);
+        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[] { masterRealm, anotherRealm }));
         when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
         when(realmProvider.getRealmByName("other")).thenReturn(anotherRealm);
         when(headers.getRequestHeaders()).thenReturn(headerValues);
@@ -102,19 +107,23 @@ class AuditEndpointTest {
 
     protected static List<AuditedClientRepresentation> getClientsViaEndpoint() {
         HttpHeaders headers = mock(HttpHeaders.class);
-        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {{
-            put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
-        }};
+        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
+            {
+                put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
+            }
+        };
 
         RealmModel masterRealm = mock(RealmModel.class);
         RealmModel anotherRealm = mock(RealmModel.class);
         RealmProvider realmProvider = mock(RealmProvider.class);
         ClientProvider clientProvider = mock(ClientProvider.class);
-        Stream<ClientModel> clientsMaster = Arrays.stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
+        Stream<ClientModel> clientsMaster = Arrays
+                .stream(new ClientModel[] { ClientModelHelper.buildClient(), ClientModelHelper.buildClient() });
         when(clientProvider.getClientsStream(masterRealm)).thenReturn(clientsMaster);
-        Stream<ClientModel> clientsOther = Arrays.stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
+        Stream<ClientModel> clientsOther = Arrays
+                .stream(new ClientModel[] { ClientModelHelper.buildClient(), ClientModelHelper.buildClient() });
         when(clientProvider.getClientsStream(anotherRealm)).thenReturn(clientsOther);
-        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[]{masterRealm, anotherRealm}));
+        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[] { masterRealm, anotherRealm }));
         when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
         when(realmProvider.getRealmByName("other")).thenReturn(anotherRealm);
         when(headers.getRequestHeaders()).thenReturn(headerValues);

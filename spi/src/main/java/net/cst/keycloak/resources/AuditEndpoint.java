@@ -24,6 +24,7 @@ import org.keycloak.services.managers.RealmManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
 import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
@@ -83,7 +84,8 @@ public class AuditEndpoint {
 
     private List<UserModel> readUsers(RealmModel realm) {
         log.debug("Checking for users in realm {}", realm.getName());
-        final List<UserModel> users = this.keycloakSession.users().searchForUserStream(realm, "*").toList();
+        final List<UserModel> users = this.keycloakSession.users()
+                .searchForUserStream(realm, Map.of(UserModel.SEARCH, "*")).toList();
         log.debug("Got {} users", (long) users.size());
         return users;
     }

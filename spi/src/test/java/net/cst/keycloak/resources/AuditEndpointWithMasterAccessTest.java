@@ -7,8 +7,8 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author : mreinhardt
@@ -21,13 +21,13 @@ class AuditEndpointWithMasterAccessTest extends AuditEndpointTest {
     void shouldShowUsersFromAllRealmsIfConfigured() throws Exception {
         List<AuditedUserRepresentation> users = getUsersViaEndpoint();
         assertNotNull(users);
-        assertTrue(users.size() == 4, "Expected 4 users, but got " + users.size());
+        assertEquals(4, users.size(), "Expected 4 users, but got " + users.size());
     }
 
     @Test
     void shouldShowClientsFromAllRealmsIfConfigured() throws Exception {
         List<AuditedClientRepresentation> clients = getClientsViaEndpoint();
         assertNotNull(clients);
-        assertTrue(clients.size() == 4, "Expected 4 clients, but got " + clients.size());
+        assertEquals(4, clients.size(), "Expected 4 clients, but got " + clients.size());
     }
 }

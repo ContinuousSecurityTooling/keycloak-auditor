@@ -35,14 +35,13 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 @Slf4j
 public class AuditEndpoint {
 
-    private static boolean DISABLE_EXTERNAL_ACCESS;
+    private boolean DISABLE_EXTERNAL_ACCESS;
 
-    private static boolean DISABLE_ROLE_CHECK;
+    private boolean DISABLE_ROLE_CHECK;
 
-    private static boolean GLOBAL_MASTER_ACCESS;
+    private boolean GLOBAL_MASTER_ACCESS;
 
-
-    private static String ROLE_NAME;
+    private String ROLE_NAME;
 
     /**
      * the current request context
@@ -74,15 +73,13 @@ public class AuditEndpoint {
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedUserRepresentation> users = new ArrayList<>();
         if (GLOBAL_MASTER_ACCESS) {
-            realmManager.getSession().realms().getRealmsStream().forEach(realm
-                    -> users.addAll(readUsers(realm).stream()
-                    .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList())
-            );
-        } else users.addAll(readUsers(realmManager.getRealmByName(realmName)).stream()
-                .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realmName)).toList());
+            realmManager.getSession().realms().getRealmsStream().forEach(realm -> users.addAll(readUsers(realm).stream()
+                    .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList()));
+        } else
+            users.addAll(readUsers(realmManager.getRealmByName(realmName)).stream()
+                    .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realmName)).toList());
         return users;
     }
-
 
     private List<UserModel> readUsers(RealmModel realm) {
         log.debug("Checking for users in realm {}", realm.getName());
@@ -100,12 +97,14 @@ public class AuditEndpoint {
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedClientRepresentation> clients = new ArrayList<>();
         if (GLOBAL_MASTER_ACCESS) {
-            realmManager.getSession().realms().getRealmsStream().forEach(realm
-                    -> clients.addAll(readClients(realm).stream()
-                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession)).toList()));
+            realmManager.getSession().realms().getRealmsStream().forEach(realm -> clients.addAll(readClients(realm)
+                    .stream()
+                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession))
+                    .toList()));
         } else {
             clients.addAll(readClients(realmManager.getRealmByName(realmName)).stream()
-                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession)).toList());
+                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession))
+                    .toList());
         }
         return clients;
     }
@@ -144,7 +143,8 @@ public class AuditEndpoint {
         if (user.getAttributes() != null && user.getAttributes().get(lastLoginAttribute) != null) {
             rep.setLastLogin(user.getAttributes().get(lastLoginAttribute).get(0));
             // check client logins
-            List<String> clients = user.getAttributes().keySet().stream().filter(key -> key.startsWith(lastLoginAttribute + "_")).toList();
+            List<String> clients = user.getAttributes().keySet().stream()
+                    .filter(key -> key.startsWith(lastLoginAttribute + "_")).toList();
             for (String client : clients) {
                 String clientName = client.split(lastLoginAttribute + "_")[1];
                 rep.getClientLogins().put(clientName, user.getAttributes().get(client).get(0));
@@ -157,7 +157,8 @@ public class AuditEndpoint {
         return rep;
     }
 
-    public static AuditedClientRepresentation toBriefRepresentation(ClientModel client, String realm, KeycloakSession session) {
+    public static AuditedClientRepresentation toBriefRepresentation(ClientModel client, String realm,
+            KeycloakSession session) {
         AuditedClientRepresentation rep = new AuditedClientRepresentation();
         BeanCopy.from(ModelToRepresentation.toRepresentation(client, session)).to(rep).copy();
         rep.setRealm(realm);

@@ -1,3 +1,14 @@
+## [1.1.7](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.6...v1.1.7) (2024-03-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v24 ([133333c](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/133333c288ab07b7a4a0d477fc2b69e86272e57b))
+* **deps:** update dependency org.keycloak:keycloak-parent to v24.0.1 ([1e14ff4](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/1e14ff417d1268325b3277b7886bc4811341e883))
+* **deps:** update dependency org.projectlombok:lombok to v1.18.32 ([50f84af](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/50f84af45473b62ba0662353f23deacbaebbe114))
+
+
+
 ## [1.1.6](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.5...v1.1.6) (2024-03-04)
 
 

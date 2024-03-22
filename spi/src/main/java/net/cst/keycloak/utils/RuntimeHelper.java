@@ -11,7 +11,10 @@ public class RuntimeHelper {
     private static final String MAVEN_PACKAGE = "net.continuous-security-tools";
     private static final String MAVEN_ARTIFACT = "spi";
 
-    public synchronized static String getVersion() {
+    private RuntimeHelper() {
+    }
+
+    public static synchronized String getVersion() {
         // Try to get version number from maven properties in jar's META-INF
         try (InputStream is = RuntimeHelper.class
                 .getResourceAsStream("/META-INF/maven/" + MAVEN_PACKAGE + "/"

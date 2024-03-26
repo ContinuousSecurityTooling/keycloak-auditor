@@ -1,4 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ContinuousSecurityTooling/renovate-config"]
+  "extends": ["github>ContinuousSecurityTooling/renovate-config"],
+  "packageRules": [
+    {
+      "groupName": "Keycloak Releases",
+      "matchDatasources": ["docker", "github-tags"],
+      "matchPackagePatterns": [
+        "quay.io/keycloak/keycloak",
+        "^org.keycloak:",
+        "^keycloak$"
+      ],
+      "matchUpdateTypes": ["major", "minor", "patch", "pin"]
+    }
+  ]
+
 }

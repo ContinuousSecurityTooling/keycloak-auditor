@@ -4,9 +4,9 @@
   "packageRules": [
     {
       "groupName": "Keycloak Releases",
-      "matchDatasources": ["docker", "github-tags"],
+      "matchDatasources": ["docker", "github-tags", "maven"],
       "matchPackagePatterns": [
-        "quay.io/keycloak/keycloak",
+        "^quay.io/keycloak",
         "^org.keycloak:",
         "^keycloak$"
       ],

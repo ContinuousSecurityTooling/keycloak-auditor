@@ -1,3 +1,13 @@
+## [1.1.8](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.7...v1.1.8) (2024-04-05)
+
+
+### Features
+
+* Adding maven to keycloak releases group ([49f43c3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/49f43c3f392f050a65eb9612dabfd41fd347514b))
+* Build and Test on JDK21 ([0601b9b](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/0601b9bceeea9568386fe768e1cdcaac703704f1))
+
+
+
 ## [1.1.7](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.6...v1.1.7) (2024-03-22)
 
 

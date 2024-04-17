@@ -83,7 +83,7 @@
 
         <!-- dependencies: compile and runtime -->
         <lombok.version>1.18.32</lombok.version>
-        <keycloak.version>24.0.2</keycloak.version>
+        <keycloak.version>24.0.3</keycloak.version>
         <resteasy.version>3.15.6.Final</resteasy.version>
         <sun-javax-activation.version>1.2.0</sun-javax-activation.version>
         <javax-activation.version>1.1.1</javax-activation.version>

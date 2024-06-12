@@ -5,7 +5,7 @@
   <parent>
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>1.1.8</version>
+    <version>1.1.9</version>
   </parent>
 
   <artifactId>spi</artifactId>
@@ -139,7 +139,7 @@
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>3.1.5</version>
+      <version>3.1.7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -150,7 +150,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.4.1</version>
         <configuration>
           <archive>
             <addMavenDescriptor/>

@@ -1,3 +1,12 @@
+## [1.1.9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.8...v1.1.9) (2024-06-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.13 ([2b3d0ac](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/2b3d0aced6195ff5241f6ac66ad6019d74c13a1e))
+
+
+
 ## [1.1.8](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.7...v1.1.8) (2024-04-05)
 
 

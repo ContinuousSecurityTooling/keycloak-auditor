@@ -90,7 +90,7 @@
 
         <!-- versions of test dependencies -->
         <jacoco.version>0.8.12</jacoco.version>
-        <junit5.version>5.10.2</junit5.version>
+        <junit5.version>5.10.3</junit5.version>
         <version.hamcrest>2.2</version.hamcrest>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>5.12.0</mockito.version>

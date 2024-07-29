@@ -1,3 +1,12 @@
+## [1.1.10](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.9...v1.1.10) (2024-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.projectlombok:lombok to v1.18.34 ([116f611](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/116f611402e5b7157348d01ddf8c6bc6f174f658))
+
+
+
 ## [1.1.9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v1.1.8...v1.1.9) (2024-06-12)
 
 

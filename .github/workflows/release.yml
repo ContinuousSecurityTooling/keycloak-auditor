@@ -1,5 +1,5 @@
 name: Create release # You may choose a different name
-run-name: Release run ${{ github.run_number }} # Enumerates entries in the "workflow runs" view
+run-name: ${{ inputs.releaseversion }} # Enumerates entries in the "workflow runs" view
 on:
     workflow_dispatch:
         inputs:
@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         permissions:
             contents: write
-            packages: write# May also run on other kinds of distros
+            packages: write
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4

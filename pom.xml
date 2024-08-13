@@ -55,9 +55,9 @@
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git@github.com:ContinuousSecurityTooling/keycloak-auditor.git</connection>
-        <developerConnection>scm:git:git@github.com:ContinuousSecurityTooling/keycloak-auditor.git</developerConnection>
-        <url>git@github.com:ContinuousSecurityTooling/keycloak-auditor.git</url>
+        <url>https://${GITHUB_TOKEN}@github.com/ContinuousSecurityTooling/keycloak-auditor.git</url>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

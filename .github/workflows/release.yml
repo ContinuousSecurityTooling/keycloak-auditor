@@ -49,7 +49,7 @@ jobs:
                 env:
                     OSSRH_USERNAME: ${{ secrets.OSS_SONATYPE_USER }}
                     OSSRH_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}
-                    GITHUB_TOKEN: ${{ github.token }}
+                    github-token: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     export TZ="Europe/Berlin"
                     mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=bb-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -D"arguments=-DskipITs=true"

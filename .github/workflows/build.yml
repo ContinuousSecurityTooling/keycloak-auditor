@@ -10,7 +10,7 @@ on:
       - '*'
 
 jobs:
-  Build:
+  build:
     name: Build and Test on JDK ${{ matrix.java }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -42,7 +42,7 @@ jobs:
           ./mvnw clean verify -U
           cd sdk && npm run clean && npm run build
 
-  End2End:
+  end2end:
     name: "End2End Test on Keycloak ${{ matrix.kcVersion }} and ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}"
     strategy:
@@ -102,10 +102,27 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
         if: github.ref == 'refs/heads/develop'
 
+  build-results:
+    name: Build results
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - end2end
+    steps:
+      - run: exit 1
+        # see https://stackoverflow.com/a/67532120/4907315
+        if: >-
+          ${{
+                contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+                || contains(needs.*.result, 'skipped')
+                }}
+
   Sonar:
     name: Analysis
     runs-on: ubuntu-latest
-    needs: Build
+    needs: build
     # main and Develop branch only
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:

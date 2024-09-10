@@ -26,6 +26,8 @@ jobs:
 
             -   name: Setup NodeJS
                 uses: actions/setup-node@v4
+                with:
+                    node-version: '20'
 
             -   name: Setup Java
                 uses: actions/setup-java@v4 # Does also set up Maven and GPG
@@ -34,25 +36,34 @@ jobs:
                     java-package: 'jdk'
                     java-version: '21'
                     check-latest: true
-                    server-id: 'central'
-                    server-username: OSSRH_USERNAME
-                    server-password: OSSRH_PASSWORD
                     cache: 'maven'
+
+            -   name: Setup settings.xml
+                uses: s4u/maven-settings-action@v3.0.0
+                with:
+                    override: true
+                    servers: |
+                        [{
+                            "id": "central",
+                            "username": "${{ secrets.OSS_SONATYPE_USER }}",
+                            "password": "${{ secrets.OSS_SONATYPE_USER }}"
+                        },{
+                            "id":"github",
+                            "username": "ci-bot",
+                            "password": "${{ secrets.GITHUB_TOKEN }}"
+                        }]
 
             -   name: Configure git
                 run: |
-                    git config --global user.name github-actions[bot]
-                    git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
-                    git config --global pull.rebase true
+                    git config --global user.name "ci-bot"
+                    git config --global user.email "ci@m13t.de"
 
             -   name: Create release
                 env:
-                    OSSRH_USERNAME: ${{ secrets.OSS_SONATYPE_USER }}
-                    OSSRH_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}
-                    github-token: ${{ secrets.GITHUB_TOKEN }}
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     export TZ="Europe/Berlin"
-                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=hypery2k -Dpassword=$GITHUB_TOKEN -DskipITs=true -D"arguments=-DskipITs=true"
+                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -D"arguments=-DskipITs=true"
                     # write version info
                     cat <<EOF >target/config.json
                     {

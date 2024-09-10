@@ -63,7 +63,8 @@ jobs:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     export TZ="Europe/Berlin"
-                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -D"arguments=-DskipITs=true"
+                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true -DpushChanges=false"
+                    git checkout -b release/${{ inputs.releaseversion }}
                     # write version info
                     cat <<EOF >target/config.json
                     {
@@ -76,6 +77,10 @@ jobs:
                 with:
                     github-token: ${{ secrets.GITHUB_TOKEN }}
                     version-file: target/config.json
+
+
+              - name: Create Pull Request
+                uses: peter-evans/create-pull-request@v7
 
             -   name: Create Release
                 uses: mikepenz/action-gh-release@v1

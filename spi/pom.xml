@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>1.1.11-SNAPSHOT</version>
+    <version>1.1.11</version>
   </parent>
 
   <artifactId>spi</artifactId>
@@ -153,7 +151,7 @@
         <version>3.4.2</version>
         <configuration>
           <archive>
-            <addMavenDescriptor/>
+            <addMavenDescriptor />
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>

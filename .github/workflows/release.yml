@@ -111,6 +111,9 @@ jobs:
 
             -   run: cd sdk && npm run clean && npm run build
             -   name: Publish npm package
-                run: cd sdk && npm publish
+                run: |
+                    cd sdk
+                    npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
+                    npm publish
                 env:
                     NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

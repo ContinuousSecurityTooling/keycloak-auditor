@@ -83,6 +83,11 @@ jobs:
                 with:
                     github-token: ${{ secrets.GITHUB_TOKEN }}
                     version-file: target/config.json
+                    pre-release: true
+                    skip-bump: true
+                    skip-tag: true
+                    skip-on-empty: false
+                    tag-prefix: 'v'
 
             -   name: Create Release
                 uses: mikepenz/action-gh-release@v1

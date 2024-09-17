@@ -3,7 +3,7 @@
 
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>1.1.12</version>
+    <version>1.1.13-SNAPSHOT</version>
     <name>Auditing Tooling for Keycloak Server</name>
     <packaging>pom</packaging>
 
@@ -57,7 +57,7 @@
         <url>https://${GITHUB_TOKEN}@github.com/ContinuousSecurityTooling/keycloak-auditor.git</url>
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
-        <tag>v1.1.12</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

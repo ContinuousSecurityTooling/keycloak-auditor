@@ -89,14 +89,25 @@ jobs:
                     skip-on-empty: false
                     tag-prefix: 'v'
 
-            -   name: Create Release
-                uses: mikepenz/action-gh-release@v1
+            -   name: Create Release on GH
+                id: tag-and-release
+                uses: avakar/tag-and-release@v1
                 with:
-                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+                    draft: true
+                    release_name: ${{ github.event.inputs.releaseversion }}
+                    tag_name: v${{ github.event.inputs.releaseversion }}
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Add SPI to github release
+                uses: actions/upload-release-asset@v1
+                with:
+                    upload_url: ${{ steps.tag-and-release.outputs.upload_url }}
+                    asset_path: spi/target/keycloak-auditor-spi.jar
                     asset_name: keycloak-auditor-spi.jar
-                    file: spi/target/keycloak-auditor-spi.jar
-                    tag: v${{ inputs.releaseversion }}
-                    overwrite: true
+                    asset_content_type: application/zip
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             -   run: cd sdk && npm run clean && npm run build
             -   name: Publish npm package

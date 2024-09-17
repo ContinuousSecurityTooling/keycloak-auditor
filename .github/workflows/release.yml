@@ -81,6 +81,7 @@ jobs:
             -   name: Conventional Changelog Action
                 uses: TriPSs/conventional-changelog-action@v5
                 with:
+                    input-file: CHANGELOG.md
                     github-token: ${{ secrets.GITHUB_TOKEN }}
                     version-file: target/config.json
                     pre-release: true

@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.continuous-security-tools</groupId>
     <artifactId>keycloak-auditor</artifactId>
-    <version>1.1.11-SNAPSHOT</version>
+    <version>1.1.11</version>
     <name>Auditing Tooling for Keycloak Server</name>
     <packaging>pom</packaging>
 
@@ -58,14 +57,14 @@
         <url>https://${GITHUB_TOKEN}@github.com/ContinuousSecurityTooling/keycloak-auditor.git</url>
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.1.11</tag>
     </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <encoding>UTF-8</encoding>
-        <surefire.argLine/>
+        <surefire.argLine />
 
         <java.version>17</java.version>
 
@@ -300,9 +299,9 @@
                             <onlyWhenRelease>true</onlyWhenRelease>
                         </requireReleaseDeps>
 
-                        <banDuplicatePomDependencyVersions/>
+                        <banDuplicatePomDependencyVersions />
 
-                        <dependencyConvergence/>
+                        <dependencyConvergence />
                     </rules>
                 </configuration>
             </plugin>

@@ -1,120 +1,120 @@
 name: Create release # You may choose a different name
 run-name: ${{ inputs.releaseversion }} # Enumerates entries in the "workflow runs" view
 on:
-    workflow_dispatch:
-        inputs:
-            releaseversion:
-                description: 'Release version'
-                required: true
-                type: string
-                default: "X.Y.Z"
+  workflow_dispatch:
+    inputs:
+      releaseversion:
+        description: "Release version"
+        required: true
+        type: string
+        default: "X.Y.Z"
 
 jobs:
-    release: # Arbitrarily chosen
-        name: Release
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            packages: write
-            attestations: write
-            id-token: write
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v4
-                with:
-                    fetch-depth: 0
+  release: # Arbitrarily chosen
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            -   uses: actions/create-github-app-token@v1
-                id: app-token
-                with:
-                    app-id: ${{ vars.CI_APP_ID }}
-                    private-key: ${{ secrets.CI_PRIVATE_KEY }}
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.CI_APP_ID }}
+          private-key: ${{ secrets.CI_PRIVATE_KEY }}
 
-            -   name: Setup NodeJS
-                uses: actions/setup-node@v4
-                with:
-                    node-version: '20'
-                    registry-url: 'https://registry.npmjs.org'
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
-            -   name: Setup Java
-                uses: actions/setup-java@v4 # Does also set up Maven and GPG
-                with:
-                    distribution: 'temurin' # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
-                    java-package: 'jdk'
-                    java-version: '21'
-                    check-latest: true
-                    cache: 'maven'
+      - name: Setup Java
+        uses: actions/setup-java@v4 # Does also set up Maven and GPG
+        with:
+          distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
+          java-package: "jdk"
+          java-version: "21"
+          check-latest: true
+          cache: "maven"
 
-            -   name: Setup settings.xml
-                uses: s4u/maven-settings-action@v3.0.0
-                with:
-                    override: true
-                    servers: |
-                        [{
-                            "id": "central",
-                            "username": "${{ secrets.OSS_SONATYPE_USER }}",
-                            "password": "${{ secrets.OSS_SONATYPE_USER }}"
-                        },{
-                            "id":"github",
-                            "username": "ci-bot",
-                            "password": "${{ secrets.GITHUB_TOKEN }}"
-                        }]
+      - name: Setup settings.xml
+        uses: s4u/maven-settings-action@v3.0.0
+        with:
+          override: true
+          servers: |
+            [{
+                "id": "central",
+                "username": "${{ secrets.OSS_SONATYPE_USER }}",
+                "password": "${{ secrets.OSS_SONATYPE_USER }}"
+            },{
+                "id":"github",
+                "username": "ci-bot",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
+            }]
 
-            -   name: Configure git
-                run: |
-                    git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-                    git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
+      - name: Configure git
+        run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
 
-            -   name: Create release
-                env:
-                    GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-                run: |
-                    export TZ="Europe/Berlin"
-                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"
-                    # write version info
-                    cat <<EOF >target/config.json
-                    {
-                      "version": "${{ inputs.releaseversion }}"
-                    }
-                    EOF
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          export TZ="Europe/Berlin"
+          mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"
+          # write version info
+          cat <<EOF >target/config.json
+          {
+            "version": "${{ inputs.releaseversion }}"
+          }
+          EOF
 
-            -   name: Conventional Changelog Action
-                uses: TriPSs/conventional-changelog-action@v5
-                with:
-                    input-file: CHANGELOG.md
-                    github-token: ${{ secrets.GITHUB_TOKEN }}
-                    version-file: target/config.json
-                    pre-release: true
-                    skip-bump: true
-                    skip-tag: true
-                    skip-on-empty: false
-                    tag-prefix: 'v'
+      - name: Conventional Changelog Action
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          input-file: CHANGELOG.md
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version-file: target/config.json
+          pre-release: true
+          skip-bump: true
+          skip-tag: true
+          skip-on-empty: true
+          tag-prefix: "v"
 
-            -   name: Create Release on GH
-                id: tag-and-release
-                uses: avakar/tag-and-release@v1
-                with:
-                    draft: true
-                    release_name: ${{ github.event.inputs.releaseversion }}
-                    tag_name: v${{ github.event.inputs.releaseversion }}
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release on GH
+        id: tag-and-release
+        uses: avakar/tag-and-release@v1
+        with:
+          draft: true
+          release_name: ${{ github.event.inputs.releaseversion }}
+          tag_name: v${{ github.event.inputs.releaseversion }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            -   name: Add SPI to github release
-                uses: actions/upload-release-asset@v1
-                with:
-                    upload_url: ${{ steps.tag-and-release.outputs.upload_url }}
-                    asset_path: spi/target/keycloak-auditor-spi.jar
-                    asset_name: keycloak-auditor-spi.jar
-                    asset_content_type: application/zip
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add SPI to github release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.tag-and-release.outputs.upload_url }}
+          asset_path: spi/target/keycloak-auditor-spi.jar
+          asset_name: keycloak-auditor-spi.jar
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            -   run: cd sdk && npm run clean && npm run build
-            -   name: Publish npm package
-                run: |
-                    cd sdk
-                    npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
-                    npm publish
-                env:
-                    NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - run: cd sdk && npm run clean && npm run build
+      - name: Publish npm package
+        run: |
+          cd sdk
+          npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

@@ -93,7 +93,11 @@ For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/Continuou
 
 ![](.docs/keycloak-realm-event-config-step2.png)
 
-3. To use the REST endpoint (e.g. `http://localhost:8080/master/realms/${KEYCLOAK_REALM}/auditing/users`) create a client which uses client credentials grant
+3. Enable Unmanged attributes:
+
+![](.docs/keycloak-enable-unmanaged-attributes.png)
+
+4. To use the REST endpoint (e.g. `http://localhost:8080/master/realms/${KEYCLOAK_REALM}/auditing/users`) create a client which uses client credentials grant
    * `full scope` needed for the client
    * Realm Role Mapping neeeded
 

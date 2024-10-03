@@ -65,6 +65,7 @@ See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 Prerequisites:
 * JDK 17+
 * Docker
+* Keycloak 20+
 
 Build and start:
 
@@ -83,10 +84,7 @@ The Keycloak server will now be available on <http://localhost:8080>. You can lo
 >**NOTE**:
 > Instead of building yourself, you can pick the latest release JAR.
 
-1. Copy the JAR from [releases](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/latest) to `/opt/keycloak/providers` (Keycloak>=22)
-> **NOTE:**
-For Keycloak 20 & 21 use the SPI JAR from [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/tag/v0.3.1)
-For Keycloak Legacy (<=19) Use the EAR from [0.3.1](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/tag/v0.3.1) and copy it to `opt/jboss/keycloak/standalone/deployments/`
+1. Copy the SPI JAR from [releases](https://github.com/ContinuousSecurityTooling/keycloak-auditor/releases/latest) to `/opt/keycloak/providers` (Keycloak>=22)
 2. Enable event listener:
 
 ![](.docs/keycloak-realm-event-config-step1.png)

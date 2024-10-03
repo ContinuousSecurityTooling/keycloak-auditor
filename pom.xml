@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.continuous-security-tools</groupId>
@@ -40,12 +41,13 @@
     </prerequisites>
 
     <distributionManagement>
-      <repository>
-        <id>github</id>
-        <name>GitHub Packages</name>
-        <url>https://maven.pkg.github.com/ContinuousSecurityTooling/keycloak-auditor</url>
-      </repository>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/ContinuousSecurityTooling/keycloak-auditor</url>
+        </repository>
     </distributionManagement>
+
 
     <issueManagement>
         <url>https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues</url>
@@ -63,7 +65,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <encoding>UTF-8</encoding>
-        <surefire.argLine />
+        <surefire.argLine/>
 
         <java.version>17</java.version>
 
@@ -72,7 +74,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <!-- Point the Sonar Qube Plugin always to the same aggregated JaCoCo report -->
         <sonar.coverage.jacoco.xmlReportPaths>
-          ${project.basedir}/../spi/target/site/jacoco/jacoco.xml
+            ${project.basedir}/../spi/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
 
         <!-- logging dependencies -->
@@ -109,6 +111,8 @@
         <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
         <plugin.gitflow-maven.version>1.21.0</plugin.gitflow-maven.version>
         <typescript-generator-maven-plugin.version>3.2.1263</typescript-generator-maven-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
 
     </properties>
 
@@ -194,10 +198,10 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-              <groupId>org.mockito</groupId>
-              <artifactId>mockito-junit-jupiter</artifactId>
-              <version>${mockito.version}</version>
-              <scope>test</scope>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -238,14 +242,14 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-junit-jupiter</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.junit-pioneer</groupId>
-          <artifactId>junit-pioneer</artifactId>
-          <version>2.2.0</version>
-          <scope>test</scope>
+            <groupId>org.junit-pioneer</groupId>
+            <artifactId>junit-pioneer</artifactId>
+            <version>2.2.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -270,7 +274,8 @@
                     <threadCount>1</threadCount>
                     <perCoreThreadCount>false</perCoreThreadCount>
                     <argLine>
-                        @{surefire.argLine}  --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED
+                        @{surefire.argLine} --add-opens java.base/java.util=ALL-UNNAMED --add-opens
+                        java.base/java.lang=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
@@ -298,9 +303,9 @@
                             <onlyWhenRelease>true</onlyWhenRelease>
                         </requireReleaseDeps>
 
-                        <banDuplicatePomDependencyVersions />
+                        <banDuplicatePomDependencyVersions/>
 
-                        <dependencyConvergence />
+                        <dependencyConvergence/>
                     </rules>
                 </configuration>
             </plugin>
@@ -310,43 +315,89 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${maven-versions-plugin.version}</version>
             </plugin>
-          <!-- Coverage metering -->
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco.version}</version>
-        		<executions>
-        			<execution>
-        				<goals>
-        					<goal>prepare-agent</goal>
-        				</goals>
-                <configuration>
-                    <propertyName>surefire.argLine</propertyName>
-                </configuration>
-        			</execution>
-        			<!-- attached to Maven test phase -->
-        			<execution>
-        				<id>report</id>
-        				<phase>test</phase>
-        				<goals>
-        					<goal>report</goal>
-        				</goals>
-                <configuration>
-                    <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                </configuration>
-        			</execution>
-        		</executions>
-          </plugin>
-
+            <!-- Coverage metering -->
             <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                </configuration>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefire.argLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- attached to Maven test phase -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
-
     </build>
+    <profiles>
 
+        <profile>
+            <id>central-publish</id>
+
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <configuration>
+                            <tagNameFormat>v@{project.version}</tagNameFormat>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <signer>bc</signer>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus-staging-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

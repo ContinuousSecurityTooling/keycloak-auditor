@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           export TZ="Europe/Berlin"
-          mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -Dusername=ci-bot -Dpassword=$GITHUB_TOKEN -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"
+          mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"
           # write version info
           cat <<EOF >target/config.json
           {

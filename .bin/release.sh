@@ -14,4 +14,4 @@ conventional-changelog -p angular -i CHANGELOG.md -s -c target/config.json
 git add CHANGELOG.md &&
   git commit -m "chore: Changelog for $version"
 # Finish release
-./mvnw release:prepare
+./mvnw release:prepare release:perform -B -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"

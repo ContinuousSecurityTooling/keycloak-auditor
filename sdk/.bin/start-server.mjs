@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 import tar from 'tar-fs'
 
+// renovate: datasource=docker depName=quay.io/keycloak/keycloak
+const KEYCLOAK_VERSION = '25.0.6';
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url))
 const SERVER_DIR = path.resolve(DIR_NAME, '../tmp/server')
 const SCRIPT_EXTENSION = process.platform === 'win32' ? '.bat' : '.sh'
@@ -57,28 +59,22 @@ async function downloadServer () {
 
   console.info('Downloading and extracting server…')
 
-  const nightlyAsset = await getNightlyAsset()
-  //console.log(nightlyAsset)
-  const assetStream = await getAssetAsStream(nightlyAsset)
+  const asset = await getAsset()
+  const assetStream = await getAssetAsStream(asset)
 
   await extractTarball(assetStream, SERVER_DIR, { strip: 1 })
 }
 
-async function getNightlyAsset () {
+async function getAsset () {
   const api = new Octokit()
-  const tag = process.env.kcVersion || 'nightly';
   const release = await api.repos.getReleaseByTag({
     owner: 'keycloak',
     repo: 'keycloak',
-    tag: tag
+    tag: KEYCLOAK_VERSION
   })
-  let assertName = `keycloak-${tag}.tar.gz`
-  if (tag == 'nightly') {
-    assertName = 'keycloak-999.0.0-SNAPSHOT.tar.gz'
-  }
 
   return release.data.assets.find(
-    ({ name }) => name === assertName
+    ({ name }) => name === `keycloak-${KEYCLOAK_VERSION}.tar.gz`
   )
 }
 

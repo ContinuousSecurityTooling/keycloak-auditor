@@ -3,7 +3,7 @@ version: '3'
 services:
   mysql:
     container_name: mysql
-    image: mysql:9.0.1
+    image: mysql:9.1.0
     environment:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_USER

@@ -12,7 +12,7 @@ import { promisify } from 'node:util'
 import tar from 'tar-fs'
 
 // renovate: datasource=docker depName=quay.io/keycloak/keycloak
-const KEYCLOAK_VERSION = '25.0.6';
+const KEYCLOAK_VERSION = '26.0.2';
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url))
 const SERVER_DIR = path.resolve(DIR_NAME, '../tmp/server')
 const SCRIPT_EXTENSION = process.platform === 'win32' ? '.bat' : '.sh'

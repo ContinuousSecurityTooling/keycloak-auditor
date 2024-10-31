@@ -9,6 +9,9 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build and Test on JDK ${{ matrix.java }} and ${{ matrix.os }}

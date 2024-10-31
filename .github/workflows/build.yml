@@ -1,5 +1,9 @@
 name: CI
 
+env:
+  # https://github.com/actions/virtual-environments/issues/1499
+  MAVEN_CLI_OPTS: '-ntp --batch-mode --errors --fail-at-end --show-version -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -Dmaven.wagon.http.retryHandler.count=3 -Dstyle.color=always'
+
 on:
   # allow to manual run the action
   workflow_dispatch: {}
@@ -44,7 +48,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Build
         run: |
-          ./mvnw clean verify -U
+          ./mvnw ${MAVEN_CLI_OPTS}  clean verify
           cd sdk && npm run clean && npm run build
 
       - name: Upload coverage to Codecov

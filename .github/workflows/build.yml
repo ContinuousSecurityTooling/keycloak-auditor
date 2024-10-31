@@ -45,6 +45,14 @@ jobs:
           ./mvnw clean verify -U
           cd sdk && npm run clean && npm run build
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.6.0
+        if: github.ref == 'refs/heads/main'
+        with:
+          file: "${{ github.workspace }}/spi/target/jacoco.xml"
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: ${{ !startsWith(github.event.ref, 'refs/tags/v') }}
+
   end2end:
     name: "End2End Test on Keycloak ${{ matrix.kcVersion }} and ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}"

@@ -12,6 +12,8 @@
 name: "CodeQL"
 
 on:
+  # allow to manual run the action
+  workflow_dispatch: {}
   push:
     branches: [ develop ]
   pull_request:

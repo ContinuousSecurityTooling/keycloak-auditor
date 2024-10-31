@@ -36,8 +36,8 @@ async function startServer () {
     ['start-dev', ...args],
     {
       env: {
-        KEYCLOAK_ADMIN: 'admin',
-        KEYCLOAK_ADMIN_PASSWORD: 'admin',
+        KC_BOOTSTRAP_ADMIN_USERNAME: 'master-admin',
+        KC_BOOTSTRAP_ADMIN_PASSWORD: 'admin',
         ...process.env
       }
     }

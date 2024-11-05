@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 public class UserModelHelper {
 

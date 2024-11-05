@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 public enum Constants {
     USER_EVENT_PREFIX("aud_usr"),

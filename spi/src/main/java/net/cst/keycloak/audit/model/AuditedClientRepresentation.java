@@ -6,7 +6,6 @@ import org.keycloak.representations.idm.ClientRepresentation;
 
 /**
  * @author : mreinhardt
- * @created : 13.07.23
  **/
 @Getter
 @Setter

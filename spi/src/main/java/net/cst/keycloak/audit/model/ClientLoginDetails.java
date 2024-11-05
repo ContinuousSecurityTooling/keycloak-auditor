@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 
 /**
  * @author : mreinhardt
- * @created : 29.06.23
  **/
 @Getter
 @Setter

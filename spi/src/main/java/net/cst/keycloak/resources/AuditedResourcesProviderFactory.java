@@ -9,7 +9,7 @@ import org.keycloak.services.resource.RealmResourceProviderFactory;
 
 /**
  * @author : mreinhardt
- * @created : 13.07.23
+ *
  **/
 @Slf4j
 public class AuditedResourcesProviderFactory implements RealmResourceProviderFactory {

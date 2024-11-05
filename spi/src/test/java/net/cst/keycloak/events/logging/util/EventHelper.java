@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 public class EventHelper {
 

@@ -17,7 +17,7 @@ import static net.cst.keycloak.audit.model.Constants.*;
  * Event Listener Implementation for auditing Keycloak events
  *
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 @Slf4j
 public class LoginEventListenerProvider implements EventListenerProvider {

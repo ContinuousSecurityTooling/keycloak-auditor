@@ -4,7 +4,6 @@ import net.cst.keycloak.audit.model.ConfigConstants;
 
 /**
  * @author : mreinhardt
- * @created : 09.10.23
  **/
 public class ConfigHelper {
 

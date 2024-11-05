@@ -31,7 +31,7 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 
 /**
  * @author : mreinhardt
- * @created : 13.07.23
+ *
  **/
 @Slf4j
 public class AuditEndpoint {

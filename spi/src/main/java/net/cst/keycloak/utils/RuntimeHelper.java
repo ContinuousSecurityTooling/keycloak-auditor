@@ -5,7 +5,6 @@ import java.util.Properties;
 
 /**
  * @author : mreinhardt
- * @created : 13.10.23
  **/
 public class RuntimeHelper {
     private static final String MAVEN_PACKAGE = "net.continuous-security-tools";

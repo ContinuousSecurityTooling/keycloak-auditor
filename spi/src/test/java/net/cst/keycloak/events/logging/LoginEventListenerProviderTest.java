@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 class LoginEventListenerProviderTest {
     static KeycloakSession session;

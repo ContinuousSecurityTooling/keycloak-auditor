@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author : mreinhardt
- * @created : 09.08.23
+ *
  **/
 @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "true")
 class AuditEndpointWithMasterAccessTest extends AuditEndpointTest {

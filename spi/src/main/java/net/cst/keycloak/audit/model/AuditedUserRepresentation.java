@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * @author : mreinhardt
- * @created : 13.07.23
+ *
  **/
 @Getter
 @Setter

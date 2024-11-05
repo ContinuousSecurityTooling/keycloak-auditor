@@ -11,7 +11,7 @@ import org.keycloak.models.KeycloakSessionFactory;
  * Event Listener Factory
  *
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 @Slf4j
 public class LoginEventListenerProviderFactory implements EventListenerProviderFactory {

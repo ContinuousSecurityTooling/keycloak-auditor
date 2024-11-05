@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author : mreinhardt
- * @created : 22.06.23
+ *
  **/
 public enum ConfigConstants {
     DISABLE_EXTERNAL_ACCESS("KC_AUD_DISABLE_EXTERNAL_ACCESS", "false"),

@@ -6,7 +6,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 /**
  * @author : mreinhardt
- * @created : 13.07.23
+ *
  **/
 @RequiredArgsConstructor
 public class AuditedResourcesProvider implements RealmResourceProvider {

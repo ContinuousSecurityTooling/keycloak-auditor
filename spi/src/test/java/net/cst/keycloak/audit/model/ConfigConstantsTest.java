@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author : mreinhardt
- * @created : 09.10.23
  **/
 class ConfigConstantsTest {
 

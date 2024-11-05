@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author : mreinhardt
- * @created : 09.08.23
+ *
  **/
 class AuditEndpointTest {
 

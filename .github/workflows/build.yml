@@ -95,6 +95,7 @@ jobs:
       - name: Build SPI
         run: |
           ./mvnw clean verify -U
+          ./mvnw javadoc:javadoc
 
       - name: Run End2End Tests
         uses: nick-fields/retry@v3

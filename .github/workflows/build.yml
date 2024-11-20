@@ -61,7 +61,7 @@ jobs:
           report_paths: '**/target/*-reports/TEST-*.xml'
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5.0.3
+        uses: codecov/codecov-action@v5.0.4
         with:
           file: "${{ github.workspace }}/spi/target/jacoco.xml"
           token: ${{ secrets.CODECOV_TOKEN }}

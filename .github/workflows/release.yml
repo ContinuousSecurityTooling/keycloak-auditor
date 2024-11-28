@@ -98,7 +98,7 @@ jobs:
                     EOF
 
             -   name: Conventional Changelog Action
-                uses: TriPSs/conventional-changelog-action@v5
+                uses: TriPSs/conventional-changelog-action@v6
                 with:
                     input-file: CHANGELOG.md
                     github-token: ${{ steps.app-token.outputs.token }}

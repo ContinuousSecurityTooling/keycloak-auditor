@@ -2,6 +2,7 @@ package net.cst.keycloak.resources;
 
 import lombok.extern.slf4j.Slf4j;
 import net.cst.keycloak.events.logging.LoginEventListenerProviderFactory;
+import net.cst.keycloak.utils.RuntimeHelper;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -27,7 +28,7 @@ public class AuditedResourcesProviderFactory implements RealmResourceProviderFac
     @Override
     public void init(Config.Scope scope) {
         log.info("Initializing Keycloak Auditor REST extension (Version {}).",
-                LoginEventListenerProviderFactory.class.getPackage().getImplementationVersion());
+                RuntimeHelper.getVersion());
     }
 
     @Override

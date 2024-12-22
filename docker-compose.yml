@@ -46,6 +46,7 @@ services:
       KEYCLOAK_ADMIN: 'admin'
       KEYCLOAK_ADMIN_PASSWORD: 'admin'
       KC_AUD_GLOBAL_MASTER_ACCESS: 'true'
+      KC_FEATURES: "authorization,declarative-ui,step-up-authentication,token-exchange,web-authn"
 
   maildev:
     container_name: maildev

@@ -60,6 +60,10 @@ jobs:
                 uses: mikepenz/action-junit-report@v5
                 if: success() || failure() # always run even if the previous step fails
                 with:
+                    summary: true
+                    detailed_summary: true
+                    annotate_notice: true
+                    truncate_stack_traces: false
                     report_paths: '**/target/*-reports/TEST-*.xml'
 
             -   name: Upload coverage to Codecov

@@ -119,17 +119,17 @@ public class AuditEndpoint {
     }
 
     protected void checkAccessRights(HttpHeaders headers) {
-        if (DISABLE_EXTERNAL_ACCESS) {
-            if (!headers.getRequestHeader("x-forwarded-host").isEmpty()) {
+        if (DISABLE_EXTERNAL_ACCESS && !headers.getRequestHeader("x-forwarded-host").isEmpty()) {
                 log.error("No external access allowed");
                 throw new ForbiddenException();
             }
-        }
+
         if (this.auth == null) {
             log.error("Empty authentication details");
             throw new NotAuthorizedException("Bearer");
-        } else if (!DISABLE_ROLE_CHECK &&
-                this.auth.getRealmAccess() == null && this.auth.getRealmAccess().isUserInRole(ROLE_NAME)) {
+        } else if (!DISABLE_ROLE_CHECK && (
+                this.auth.getRealmAccess() == null || !this.auth.getRealmAccess().isUserInRole(ROLE_NAME)
+            )) {
             log.error("No access to realm with auth {}", this.auth);
             throw new ForbiddenException("Don't have realm access");
         }

@@ -12,20 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author : mreinhardt
- *
  **/
 @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "true")
 class AuditEndpointWithMasterAccessTest extends AuditEndpointTest {
 
     @Test
-    void shouldShowUsersFromAllRealmsIfConfigured() throws Exception {
+    void shouldShowUsersFromAllRealmsIfConfigured() {
         List<AuditedUserRepresentation> users = getUsersViaEndpoint();
         assertNotNull(users);
         assertEquals(4, users.size(), "Expected 4 users, but got " + users.size());
     }
 
     @Test
-    void shouldShowClientsFromAllRealmsIfConfigured() throws Exception {
+    void shouldShowClientsFromAllRealmsIfConfigured() {
         List<AuditedClientRepresentation> clients = getClientsViaEndpoint();
         assertNotNull(clients);
         assertEquals(4, clients.size(), "Expected 4 clients, but got " + clients.size());

@@ -5,8 +5,10 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import net.cst.keycloak.audit.model.AuditedClientRepresentation;
 import net.cst.keycloak.audit.model.AuditedUserRepresentation;
+import net.cst.keycloak.audit.model.ConfigConstants;
 import net.cst.keycloak.events.logging.util.ClientModelHelper;
 import net.cst.keycloak.events.logging.util.UserModelHelper;
+import net.cst.keycloak.utils.ConfigHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.authorization.AuthorizationProvider;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.*;
 class AuditEndpointTest {
 
     static KeycloakSession session;
+    protected static AccessToken auth;
 
     @BeforeEach
     void setUp() {
@@ -92,17 +95,20 @@ class AuditEndpointTest {
         when(session.realms()).thenReturn(realmProvider);
         when(session.users()).thenReturn(userProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            AccessToken token = new AccessToken();
-            token.issuer("master");
-            token.setRealmAccess(new AccessToken.Access());
-            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(token);
-            AuditEndpoint endpoint = new AuditEndpoint(session) {
-                @Override
-                public void authenticate() {
-                }
-            };
-            return endpoint.listUsers(headers);
+            return  mockAccessToken(tokenMock).listUsers(headers);
         }
+    }
+
+    private static AuditEndpoint mockAccessToken(MockedStatic<Tokens> tokenMock) {
+        auth = new AccessToken();
+        auth.issuer("master");
+        auth.setRealmAccess(new AccessToken.Access().addRole(ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE)));
+        tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(auth);
+        return new AuditEndpoint(session) {
+            @Override
+            public void authenticate() {
+            }
+        };
     }
 
     protected static List<AuditedClientRepresentation> getClientsViaEndpoint() {
@@ -134,16 +140,7 @@ class AuditEndpointTest {
         when(session.realms()).thenReturn(realmProvider);
         when(session.clients()).thenReturn(clientProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            AccessToken token = new AccessToken();
-            token.issuer("master");
-            token.setRealmAccess(new AccessToken.Access());
-            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(token);
-            AuditEndpoint endpoint = new AuditEndpoint(session) {
-                @Override
-                public void authenticate() {
-                }
-            };
-            return endpoint.listClients(headers);
+            return  mockAccessToken(tokenMock).listClients(headers);
         }
     }
 }

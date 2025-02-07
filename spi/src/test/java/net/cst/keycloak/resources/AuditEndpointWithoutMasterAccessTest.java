@@ -2,31 +2,29 @@ package net.cst.keycloak.resources;
 
 import net.cst.keycloak.audit.model.AuditedClientRepresentation;
 import net.cst.keycloak.audit.model.AuditedUserRepresentation;
+import net.cst.keycloak.utils.EndpointTest;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author : mreinhardt
- **/
-@SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "false")
-class AuditEndpointWithoutMasterAccessTest extends AuditEndpointTest {
+class AuditEndpointWithoutMasterAccessTest extends EndpointTest {
 
     @Test
+    @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "false")
     void shouldNotShowUsersFromAllRealmsIfNotConfigured() {
         List<AuditedUserRepresentation> usersResponse = getUsersViaEndpoint();
         assertNotNull(usersResponse);
-        assertTrue(usersResponse.size() == 2, "Expected 2 users, but got " + usersResponse.size());
+        assertEquals(2, usersResponse.size(), "Expected 2 users, but got " + usersResponse.size());
     }
 
     @Test
+    @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "false")
     void shouldNotShowClientsFromAllRealmsIfConfigured() {
         List<AuditedClientRepresentation> clients = getClientsViaEndpoint();
         assertNotNull(clients);
-        assertTrue(clients.size() == 2, "Expected 2 clients, but got " + clients.size());
+        assertEquals(2, clients.size(), "Expected 2 clients, but got " + clients.size());
     }
 }

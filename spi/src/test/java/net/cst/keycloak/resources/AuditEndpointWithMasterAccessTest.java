@@ -2,6 +2,7 @@ package net.cst.keycloak.resources;
 
 import net.cst.keycloak.audit.model.AuditedClientRepresentation;
 import net.cst.keycloak.audit.model.AuditedUserRepresentation;
+import net.cst.keycloak.utils.EndpointTest;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author : mreinhardt
  **/
 @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "true")
-class AuditEndpointWithMasterAccessTest extends AuditEndpointTest {
+class AuditEndpointWithMasterAccessTest extends EndpointTest {
 
     @Test
     void shouldShowUsersFromAllRealmsIfConfigured() {

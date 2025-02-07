@@ -1,11 +1,11 @@
 package net.cst.keycloak.audit.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * @author : mreinhardt
- *
- **/
+@Getter
+@AllArgsConstructor
 public enum ConfigConstants {
     DISABLE_EXTERNAL_ACCESS("KC_AUD_DISABLE_EXTERNAL_ACCESS", "false"),
     DISABLE_ROLE_CHECK("KC_AUD_DISABLE_ROLE_CHECK", "false"),
@@ -17,14 +17,10 @@ public enum ConfigConstants {
 
     private final String defaultValue;
 
-    private ConfigConstants(String value, String defaultValue) {
-        this.value = value;
-        this.defaultValue = defaultValue;
-    }
-
     public final String value() {
         return this.value;
     }
+
     public final String getDefaultValue() {
         return this.defaultValue;
     }

@@ -2,19 +2,13 @@ package net.cst.keycloak.utils;
 
 import net.cst.keycloak.audit.model.ConfigConstants;
 
-/**
- * @author : mreinhardt
- **/
 public class ConfigHelper {
 
     private ConfigHelper() {
     }
 
     public static boolean getConfigToggle(ConfigConstants config) {
-        String value = getEnvValue(config.value());
-        if (value == null) {
-            value = config.getDefaultValue();
-        }
+        String value = getConfigValue(config);
         return Boolean.parseBoolean(value);
     }
 

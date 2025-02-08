@@ -5,6 +5,7 @@ import net.cst.keycloak.audit.model.ConfigConstants;
 public class ConfigHelper {
 
     private ConfigHelper() {
+        // Utility class
     }
 
     public static boolean getConfigToggle(ConfigConstants config) {

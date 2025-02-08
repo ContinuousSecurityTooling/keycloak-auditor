@@ -10,7 +10,6 @@ import org.keycloak.models.KeycloakSessionFactory;
 /**
  * Event Listener Factory
  *
- * @author : mreinhardt
  *
  **/
 @Slf4j

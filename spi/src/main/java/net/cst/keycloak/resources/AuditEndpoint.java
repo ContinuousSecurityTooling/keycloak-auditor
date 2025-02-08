@@ -72,7 +72,7 @@ public class AuditEndpoint {
                 String clientName = client.split(lastLoginAttribute + "_")[1];
                 rep.getClientLogins().put(clientName, user.getAttributes().get(client).get(0));
             }
-            log.debug("Got clients {}", clients);
+            log.debug("Got {} clients for user {}", clients.size(), user.getId());
         } else {
             rep.setLastLogin(null);
             rep.setClientLogins(null);

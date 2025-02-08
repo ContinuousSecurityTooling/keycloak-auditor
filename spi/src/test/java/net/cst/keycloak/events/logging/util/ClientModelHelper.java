@@ -10,11 +10,6 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
-/**
- * @author : mreinhardt
- *
- **/
 public class ClientModelHelper {
 
     public static ClientModel buildClient(String clientId) {

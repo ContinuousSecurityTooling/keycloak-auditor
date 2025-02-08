@@ -1,20 +1,16 @@
 package net.cst.keycloak.events.logging.util;
 
 import org.keycloak.models.UserModel;
-import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.*;
 
+import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
+import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
-/**
- * @author : mreinhardt
- *
- **/
 public class UserModelHelper {
 
     public static UserModel buildUser(String userId) {
@@ -28,8 +24,15 @@ public class UserModelHelper {
             // save to map
             userAttributes.put(key, Collections.singletonList(value));
             return null;
-        }).when(user).setSingleAttribute(any(),any());
+        }).when(user).setSingleAttribute(any(), any());
         when(user.getId()).thenReturn(userId);
+        return user;
+    }
+
+    public static UserModel buildUser(String userId, String lastLogin) {
+        UserModel user = buildUser(userId);
+        user.getAttributes().put(USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value(),
+                Collections.singletonList(lastLogin));
         return user;
     }
 

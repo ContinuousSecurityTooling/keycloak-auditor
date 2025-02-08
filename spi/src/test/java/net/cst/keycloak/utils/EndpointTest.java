@@ -38,13 +38,16 @@ public abstract class EndpointTest {
                 put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
             }
         };
-
         RealmModel masterRealm = mock(RealmModel.class);
         RealmModel anotherRealm = mock(RealmModel.class);
         RealmProvider realmProvider = mock(RealmProvider.class);
         UserProvider userProvider = mock(UserProvider.class);
+
         Stream<UserModel> usersMaster = Arrays
-                .stream(new UserModel[]{UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2")});
+                .stream(new UserModel[]{
+                        UserModelHelper.buildUser("1", "2024-06-15T09:07:19.45743358Z"),
+                        UserModelHelper.buildUser("2")
+                });
         when(userProvider.searchForUserStream(masterRealm, Map.of(UserModel.SEARCH, "*"))).thenReturn(usersMaster);
         Stream<UserModel> usersOther = Arrays
                 .stream(new UserModel[]{UserModelHelper.buildUser("1"), UserModelHelper.buildUser("2")});
@@ -72,6 +75,7 @@ public abstract class EndpointTest {
         return new AuditEndpoint(session) {
             @Override
             public void authenticate() {
+                // just for mocks
             }
         };
     }

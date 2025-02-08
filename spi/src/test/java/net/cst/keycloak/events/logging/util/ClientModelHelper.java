@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
+import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +27,13 @@ public class ClientModelHelper {
             return null;
         }).when(client).setAttribute(any(), any());
         when(client.getId()).thenReturn(clientId);
+        return client;
+    }
+
+    public static ClientModel buildClient(String clientId, String lastLogin) {
+        ClientModel client = buildClient(clientId);
+        client.getAttributes().put(USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value(),
+                lastLogin);
         return client;
     }
 

@@ -36,6 +36,14 @@ public class UserModelHelper {
         return user;
     }
 
+    public static UserModel buildUser(String userId, String lastLogin, String clientId, String clientLogin) {
+        UserModel user = buildUser(userId, lastLogin);
+        user.getAttributes().put(USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value() + "_" + clientId,
+                Collections.singletonList(clientLogin));
+        return user;
+    }
+
+
     public static UserModel buildUser() {
         return buildUser(UUID.randomUUID().toString());
     }

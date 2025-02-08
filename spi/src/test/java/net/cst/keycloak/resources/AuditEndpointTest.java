@@ -16,7 +16,7 @@ class AuditEndpointTest extends EndpointTest {
 
     @Test
     void shouldConvertToAuditedClientRepresentation() {
-        ClientModel source = ClientModelHelper.buildClient();
+        ClientModel source = ClientModelHelper.buildClient("test-client", "2024-06-15T09:07:19.45743358Z");
         AuditedClientRepresentation client = AuditEndpoint.toBriefRepresentation(source, "master", session);
         assertNotNull(client);
         assertNotNull(client.getAttributes());
@@ -26,6 +26,15 @@ class AuditEndpointTest extends EndpointTest {
     @Test
     void shouldConvertToAuditedUserRepresentation() {
         UserModel source = UserModelHelper.buildUser("1", "2024-06-15T09:07:19.45743358Z");
+        AuditedUserRepresentation user = AuditEndpoint.toBriefRepresentation(source, "master");
+        assertNotNull(user);
+        assertNotNull(user.getLastLogin());
+        assertEquals(user.getId(), source.getId());
+    }
+
+    @Test
+    void shouldConvertToAuditedUserRepresentationWithClients() {
+        UserModel source = UserModelHelper.buildUser("1", "2024-06-15T09:07:19.45743358Z", "test-client", "2024-06-15T09:07:19.45743358Z");
         AuditedUserRepresentation user = AuditEndpoint.toBriefRepresentation(source, "master");
         assertNotNull(user);
         assertNotNull(user.getLastLogin());

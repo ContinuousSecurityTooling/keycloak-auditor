@@ -29,20 +29,16 @@ import java.util.Map;
 import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
 import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 
-/**
- * @author : mreinhardt
- *
- **/
 @Slf4j
 public class AuditEndpoint {
 
-    private boolean DISABLE_EXTERNAL_ACCESS;
+    private final boolean disableExternalAccess;
 
-    private boolean DISABLE_ROLE_CHECK;
+    private final boolean disableRoleCheck;
 
-    private boolean GLOBAL_MASTER_ACCESS;
+    private final boolean globalMasterAccess;
 
-    private String ROLE_NAME;
+    private final String roleName;
 
     /**
      * the current request context
@@ -55,10 +51,10 @@ public class AuditEndpoint {
         this.keycloakSession = keycloakSession;
         this.auth = Tokens.getAccessToken(this.keycloakSession);
         this.authenticate();
-        DISABLE_EXTERNAL_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
-        DISABLE_ROLE_CHECK = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_ROLE_CHECK);
-        GLOBAL_MASTER_ACCESS = ConfigHelper.getConfigToggle(ConfigConstants.GLOBAL_MASTER_ACCESS);
-        ROLE_NAME = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
+        disableExternalAccess = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_EXTERNAL_ACCESS);
+        disableRoleCheck = ConfigHelper.getConfigToggle(ConfigConstants.DISABLE_ROLE_CHECK);
+        globalMasterAccess = ConfigHelper.getConfigToggle(ConfigConstants.GLOBAL_MASTER_ACCESS);
+        roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
     }
 
     public void authenticate() {
@@ -73,7 +69,7 @@ public class AuditEndpoint {
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedUserRepresentation> users = new ArrayList<>();
-        if (GLOBAL_MASTER_ACCESS) {
+        if (globalMasterAccess) {
             realmManager.getSession().realms().getRealmsStream().forEach(realm -> users.addAll(readUsers(realm).stream()
                     .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList()));
         } else
@@ -98,7 +94,7 @@ public class AuditEndpoint {
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedClientRepresentation> clients = new ArrayList<>();
-        if (GLOBAL_MASTER_ACCESS) {
+        if (globalMasterAccess) {
             realmManager.getSession().realms().getRealmsStream().forEach(realm -> clients.addAll(readClients(realm)
                     .stream()
                     .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession))
@@ -119,7 +115,7 @@ public class AuditEndpoint {
     }
 
     protected void checkAccessRights(HttpHeaders headers) {
-        if (DISABLE_EXTERNAL_ACCESS && !headers.getRequestHeader("x-forwarded-host").isEmpty()) {
+        if (disableExternalAccess && !headers.getRequestHeader("x-forwarded-host").isEmpty()) {
                 log.error("No external access allowed");
                 throw new ForbiddenException();
             }
@@ -127,8 +123,8 @@ public class AuditEndpoint {
         if (this.auth == null) {
             log.error("Empty authentication details");
             throw new NotAuthorizedException("Bearer");
-        } else if (!DISABLE_ROLE_CHECK && (
-                this.auth.getRealmAccess() == null || !this.auth.getRealmAccess().isUserInRole(ROLE_NAME)
+        } else if (!disableRoleCheck && (
+                this.auth.getRealmAccess() == null || !this.auth.getRealmAccess().isUserInRole(roleName)
             )) {
             log.error("No access to realm with auth {}", this.auth);
             throw new ForbiddenException("Don't have realm access");

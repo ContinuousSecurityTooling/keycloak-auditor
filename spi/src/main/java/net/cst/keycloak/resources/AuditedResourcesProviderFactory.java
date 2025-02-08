@@ -7,10 +7,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
 
-/**
- * @author : mreinhardt
- *
- **/
 @Slf4j
 public class AuditedResourcesProviderFactory implements RealmResourceProviderFactory {
     public static final String CONTEXT_PATH = "auditing";
@@ -20,11 +16,11 @@ public class AuditedResourcesProviderFactory implements RealmResourceProviderFac
         return new AuditedResourcesProvider(keycloakSession);
     }
 
+    /**
+     * this ID identifies the rest provider and is used as base context path for this module
+     */
     @Override
     public String getId() {
-        /**
-         * this ID identifies the rest provider and is used as base context path for this module
-         */
         return CONTEXT_PATH;
     }
 

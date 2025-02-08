@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AuditEndpointTest extends EndpointTest {
+
     @Test
     void shouldConvertToAuditedClientRepresentation() {
         ClientModel source = ClientModelHelper.buildClient();

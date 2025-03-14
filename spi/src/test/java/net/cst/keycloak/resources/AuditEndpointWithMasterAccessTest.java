@@ -20,6 +20,7 @@ class AuditEndpointWithMasterAccessTest extends EndpointTest {
     @Test
     void shouldShowUsersFromAllRealmsIfConfigured() {
         List<AuditedUserRepresentation> users = getUsersViaEndpoint();
+        auditEndpoint.authenticate();
         assertNotNull(users);
         assertEquals(4, users.size(), "Expected 4 users, but got " + users.size());
     }
@@ -27,6 +28,7 @@ class AuditEndpointWithMasterAccessTest extends EndpointTest {
     @Test
     void shouldShowClientsFromAllRealmsIfConfigured() {
         List<AuditedClientRepresentation> clients = getClientsViaEndpoint();
+        auditEndpoint.authenticate();
         assertNotNull(clients);
         assertEquals(4, clients.size(), "Expected 4 clients, but got " + clients.size());
     }

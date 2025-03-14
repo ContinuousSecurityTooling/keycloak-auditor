@@ -30,8 +30,43 @@ public abstract class EndpointTest {
 
     protected static KeycloakSession session;
     protected static AccessToken auth;
+    protected AuditEndpoint auditEndpoint;
 
-    protected static List<AuditedUserRepresentation> getUsersViaEndpoint() {
+    protected  List<AuditedClientRepresentation> getClientsViaEndpoint() {
+        HttpHeaders headers = mock(HttpHeaders.class);
+        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
+            {
+                put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
+            }
+        };
+
+        RealmModel masterRealm = mock(RealmModel.class);
+        RealmModel anotherRealm = mock(RealmModel.class);
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        ClientProvider clientProvider = mock(ClientProvider.class);
+        Stream<ClientModel> clientsMaster = Arrays
+                .stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
+        when(clientProvider.getClientsStream(masterRealm)).thenReturn(clientsMaster);
+        Stream<ClientModel> clientsOther = Arrays
+                .stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
+        when(clientProvider.getClientsStream(anotherRealm)).thenReturn(clientsOther);
+        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[]{masterRealm, anotherRealm}));
+        when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
+        when(realmProvider.getRealmByName("other")).thenReturn(anotherRealm);
+        when(headers.getRequestHeaders()).thenReturn(headerValues);
+        KeycloakContext context = mock(KeycloakContext.class);
+        when(context.getRealm()).thenReturn(masterRealm);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(session.getContext()).thenReturn(context);
+        when(session.realms()).thenReturn(realmProvider);
+        when(session.clients()).thenReturn(clientProvider);
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
+            auditEndpoint = mockAccessToken(tokenMock);
+            return auditEndpoint.listClients(headers);
+        }
+    }
+
+    protected List<AuditedUserRepresentation> getUsersViaEndpoint() {
         HttpHeaders headers = mock(HttpHeaders.class);
         MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
             {
@@ -63,11 +98,12 @@ public abstract class EndpointTest {
         when(session.realms()).thenReturn(realmProvider);
         when(session.users()).thenReturn(userProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            return mockAccessToken(tokenMock).listUsers(headers);
+            auditEndpoint = mockAccessToken(tokenMock);
+            return auditEndpoint.listUsers(headers);
         }
     }
 
-    private static AuditEndpoint mockAccessToken(MockedStatic<Tokens> tokenMock) {
+    private AuditEndpoint mockAccessToken(MockedStatic<Tokens> tokenMock) {
         auth = new AccessToken();
         auth.issuer("master");
         auth.setRealmAccess(new AccessToken.Access().addRole(ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE)));
@@ -78,39 +114,6 @@ public abstract class EndpointTest {
                 // just for mocks
             }
         };
-    }
-
-    protected static List<AuditedClientRepresentation> getClientsViaEndpoint() {
-        HttpHeaders headers = mock(HttpHeaders.class);
-        MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
-            {
-                put(HttpHeaders.AUTHORIZATION, List.of("BEARER 1234"));
-            }
-        };
-
-        RealmModel masterRealm = mock(RealmModel.class);
-        RealmModel anotherRealm = mock(RealmModel.class);
-        RealmProvider realmProvider = mock(RealmProvider.class);
-        ClientProvider clientProvider = mock(ClientProvider.class);
-        Stream<ClientModel> clientsMaster = Arrays
-                .stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
-        when(clientProvider.getClientsStream(masterRealm)).thenReturn(clientsMaster);
-        Stream<ClientModel> clientsOther = Arrays
-                .stream(new ClientModel[]{ClientModelHelper.buildClient(), ClientModelHelper.buildClient()});
-        when(clientProvider.getClientsStream(anotherRealm)).thenReturn(clientsOther);
-        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[]{masterRealm, anotherRealm}));
-        when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
-        when(realmProvider.getRealmByName("other")).thenReturn(anotherRealm);
-        when(headers.getRequestHeaders()).thenReturn(headerValues);
-        KeycloakContext context = mock(KeycloakContext.class);
-        when(context.getRealm()).thenReturn(masterRealm);
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(session.getContext()).thenReturn(context);
-        when(session.realms()).thenReturn(realmProvider);
-        when(session.clients()).thenReturn(clientProvider);
-        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            return mockAccessToken(tokenMock).listClients(headers);
-        }
     }
 
     @BeforeEach

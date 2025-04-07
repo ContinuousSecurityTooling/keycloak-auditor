@@ -9,9 +9,14 @@ import org.keycloak.models.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import net.cst.keycloak.audit.model.ConfigConstants;
+import net.cst.keycloak.utils.ConfigHelper;
+
 import static net.cst.keycloak.audit.model.Constants.*;
+
 
 /**
  * Event Listener Implementation for auditing Keycloak events
@@ -36,8 +41,9 @@ public class LoginEventListenerProvider implements EventListenerProvider {
 
             if (user != null) {
                 log.info("Updating last login status for user: {} (client: {})", event.getUserId(), event.getClientId());
-                // Use current server time for login event
-                OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
+                // Use server time and set timezone for login event
+                String defaultTimeZone = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
+                OffsetDateTime loginTime = OffsetDateTime.now(ZoneId.of(defaultTimeZone));
                 String lastLoginAttribute = USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value();
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
                 user.setSingleAttribute(lastLoginAttribute, loginTimeS);
@@ -50,8 +56,9 @@ public class LoginEventListenerProvider implements EventListenerProvider {
 
             if (client != null) {
                 log.info("Updating last login status in client {} for user: {}", event.getClientId(), event.getUserId());
-                // Use current server time for login event
-                OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
+                // Use server time and set timezone for login event
+                String defaultTimeZone = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
+                OffsetDateTime loginTime = OffsetDateTime.now(ZoneId.of(defaultTimeZone));
                 String lastLoginAttribute = CLIENT_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value();
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
                 client.setAttribute(lastLoginAttribute, loginTimeS);

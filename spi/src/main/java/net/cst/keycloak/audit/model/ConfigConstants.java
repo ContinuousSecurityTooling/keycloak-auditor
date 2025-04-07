@@ -10,7 +10,8 @@ public enum ConfigConstants {
     DISABLE_EXTERNAL_ACCESS("KC_AUD_DISABLE_EXTERNAL_ACCESS", "false"),
     DISABLE_ROLE_CHECK("KC_AUD_DISABLE_ROLE_CHECK", "false"),
     GLOBAL_MASTER_ACCESS("KC_AUD_GLOBAL_MASTER_ACCESS", "false"),
-    DEFAULT_ROLE("KC_AUD_DEFAULT_ROLE", "admin");
+    DEFAULT_ROLE("KC_AUD_DEFAULT_ROLE", "admin"),
+    DEFAULT_TIMEZONE("KC_AUD_DEFAULT_TIMEZONE", "UTC"),;
 
     @JsonValue
     private final String value;

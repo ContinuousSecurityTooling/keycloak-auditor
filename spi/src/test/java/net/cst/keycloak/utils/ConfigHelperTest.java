@@ -48,4 +48,17 @@ class ConfigHelperTest {
         assertEquals("test", roleName);
     }
 
+    @Test
+    void shouldReadDefaultTimezone() {
+        var roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
+        assertEquals("UTC", roleName);
+    }
+
+    @Test
+    @SetEnvironmentVariable(key = "KC_AUD_DEFAULT_TIMEZONE", value = "Europe/Berlin")
+    void shouldReadConfigredTimezone() {
+        var roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
+        assertEquals("Europe/Berlin", roleName);
+    }
+
 }

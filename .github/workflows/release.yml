@@ -51,7 +51,7 @@ jobs:
                     registry-url: "https://registry.npmjs.org"
 
             -   name: Setup Java
-                uses: actions/setup-java@v4
+                uses: actions/setup-java@v5
                 with:
                     distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
                     java-package: "jdk"

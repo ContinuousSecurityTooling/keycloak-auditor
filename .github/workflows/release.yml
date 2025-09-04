@@ -45,7 +45,7 @@ jobs:
                     git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
 
             -   name: Setup NodeJS
-                uses: actions/setup-node@v4
+                uses: actions/setup-node@v5
                 with:
                     node-version: "22"
                     registry-url: "https://registry.npmjs.org"

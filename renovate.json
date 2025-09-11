@@ -9,7 +9,8 @@
       "matchDatasources": [
         "docker",
         "github-tags",
-        "maven"
+        "maven",
+        "npm"
       ],
       "matchUpdateTypes": [
         "major",
@@ -21,7 +22,8 @@
         "/^quay.io/keycloak/",
         "/^org.keycloak:/",
         "/^keycloak$/"
-      ]
+      ],
+      "minimumReleaseAge": "2 days"
     }
   ]
 }

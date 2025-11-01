@@ -62,7 +62,7 @@ jobs:
 
             -   name: Publish Test Report
                 # sonarcloud-ignore githubactions:S7637
-                uses: mikepenz/action-junit-report@v5
+                uses: mikepenz/action-junit-report@v6
                 if: success() || failure()
                 with:
                     summary: true

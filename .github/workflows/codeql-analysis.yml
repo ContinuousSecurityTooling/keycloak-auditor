@@ -42,7 +42,7 @@ jobs:
     steps:
     - name: Checkout repository
       # sonarcloud-ignore githubactions:S7637
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Setup Java JDK
       # sonarcloud-ignore githubactions:S7637

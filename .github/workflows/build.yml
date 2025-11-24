@@ -38,7 +38,7 @@ jobs:
 
         steps:
             # sonarcloud-ignore githubactions:S7637
-            -   uses: actions/checkout@v5
+            -   uses: actions/checkout@v6
                 # sonarcloud-ignore githubactions:S7637
             -   uses: actions/setup-node@v6
             -   name: Set up JDK ${{ matrix.java }}
@@ -96,7 +96,7 @@ jobs:
                     - "nightly"
         steps:
             # sonarcloud-ignore githubactions:S7637
-            -   uses: actions/checkout@v5
+            -   uses: actions/checkout@v6
             -   name: "Use Node.js"
                 # sonarcloud-ignore githubactions:S7637
                 uses: actions/setup-node@v6
@@ -170,7 +170,7 @@ jobs:
         # main and Develop branch only
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         steps:
-            -   uses: actions/checkout@v5
+            -   uses: actions/checkout@v6
                 with:
                     fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
             -   name: Set up JDK

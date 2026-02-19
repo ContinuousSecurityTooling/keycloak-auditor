@@ -110,26 +110,6 @@ jobs:
                     skip-on-empty: true
                     tag-prefix: "v"
 
-            -   name: Create Release on GH
-                id: tag-and-release
-                uses: avakar/tag-and-release@v1.0.0
-                with:
-                    draft: true
-                    release_name: ${{ github.event.inputs.releaseversion }}
-                    tag_name: v${{ github.event.inputs.releaseversion }}
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            -   name: Add SPI to github release
-                uses: actions/upload-release-asset@v1
-                with:
-                    upload_url: ${{ steps.tag-and-release.outputs.upload_url }}
-                    asset_path: spi/target/keycloak-auditor-spi.jar
-                    asset_name: keycloak-auditor-spi.jar
-                    asset_content_type: application/zip
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
             -   run: cd sdk && npm run clean && npm run build
             -   name: Publish npm package
                 run: |
@@ -138,3 +118,20 @@ jobs:
                     npm publish
                 env:
                     NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+            -   name: Prepare release artifacts
+                run: |
+                    # rename files
+                    cp spi/target/keycloak-auditor-spi.jar keycloak-auditor-spi.jar
+
+            -   name: Create GH release
+                uses: softprops/action-gh-release@v2
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    name: ${{ github.event.inputs.releaseversion }}
+                    tag_name: v${{ github.event.inputs.releaseversion }}
+                    draft: true
+                    files: |
+                        keycloak-auditor-spi.jar

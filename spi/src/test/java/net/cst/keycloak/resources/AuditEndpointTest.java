@@ -29,6 +29,7 @@ class AuditEndpointTest extends EndpointTest {
         AuditedUserRepresentation user = AuditEndpoint.toBriefRepresentation(source, "master");
         assertNotNull(user);
         assertNotNull(user.getLastLogin());
+        assertNotNull(user.getClientLogins());
         assertEquals(user.getId(), source.getId());
     }
 
@@ -38,6 +39,7 @@ class AuditEndpointTest extends EndpointTest {
         AuditedUserRepresentation user = AuditEndpoint.toBriefRepresentation(source, "master");
         assertNotNull(user);
         assertNotNull(user.getLastLogin());
+        assertNotNull(user.getClientLogins());
         assertEquals(user.getId(), source.getId());
     }
 }

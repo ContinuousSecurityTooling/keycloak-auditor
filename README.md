@@ -1,6 +1,4 @@
 [![CI](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml/badge.svg)](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ContinuousSecurityTooling_keycloak-auditor&metric=alert_status)](https://sonarcloud.io/dashboard?id=ContinuousSecurityTooling_keycloak-auditor)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ContinuousSecurityTooling_keycloak-auditor&metric=coverage)](https://sonarcloud.io/dashboard?id=ContinuousSecurityTooling_keycloak-auditor)
 [![codecov](https://codecov.io/gh/ContinuousSecurityTooling/keycloak-auditor/graph/badge.svg?token=DD9WTH36UR)](https://codecov.io/gh/ContinuousSecurityTooling/keycloak-auditor)
 [![npm version](https://badge.fury.io/js/@continuoussecuritytooling%2Fkeycloak-auditor.svg)](https://www.npmjs.com/package/@continuoussecuritytooling/keycloak-auditor)
 [![Known Vulnerabilities](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor/badge.svg)](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor)

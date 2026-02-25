@@ -12,10 +12,6 @@
 
   <packaging>jar</packaging>
 
-  <properties>
-    <sonar.projectKey>ContinuousSecurityTooling_keycloak-auditor_spi</sonar.projectKey>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.keycloak</groupId>

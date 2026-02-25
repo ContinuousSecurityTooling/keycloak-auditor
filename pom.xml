@@ -68,14 +68,6 @@
 
         <java.version>17</java.version>
 
-        <sonar.projectKey>ContinuousSecurityTooling_keycloak-auditor</sonar.projectKey>
-        <sonar.organization>continuoussecuritytooling</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <!-- Point the Sonar Qube Plugin always to the same aggregated JaCoCo report -->
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/../spi/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-
         <!-- logging dependencies -->
         <log4j2.version>2.25.3</log4j2.version>
         <slf4j.version>1.7.33</slf4j.version>

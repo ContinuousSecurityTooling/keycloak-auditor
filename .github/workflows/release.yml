@@ -98,7 +98,6 @@ jobs:
                     EOF
 
             -   name: Conventional Changelog Action
-                # sonarcloud-ignore githubactions:S7637
                 uses: TriPSs/conventional-changelog-action@v6
                 with:
                     input-file: CHANGELOG.md

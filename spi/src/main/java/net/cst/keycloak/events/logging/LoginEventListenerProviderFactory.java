@@ -1,11 +1,16 @@
 package net.cst.keycloak.events.logging;
 
 import lombok.extern.slf4j.Slf4j;
+import net.cst.keycloak.userprofile.AuditUserProfileRegistrar;
 import net.cst.keycloak.utils.RuntimeHelper;
 import org.keycloak.Config;
 import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
+
+import java.util.List;
 
 /**
  * Event Listener Factory
@@ -27,8 +32,18 @@ public class LoginEventListenerProviderFactory implements EventListenerProviderF
     }
 
     @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        //
+    public void postInit(KeycloakSessionFactory factory) {
+        KeycloakModelUtils.runJobInTransaction(factory, session -> {
+            List<String> realmIds = session.realms().getRealmsStream()
+                    .map(RealmModel::getId)
+                    .toList();
+            for (String realmId : realmIds) {
+                RealmModel realm = session.realms().getRealm(realmId);
+                if (realm != null) {
+                    AuditUserProfileRegistrar.registerForRealm(session, realm);
+                }
+            }
+        });
     }
 
     @Override

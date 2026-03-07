@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import net.cst.keycloak.audit.model.ConfigConstants;
+import net.cst.keycloak.userprofile.AuditUserProfileRegistrar;
 import net.cst.keycloak.utils.ConfigHelper;
 
 import static net.cst.keycloak.audit.model.Constants.*;
@@ -48,6 +49,8 @@ public class LoginEventListenerProvider implements EventListenerProvider {
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
                 user.setSingleAttribute(lastLoginAttribute, loginTimeS);
                 user.setSingleAttribute(lastLoginAttribute + "_" + event.getClientId(), loginTimeS);
+                AuditUserProfileRegistrar.registerForRealm(session, realm);
+                AuditUserProfileRegistrar.registerClientLoginAttribute(session, realm, event.getClientId());
             }
         }
         if (EventType.CLIENT_LOGIN.equals(event.getType())) {

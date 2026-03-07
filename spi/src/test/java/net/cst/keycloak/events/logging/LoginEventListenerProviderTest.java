@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.events.Event;
 import org.keycloak.models.*;
+import org.keycloak.representations.userprofile.config.UPConfig;
+import org.keycloak.userprofile.UserProfileProvider;
 
 import static net.cst.keycloak.events.logging.util.ClientModelHelper.buildClient;
 import static net.cst.keycloak.events.logging.util.EventHelper.buildClientLoginEvent;
@@ -35,11 +37,14 @@ class LoginEventListenerProviderTest {
         clientProvider = mock(ClientProvider.class);
         RealmProvider realmProvider = mock(RealmProvider.class);
         KeycloakContext ctx = mock(KeycloakContext.class);
+        UserProfileProvider userProfileProvider = mock(UserProfileProvider.class);
         when(session.getContext()).thenReturn(ctx);
         when(session.realms()).thenReturn(realmProvider);
         when(realmProvider.getRealm(anyString())).thenReturn(realmModel);
         when(session.users()).thenReturn(userProvider);
         when(session.clients()).thenReturn(clientProvider);
+        when(session.getProvider(UserProfileProvider.class)).thenReturn(userProfileProvider);
+        when(userProfileProvider.getConfiguration()).thenReturn(new UPConfig());
     }
 
     @BeforeEach

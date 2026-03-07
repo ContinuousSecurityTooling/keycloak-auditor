@@ -55,6 +55,12 @@ See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 ]
 ```
 
+Within the user profile the attributes are shown below:
+
+![](.docs/keycloak-user-attributes.png)
+
+
+
 >**NOTE**:
 >
 > The regular Keycloak ADMIN API Authentication is used.

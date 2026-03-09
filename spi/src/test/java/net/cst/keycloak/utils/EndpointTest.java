@@ -32,7 +32,11 @@ public abstract class EndpointTest {
     protected static AccessToken auth;
     protected AuditEndpoint auditEndpoint;
 
-    protected  List<AuditedClientRepresentation> getClientsViaEndpoint() {
+    protected List<AuditedClientRepresentation> getClientsViaEndpoint() {
+        return getClientsViaEndpoint("master");
+    }
+
+    protected List<AuditedClientRepresentation> getClientsViaEndpoint(String issuerRealm) {
         HttpHeaders headers = mock(HttpHeaders.class);
         MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
             {
@@ -61,12 +65,16 @@ public abstract class EndpointTest {
         when(session.realms()).thenReturn(realmProvider);
         when(session.clients()).thenReturn(clientProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            auditEndpoint = mockAccessToken(tokenMock);
+            auditEndpoint = mockAccessToken(tokenMock, issuerRealm);
             return auditEndpoint.listClients(headers);
         }
     }
 
     protected List<AuditedUserRepresentation> getUsersViaEndpoint() {
+        return getUsersViaEndpoint("master");
+    }
+
+    protected List<AuditedUserRepresentation> getUsersViaEndpoint(String issuerRealm) {
         HttpHeaders headers = mock(HttpHeaders.class);
         MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
             {
@@ -98,14 +106,14 @@ public abstract class EndpointTest {
         when(session.realms()).thenReturn(realmProvider);
         when(session.users()).thenReturn(userProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
-            auditEndpoint = mockAccessToken(tokenMock);
+            auditEndpoint = mockAccessToken(tokenMock, issuerRealm);
             return auditEndpoint.listUsers(headers);
         }
     }
 
-    private AuditEndpoint mockAccessToken(MockedStatic<Tokens> tokenMock) {
+    private AuditEndpoint mockAccessToken(MockedStatic<Tokens> tokenMock, String issuerRealm) {
         auth = new AccessToken();
-        auth.issuer("master");
+        auth.issuer(issuerRealm);
         auth.setRealmAccess(new AccessToken.Access().addRole(ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE)));
         tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(auth);
         return new AuditEndpoint(session) {

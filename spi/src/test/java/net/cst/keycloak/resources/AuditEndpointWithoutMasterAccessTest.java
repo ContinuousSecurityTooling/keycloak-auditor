@@ -15,7 +15,7 @@ class AuditEndpointWithoutMasterAccessTest extends EndpointTest {
     @Test
     @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "false")
     void shouldNotShowUsersFromAllRealmsIfNotConfigured() {
-        List<AuditedUserRepresentation> usersResponse = getUsersViaEndpoint();
+        List<AuditedUserRepresentation> usersResponse = getUsersViaEndpoint("other");
         auditEndpoint.authenticate();
         assertNotNull(usersResponse);
         assertEquals(2, usersResponse.size(), "Expected 2 users, but got " + usersResponse.size());
@@ -24,7 +24,7 @@ class AuditEndpointWithoutMasterAccessTest extends EndpointTest {
     @Test
     @SetEnvironmentVariable(key = "KC_AUD_GLOBAL_MASTER_ACCESS", value = "false")
     void shouldNotShowClientsFromAllRealmsIfConfigured() {
-        List<AuditedClientRepresentation> clients = getClientsViaEndpoint();
+        List<AuditedClientRepresentation> clients = getClientsViaEndpoint("other");
         auditEndpoint.authenticate();
         assertNotNull(clients);
         assertEquals(2, clients.size(), "Expected 2 clients, but got " + clients.size());

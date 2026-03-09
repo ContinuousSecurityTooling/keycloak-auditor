@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile)",
+      "Bash(xargs jar tf)",
+      "Bash(javap -classpath ~/.m2/repository/org/keycloak/keycloak-core/26.5.4/keycloak-core-26.5.4.jar org.keycloak.representations.userprofile.config.UPConfig)",
+      "Bash(mvn test -pl . -Dtest=LoginEventListenerProviderTest)",
+      "Bash(mvn test -Dtest=LoginEventListenerProviderTest)",
+      "Bash(mvn test)",
+      "Bash(while read f)",
+      "Bash(do jar tf \"$f\")",
+      "Bash(echo \"$f\")",
+      "Bash(done)"
+    ]
+  }
+}

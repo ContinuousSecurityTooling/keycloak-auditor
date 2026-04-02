@@ -20,6 +20,7 @@ For further automated reporting, you can use [keycloak-reporter](https://github.
 
 See example for the docker-compose setup in `.bin/read-audited-users.sh`.
 
+
 ![](.docs/example_user-auditing.png)
 
 ```
@@ -96,7 +97,7 @@ The Keycloak server will now be available on <http://localhost:8080>. You can lo
 
 ![](.docs/keycloak-realm-event-config-step2.png)
 
-3. Enable Unmanged attributes:
+3. Enable Unmanaged attributes:
 
 ![](.docs/keycloak-enable-unmanaged-attributes.png)
 
@@ -129,4 +130,30 @@ await kcClient.auth({
 });
 const users = await client.userListing();
 const clients = await client.clientListing();
+```
+
+User attributes in the console also showing the details per Client:
+
+![](.docs/keycloak-admin-audit-userattributes.png)
+
+## Audit Reports Download Page
+
+The SPI ships a self-contained HTML report page at `http://<keycloak-url>/realms/<realm>/auditing/download`, e.g. `http://localhost:8080/realms/master/auditing/download`:
+
+![](.docs/keycloak-admin-audit-report-download.png)
+
+No admin console navigation is required. The page shows a table of all realms (when accessed from the master realm) or the current realm only, with one-click JSON and CSV download buttons for users and clients.
+
+**Authentication:** The page itself is public (no token needed to load it). Download buttons require a Bearer token — use the built-in **Auto-detect** button when accessing from within the admin console session, or paste a token obtained via:
+
+```bash
+curl -s -d 'client_id=admin-cli&username=admin&password=<pw>&grant_type=password' \
+  http://localhost:8080/realms/master/protocol/openid-connect/token | jq -r .access_token
+```
+
+**Per-realm filtering:** To download data for a single realm via the REST API directly, use the `?realm=<name>` query parameter:
+
+```
+GET /realms/master/auditing/users?realm=my-realm
+GET /realms/master/auditing/users/csv?realm=my-realm
 ```

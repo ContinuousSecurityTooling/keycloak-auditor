@@ -67,7 +67,7 @@ class AuditEndpointAccessRightsTest {
                 }
             };
 
-            assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers));
+            assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers, null, null));
         }
     }
 
@@ -86,7 +86,7 @@ class AuditEndpointAccessRightsTest {
                 }
             };
 
-            assertThrows(NotAuthorizedException.class, () -> endpoint.listUsers(headers));
+            assertThrows(NotAuthorizedException.class, () -> endpoint.listUsers(headers, null, null));
         }
     }
 
@@ -111,7 +111,7 @@ class AuditEndpointAccessRightsTest {
                 }
             };
 
-            assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers));
+            assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers, null, null));
         }
     }
 }

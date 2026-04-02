@@ -32,10 +32,15 @@ class AuditEndpointDownloadTest extends EndpointTest {
     @Test
     void downloadPageShouldReturnHtmlWithoutRequiringAuth() {
         RealmModel masterRealm = mock(RealmModel.class);
+        RealmModel otherRealm = mock(RealmModel.class);
         when(masterRealm.getName()).thenReturn("master");
+        when(otherRealm.getName()).thenReturn("testrealm");
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        when(realmProvider.getRealmsStream()).thenReturn(Arrays.stream(new RealmModel[]{masterRealm, otherRealm}));
         KeycloakContext context = mock(KeycloakContext.class);
         when(context.getRealm()).thenReturn(masterRealm);
         when(session.getContext()).thenReturn(context);
+        when(session.realms()).thenReturn(realmProvider);
 
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
             tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(null);
@@ -49,13 +54,16 @@ class AuditEndpointDownloadTest extends EndpointTest {
 
             assertEquals(200, response.getStatus());
             String html = (String) response.getEntity();
-            assertTrue(html.contains("Keycloak Audit Reports"), "Page title missing");
-            assertTrue(html.contains("download('users','csv'"), "Users CSV button missing");
-            assertTrue(html.contains("download('clients','csv'"), "Clients CSV button missing");
-            assertTrue(html.contains("download('users','json'"), "Users JSON button missing");
-            assertTrue(html.contains("download('clients','json'"), "Clients JSON button missing");
+            assertTrue(html.contains("Audit Reporting"), "Page title missing");
+            assertTrue(html.contains("dl('users'"), "Users download JS call missing");
+            assertTrue(html.contains("dl('clients'"), "Clients download JS call missing");
+            assertTrue(html.contains("'csv'"), "CSV format missing");
+            assertTrue(html.contains("'json'"), "JSON format missing");
             assertTrue(html.contains("autoDetect"), "Auto-detect JS function missing");
             assertTrue(html.contains("/csv"), "CSV path pattern missing in JS");
+            assertTrue(html.contains("all-realms"), "all-realms scope missing");
+            assertTrue(html.contains("testrealm"), "Per-realm row missing");
+            assertTrue(html.contains("All Realms"), "All Realms header row missing for master");
         }
     }
 
@@ -140,7 +148,7 @@ class AuditEndpointDownloadTest extends EndpointTest {
 
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
             auditEndpoint = mockAccessTokenEndpoint(tokenMock);
-            return auditEndpoint.downloadUsersCsv(headers);
+            return auditEndpoint.downloadUsersCsv(headers, null, null);
         }
     }
 
@@ -167,7 +175,7 @@ class AuditEndpointDownloadTest extends EndpointTest {
 
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
             auditEndpoint = mockAccessTokenEndpoint(tokenMock);
-            return auditEndpoint.downloadClientsCsv(headers);
+            return auditEndpoint.downloadClientsCsv(headers, null, null);
         }
     }
 

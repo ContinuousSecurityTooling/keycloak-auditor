@@ -17,12 +17,10 @@ spi/                            # only Maven module
     events/logging/             # LoginEventListenerProvider + Factory
     resources/                  # AuditEndpoint (JAX-RS) + AuditedResourcesProvider/Factory
     userprofile/                # AuditUserProfileRegistrar
-    admin/                      # AdminUiPage (UiPageProvider)
     utils/                      # ConfigHelper, RuntimeHelper
   src/main/resources/META-INF/services/
     org.keycloak.events.EventListenerProviderFactory
     org.keycloak.services.resource.RealmResourceProviderFactory
-    org.keycloak.services.ui.extend.UiPageProviderFactory
 ```
 
 ## Keycloak version
@@ -72,19 +70,23 @@ Base path: `/realms/{realm}/auditing/`
 
 **Important**: `authenticate()` is **not** called in the constructor — it is called inside `checkAccessRights()`. This allows the `/download` HTML page to be served without a Bearer token, while all data endpoints still enforce auth.
 
-### Master realm auto-scope
+### Query parameters
 
-When the access token issuer realm is `"master"` (i.e. `auth.getIssuer()` ends with `/master` or equals `"master"`), both `listUsers` and `listClients` automatically include **all realms** — regardless of the `KC_AUD_GLOBAL_MASTER_ACCESS` flag. Other realms only see their own data unless `KC_AUD_GLOBAL_MASTER_ACCESS=true` is set.
+`listUsers`, `listClients`, `downloadUsersCsv`, `downloadClientsCsv` accept:
 
-The `/download` HTML page also shows a realm-aware scope label: "Downloads include all realms." for master, or "Downloads include realm: {name}." for others, using `keycloakSession.getContext().getRealm()`.
+- `?scope=current-realm` — always returns only the current realm (overrides master auto-scope)
+- `?scope=all-realms` or omitted — returns all realms if `globalMasterAccess=true` OR token issuer is `"master"`
+- `?realm=<name>` — when the caller has all-realm access, filters results to that specific realm only
 
-## Admin console integration (`AdminUiPage`)
+The `/download` page shows a per-realm table: master realm gets an "All Realms" row + one row per realm (sorted); non-master realms get a single row. Each row has JSON/CSV download buttons that pass either `?realm=<name>` or `?scope=all-realms`.
 
-- Implements `UiPageProvider` + `UiPageProviderFactory` — appears in KC admin sidebar as "Auditing"
-- ID must be `"auditing"` (matches `AuditedResourcesProviderFactory.CONTEXT_PATH`)
-- `getTypeMetadata()` exports `displayName` ("Auditing"), `downloadPage`, `usersEndpoint`, `usersCsvEndpoint`, `clientsEndpoint`, `clientsCsvEndpoint` keys
-- **`UiPageProviderFactory` / `ComponentFactory` does NOT have `getDisplayType()`** — display name must be in `getTypeMetadata()` as `"displayName"`
-- The HTML download page is at `<realm-base-url>/auditing/download`
+## Admin console integration
+
+**There is no admin sidebar entry.** `UiPageProviderFactory` requires a corresponding JavaScript/React extension bundle to render a usable page; without it KC shows a broken "Create item" generic UI. The `AdminUiPage` class and its service registration have been removed.
+
+**Access audit reports** directly via: `<keycloak-url>/realms/{realm}/auditing/download`
+
+Do not re-introduce `UiPageProviderFactory` registration unless a full Vite+React extension bundle is also built and packaged with the JAR.
 
 ## Test patterns
 
@@ -118,7 +120,6 @@ Test classes by concern:
 - `AuditEndpointWithoutMasterAccessTest` — uses issuer "other" (non-master), `KC_AUD_GLOBAL_MASTER_ACCESS=false`, expects 2 records
 - `AuditEndpointMasterRealmAutoAccessTest` — issuer "master", `KC_AUD_GLOBAL_MASTER_ACCESS=false`, still expects 4 records (auto-scope)
 - `AuditUserProfileRegistrarTest` — idempotency, permissions, group assignment
-- `AdminUiPageTest` — metadata keys, config properties
 
 ## Build
 

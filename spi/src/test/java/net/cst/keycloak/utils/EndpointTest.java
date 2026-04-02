@@ -66,15 +66,19 @@ public abstract class EndpointTest {
         when(session.clients()).thenReturn(clientProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
             auditEndpoint = mockAccessToken(tokenMock, issuerRealm);
-            return auditEndpoint.listClients(headers);
+            return auditEndpoint.listClients(headers, null, null);
         }
     }
 
     protected List<AuditedUserRepresentation> getUsersViaEndpoint() {
-        return getUsersViaEndpoint("master");
+        return getUsersViaEndpoint("master", null);
     }
 
     protected List<AuditedUserRepresentation> getUsersViaEndpoint(String issuerRealm) {
+        return getUsersViaEndpoint(issuerRealm, null);
+    }
+
+    protected List<AuditedUserRepresentation> getUsersViaEndpoint(String issuerRealm, String scope) {
         HttpHeaders headers = mock(HttpHeaders.class);
         MultivaluedMap<String, String> headerValues = new MultivaluedHashMap<>() {
             {
@@ -107,7 +111,7 @@ public abstract class EndpointTest {
         when(session.users()).thenReturn(userProvider);
         try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
             auditEndpoint = mockAccessToken(tokenMock, issuerRealm);
-            return auditEndpoint.listUsers(headers);
+            return auditEndpoint.listUsers(headers, scope, null);
         }
     }
 

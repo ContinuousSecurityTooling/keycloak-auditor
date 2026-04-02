@@ -31,4 +31,11 @@ class AuditEndpointMasterRealmAutoAccessTest extends EndpointTest {
         assertNotNull(clients);
         assertEquals(4, clients.size(), "Master realm should include clients from all realms, got " + clients.size());
     }
+
+    @Test
+    void scopeCurrentRealmOverridesShouldLimitToCurrentRealmEvenInMaster() {
+        List<AuditedUserRepresentation> users = getUsersViaEndpoint("master", "current-realm");
+        assertNotNull(users);
+        assertEquals(2, users.size(), "scope=current-realm should limit to current realm even for master, got " + users.size());
+    }
 }

@@ -102,15 +102,26 @@ public class AuditEndpoint {
     @Path("users")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<AuditedUserRepresentation> listUsers(@Context HttpHeaders headers) {
+    public List<AuditedUserRepresentation> listUsers(@Context HttpHeaders headers,
+                                                     @QueryParam("scope") String scope,
+                                                     @QueryParam("realm") String realmFilter) {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedUserRepresentation> users = new ArrayList<>();
-        if (globalMasterAccess || "master".equals(realmName)) {
-            realmManager.getSession().realms().getRealmsStream().forEach(realm -> users.addAll(readUsers(realm).stream()
-                    .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList()));
-            log.debug("Adding user info for all realms");
+        if (shouldIncludeAllRealms(realmName, scope)) {
+            if (realmFilter != null && !realmFilter.isBlank()) {
+                RealmModel targetRealm = realmManager.getSession().realms().getRealmByName(realmFilter);
+                if (targetRealm != null) {
+                    users.addAll(readUsers(targetRealm).stream()
+                            .map(u -> AuditEndpoint.toBriefRepresentation(u, targetRealm.getName())).toList());
+                    log.debug("Adding user info filtered to realm {}", realmFilter);
+                }
+            } else {
+                realmManager.getSession().realms().getRealmsStream().forEach(realm -> users.addAll(readUsers(realm).stream()
+                        .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realm.getName())).toList()));
+                log.debug("Adding user info for all realms");
+            }
         } else {
             users.addAll(readUsers(realmManager.getRealmByName(realmName)).stream()
                     .map(userModel -> AuditEndpoint.toBriefRepresentation(userModel, realmName)).toList());
@@ -130,17 +141,29 @@ public class AuditEndpoint {
     @Path("clients")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<AuditedClientRepresentation> listClients(@Context HttpHeaders headers) {
+    public List<AuditedClientRepresentation> listClients(@Context HttpHeaders headers,
+                                                         @QueryParam("scope") String scope,
+                                                         @QueryParam("realm") String realmFilter) {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(this.keycloakSession);
         List<AuditedClientRepresentation> clients = new ArrayList<>();
-        if (globalMasterAccess || "master".equals(realmName)) {
-            realmManager.getSession().realms().getRealmsStream().forEach(realm -> clients.addAll(readClients(realm)
-                    .stream()
-                    .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realm.getName(), keycloakSession))
-                    .toList()));
-            log.debug("Adding client info for all realms");
+        if (shouldIncludeAllRealms(realmName, scope)) {
+            if (realmFilter != null && !realmFilter.isBlank()) {
+                RealmModel targetRealm = realmManager.getSession().realms().getRealmByName(realmFilter);
+                if (targetRealm != null) {
+                    clients.addAll(readClients(targetRealm).stream()
+                            .map(c -> AuditEndpoint.toBriefRepresentation(c, targetRealm.getName(), keycloakSession))
+                            .toList());
+                    log.debug("Adding client info filtered to realm {}", realmFilter);
+                }
+            } else {
+                realmManager.getSession().realms().getRealmsStream().forEach(realm -> clients.addAll(readClients(realm)
+                        .stream()
+                        .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realm.getName(), keycloakSession))
+                        .toList()));
+                log.debug("Adding client info for all realms");
+            }
         } else {
             clients.addAll(readClients(realmManager.getRealmByName(realmName)).stream()
                     .map(clientModel -> AuditEndpoint.toBriefRepresentation(clientModel, realmName, keycloakSession))
@@ -150,11 +173,18 @@ public class AuditEndpoint {
         return clients;
     }
 
+    private boolean shouldIncludeAllRealms(String realmName, String scope) {
+        if ("current-realm".equals(scope)) return false;
+        return globalMasterAccess || "master".equals(realmName);
+    }
+
     @Path("users/csv")
     @GET
     @Produces("text/csv")
-    public Response downloadUsersCsv(@Context HttpHeaders headers) {
-        List<AuditedUserRepresentation> users = listUsers(headers);
+    public Response downloadUsersCsv(@Context HttpHeaders headers,
+                                     @QueryParam("scope") String scope,
+                                     @QueryParam("realm") String realmFilter) {
+        List<AuditedUserRepresentation> users = listUsers(headers, scope, realmFilter);
         StringBuilder csv = new StringBuilder("username,email,firstName,lastName,realm,lastLogin\n");
         for (AuditedUserRepresentation u : users) {
             csv.append(escapeCsv(u.getUsername())).append(",")
@@ -172,8 +202,10 @@ public class AuditEndpoint {
     @Path("clients/csv")
     @GET
     @Produces("text/csv")
-    public Response downloadClientsCsv(@Context HttpHeaders headers) {
-        List<AuditedClientRepresentation> clients = listClients(headers);
+    public Response downloadClientsCsv(@Context HttpHeaders headers,
+                                       @QueryParam("scope") String scope,
+                                       @QueryParam("realm") String realmFilter) {
+        List<AuditedClientRepresentation> clients = listClients(headers, scope, realmFilter);
         StringBuilder csv = new StringBuilder("clientId,name,realm,lastLogin\n");
         for (AuditedClientRepresentation c : clients) {
             csv.append(escapeCsv(c.getClientId())).append(",")
@@ -193,38 +225,49 @@ public class AuditEndpoint {
         RealmModel currentRealm = keycloakSession.getContext().getRealm();
         String currentRealmName = currentRealm != null ? currentRealm.getName() : "unknown";
         boolean isMasterRealm = "master".equals(currentRealmName);
-        String scopeLabel = isMasterRealm
-                ? "Downloads include <strong>all realms</strong>."
-                : "Downloads include realm: <strong>" + currentRealmName + "</strong>.";
+
+        StringBuilder realmRows = new StringBuilder();
+        if (isMasterRealm) {
+            realmRows.append(realmRow("All Realms", "all", true));
+            keycloakSession.realms().getRealmsStream()
+                    .map(RealmModel::getName)
+                    .sorted()
+                    .forEach(name -> realmRows.append(realmRow(name, name, false)));
+        } else {
+            realmRows.append(realmRow(currentRealmName, currentRealmName, false));
+        }
 
         String html = """
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
                   <meta charset="UTF-8">
-                  <title>Keycloak Audit Reports</title>
+                  <title>Audit Reporting</title>
                   <style>
-                    body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #333; }
+                    body { font-family: sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; color: #333; }
                     h1 { border-bottom: 2px solid #e00; padding-bottom: 8px; }
                     h2 { margin-top: 28px; }
-                    .btn { display: inline-block; margin: 6px 4px; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+                    .field-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+                    .field-row label { min-width: 110px; font-size: 14px; }
+                    .field-row input { flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+                    .field-row button { padding: 6px 12px; border: 1px solid #aaa; border-radius: 4px; cursor: pointer; background: #f5f5f5; }
+                    .hint { font-size: 12px; color: #666; margin-top: 4px; }
+                    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+                    th { background: #f0f0f0; text-align: left; padding: 8px 12px; border: 1px solid #ddd; font-size: 13px; }
+                    td { padding: 7px 12px; border: 1px solid #ddd; font-size: 13px; vertical-align: middle; }
+                    tr:first-child td { font-weight: bold; background: #fafafa; }
+                    .btn { display: inline-block; padding: 4px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; }
                     .btn-json { background: #0066cc; color: white; }
                     .btn-csv  { background: #217346; color: white; }
-                    .token-row { display: flex; gap: 8px; margin: 12px 0; }
-                    .token-row input { flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
-                    .token-row button { padding: 6px 12px; border: 1px solid #aaa; border-radius: 4px; cursor: pointer; background: #f5f5f5; }
-                    .hint { font-size: 12px; color: #666; margin-top: 4px; }
-                    .scope-info { background: #f0f7ff; border-left: 4px solid #0066cc; padding: 8px 12px; margin: 12px 0; font-size: 14px; }
                     #status { margin-top: 16px; color: #c00; }
                   </style>
                 </head>
                 <body>
-                  <h1>Keycloak Audit Reports</h1>
-                  <div class="scope-info">""" + scopeLabel + """
-                  </div>
+                  <h1>Audit Reporting</h1>
 
                   <h2>Authentication</h2>
-                  <div class="token-row">
+                  <div class="field-row">
+                    <label for="token">Bearer Token</label>
                     <input type="password" id="token" placeholder="Paste your Admin Bearer token here" />
                     <button onclick="autoDetect()">Auto-detect</button>
                   </div>
@@ -234,13 +277,21 @@ public class AuditEndpoint {
                     .../realms/master/protocol/openid-connect/token | jq -r .access_token</code>
                   </p>
 
-                  <h2>Users Report</h2>
-                  <button class="btn btn-json" onclick="download('users','json','audit-users-report.json')">&#8595; JSON</button>
-                  <button class="btn btn-csv"  onclick="download('users','csv','audit-users-report.csv')">&#8595; CSV</button>
-
-                  <h2>Clients Report</h2>
-                  <button class="btn btn-json" onclick="download('clients','json','audit-clients-report.json')">&#8595; JSON</button>
-                  <button class="btn btn-csv"  onclick="download('clients','csv','audit-clients-report.csv')">&#8595; CSV</button>
+                  <h2>Reports</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Realm</th>
+                        <th>Users JSON</th>
+                        <th>Users CSV</th>
+                        <th>Clients JSON</th>
+                        <th>Clients CSV</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                """ + realmRows + """
+                    </tbody>
+                  </table>
 
                   <div id="status"></div>
 
@@ -260,16 +311,20 @@ public class AuditEndpoint {
                         document.getElementById('token').value = found;
                         document.getElementById('status').textContent = 'Token detected.';
                       } else {
-                        document.getElementById('status').textContent = 'Could not auto-detect token — please paste it manually.';
+                        document.getElementById('status').textContent = 'Could not auto-detect token \u2014 please paste it manually.';
                       }
                     }
 
-                    async function download(type, fmt, filename) {
+                    async function dl(type, fmt, filename, realm) {
                       const token = document.getElementById('token').value.trim();
                       if (!token) { document.getElementById('status').textContent = 'Please provide a Bearer token.'; return; }
-                      const url = fmt === 'csv' ? `${base}/${type}/csv` : `${base}/${type}`;
+                      const path = fmt === 'csv' ? `${base}/${type}/csv` : `${base}/${type}`;
+                      const params = new URLSearchParams();
+                      if (realm === 'all') params.set('scope', 'all-realms');
+                      else params.set('realm', realm);
+                      const url = path + '?' + params.toString();
                       const accept = fmt === 'csv' ? 'text/csv' : 'application/json';
-                      document.getElementById('status').textContent = 'Downloading…';
+                      document.getElementById('status').textContent = 'Downloading\u2026';
                       try {
                         const resp = await fetch(url, { headers: { Authorization: 'Bearer ' + token, Accept: accept } });
                         if (!resp.ok) { document.getElementById('status').textContent = 'Error ' + resp.status + ': ' + await resp.text(); return; }
@@ -284,6 +339,18 @@ public class AuditEndpoint {
                 </html>
                 """;
         return Response.ok(html).build();
+    }
+
+    private static String realmRow(String label, String realmParam, boolean isAll) {
+        String uFile = isAll ? "audit-users-all" : "audit-users-" + realmParam;
+        String cFile = isAll ? "audit-clients-all" : "audit-clients-" + realmParam;
+        return "      <tr>\n"
+                + "        <td>" + label + "</td>\n"
+                + "        <td><button class=\"btn btn-json\" onclick=\"dl('users','json','" + uFile + ".json','" + realmParam + "')\">&#8595; JSON</button></td>\n"
+                + "        <td><button class=\"btn btn-csv\"  onclick=\"dl('users','csv','" + uFile + ".csv','" + realmParam + "')\">&#8595; CSV</button></td>\n"
+                + "        <td><button class=\"btn btn-json\" onclick=\"dl('clients','json','" + cFile + ".json','" + realmParam + "')\">&#8595; JSON</button></td>\n"
+                + "        <td><button class=\"btn btn-csv\"  onclick=\"dl('clients','csv','" + cFile + ".csv','" + realmParam + "')\">&#8595; CSV</button></td>\n"
+                + "      </tr>\n";
     }
 
     private String escapeCsv(String value) {

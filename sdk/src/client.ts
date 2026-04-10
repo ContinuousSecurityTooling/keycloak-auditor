@@ -8,7 +8,7 @@ export interface Credentials {
 }
 
 export class AuditClient {
-  private accessToken: string;
+  private accessToken: string | undefined;
   private realmUrl: string;
   constructor(url: string, realm: string) {
     this.realmUrl = `${url}/realms/${realm}`;
@@ -19,42 +19,41 @@ export class AuditClient {
     params.append('client_secret', credentials.clientSecret);
     params.append('grant_type', credentials.grantType);
     params.append('scope', 'profile');
-    this.accessToken = (
-      await (
-        await fetch(`${this.realmUrl}/protocol/openid-connect/token`, {
-          method: 'POST',
-          body: params,
-        })
-      ).json()
-    )['access_token'];
+    const body = (await (
+      await fetch(`${this.realmUrl}/protocol/openid-connect/token`, {
+        method: 'POST',
+        body: params,
+      })
+    ).json()) as Record<string, string>;
+    this.accessToken = body['access_token'];
     return this;
   }
 
   public async userListing(): Promise<AuditedUserRepresentation[]> {
-    const users: Array<AuditedUserRepresentation> = <Array<AuditedUserRepresentation>>(<unknown>(
+    const response = (await (
       await fetch(`${this.realmUrl}/auditing/users`, {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
-    ).json());
-    if (users['error']) {
+    ).json()) as Record<string, unknown>;
+    if (response['error']) {
       throw new Error(
-        `Please check your client config, did you enabled the access the API endpoint? Error: ${users['error']}`
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${response['error']}`
       );
     }
-    return users;
+    return response as unknown as AuditedUserRepresentation[];
   }
 
   public async clientListing(): Promise<AuditedClientRepresentation[]> {
-    const clients: Array<AuditedClientRepresentation> = <Array<AuditedClientRepresentation>>await (
+    const response = (await (
       await fetch(`${this.realmUrl}/auditing/clients`, {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
-    ).json();
-    if (clients['error']) {
+    ).json()) as Record<string, unknown>;
+    if (response['error']) {
       throw new Error(
-        `Please check your client config, did you enabled the access the API endpoint? Error: ${clients['error']}`
+        `Please check your client config, did you enabled the access the API endpoint? Error: ${response['error']}`
       );
     }
-    return clients;
+    return response as unknown as AuditedClientRepresentation[];
   }
 }

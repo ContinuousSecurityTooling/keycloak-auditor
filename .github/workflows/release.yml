@@ -115,8 +115,6 @@ jobs:
                     cd sdk
                     npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
                     npm publish
-                env:
-                    NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
             -   name: Prepare release artifacts
                 run: |

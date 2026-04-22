@@ -1,5 +1,6 @@
 [![CI](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml/badge.svg)](https://github.com/ContinuousSecurityTooling/keycloak-auditor/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/ContinuousSecurityTooling/keycloak-auditor/graph/badge.svg?token=DD9WTH36UR)](https://codecov.io/gh/ContinuousSecurityTooling/keycloak-auditor)
+![Maven Central Version](https://img.shields.io/maven-central/v/net.continuous-security-tools/keycloak-auditor-spi?link=https%3A%2F%2Fcentral.sonatype.com%2Fartifact%2Fnet.continuous-security-tools%2Fkeycloak-auditor-spi)
 [![npm version](https://badge.fury.io/js/@continuoussecuritytooling%2Fkeycloak-auditor.svg)](https://www.npmjs.com/package/@continuoussecuritytooling/keycloak-auditor)
 [![Known Vulnerabilities](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor/badge.svg)](https://snyk.io/test/github/ContinuousSecurityTooling/keycloak-auditor)
 

@@ -6,7 +6,7 @@
     <version>2.2.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>spi</artifactId>
+  <artifactId>keycloak-auditor-spi</artifactId>
   <name>Auditor SPI for Keycloak Server</name>
 
   <packaging>jar</packaging>

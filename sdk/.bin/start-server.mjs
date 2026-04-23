@@ -74,7 +74,9 @@ async function downloadServer () {
 }
 
 async function getNightlyAsset () {
-  const api = new Octokit()
+  const api = new Octokit({
+    auth: process.env.GITHUB_TOKEN || undefined
+  })
   const tag = process.env.KC_VERSION || 'nightly'
   const release = await api.repos.getReleaseByTag({
     owner: 'keycloak',

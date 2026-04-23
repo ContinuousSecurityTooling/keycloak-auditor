@@ -108,6 +108,7 @@ jobs:
         uses: nick-fields/retry@v4
         env:
           KC_VERSION: ${{ matrix.kcVersion }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           max_attempts: 3
           retry_on: error

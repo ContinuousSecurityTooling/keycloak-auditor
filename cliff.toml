@@ -2,7 +2,7 @@
 header = ""
 body = """
 {% if version %}\
-## [{{ version }}](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/{{ previous.version }}...{{ version }}) ({{ timestamp | date(format="%Y-%m-%d") }})
+## [{{ version | trim_start_matches(pat="v") }}](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/{{ previous.version }}...{{ version }}) ({{ timestamp | date(format="%Y-%m-%d") }})
 {% else %}\
 ## [Unreleased]
 {% endif %}\

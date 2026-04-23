@@ -106,6 +106,8 @@ jobs:
 
       - name: Run End2End Tests
         uses: nick-fields/retry@v4
+        env:
+          KC_VERSION: ${{ matrix.kcVersion }}
         with:
           max_attempts: 3
           retry_on: error

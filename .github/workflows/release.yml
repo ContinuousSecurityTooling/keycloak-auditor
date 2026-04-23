@@ -1,134 +1,142 @@
 name: Create release # You may choose a different name
 run-name: ${{ inputs.releaseversion }} # Enumerates entries in the "workflow runs" view
 on:
-    workflow_dispatch:
-        inputs:
-            releaseversion:
-                description: "Release version"
-                required: true
-                type: string
-                default: "X.Y.Z"
+  workflow_dispatch:
+    inputs:
+      releaseversion:
+        description: "Release version"
+        required: true
+        type: string
+        default: "X.Y.Z"
 
 jobs:
-    release: # Arbitrarily chosen
-        name: Release
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            packages: write
-            attestations: write
-            id-token: write
-        steps:
+  release: # Arbitrarily chosen
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ vars.CI_APP_ID }}
+          private-key: ${{ secrets.CI_PRIVATE_KEY }}
 
-            -   uses: actions/create-github-app-token@v3
-                id: app-token
-                with:
-                    app-id: ${{ vars.CI_APP_ID }}
-                    private-key: ${{ secrets.CI_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.head_ref }}
 
-            -   name: Checkout
-                uses: actions/checkout@v6
-                with:
-                    fetch-depth: 0
-                    token: ${{ steps.app-token.outputs.token }}
-                    ref: ${{ github.head_ref }}
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
-            -   name: Get GitHub App User ID
-                id: get-user-id
-                run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-                env:
-                    GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - name: Configure Git author
+        run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
 
-            -   name: Configure Git author
-                run: |
-                    git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-                    git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
+      - name: Setup NodeJS
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
-            -   name: Setup NodeJS
-                uses: actions/setup-node@v6
-                with:
-                    node-version: "24"
-                    registry-url: "https://registry.npmjs.org"
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
+          java-package: "jdk"
+          java-version: "21"
+          check-latest: true
+          cache: "maven"
 
-            -   name: Setup Java
-                uses: actions/setup-java@v5
-                with:
-                    distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
-                    java-package: "jdk"
-                    java-version: "21"
-                    check-latest: true
-                    cache: "maven"
+      - name: Setup settings.xml
+        uses: s4u/maven-settings-action@v4.0.0
+        with:
+          override: true
+          servers: |
+            [{
+                "id": "central",
+                "username": "${{ secrets.OSS_SONATYPE_USER }}",
+                "password": "${{ secrets.OSS_SONATYPE_PASS }}"
+            },{
+                "id":"github",
+                "username": "ci-bot",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
+            }]
 
-            -   name: Setup settings.xml
-                uses: s4u/maven-settings-action@v4.0.0
-                with:
-                    override: true
-                    servers: |
-                        [{
-                            "id": "central",
-                            "username": "${{ secrets.OSS_SONATYPE_USER }}",
-                            "password": "${{ secrets.OSS_SONATYPE_PASS }}"
-                        },{
-                            "id":"github",
-                            "username": "ci-bot",
-                            "password": "${{ secrets.GITHUB_TOKEN }}"
-                        }]
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          # Install gpg secret key
+          cat <(echo -e "${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}") | gpg --batch --import
+          # Verify gpg secret key
+          gpg --list-secret-keys --keyid-format LONG
 
-            -   id: install-secret-key
-                name: Install gpg secret key
-                run: |
-                    # Install gpg secret key
-                    cat <(echo -e "${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}") | gpg --batch --import
-                    # Verify gpg secret key
-                    gpg --list-secret-keys --keyid-format LONG
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          MAVEN_GPG_KEY: ${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
+        run: |
+          export TZ="Europe/Berlin"
+          ./mvnw release:prepare release:perform -B -Pcentral-publish -DreleaseVersion=${{ inputs.releaseversion }} -Dgpg.keyname=${{ env.OSS_SONATYPE_GPG_KEYID }} -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }} -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}"
+          # Create SBOM
+          mvn cyclonedx:makeAggregateBom
+          # write version info
+          cat <<EOF >target/config.json
+          {
+            "version": "${{ inputs.releaseversion }}"
+          }
+          EOF
 
-            -   name: Create release
-                env:
-                    GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-                    MAVEN_GPG_KEY: ${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}
-                    MAVEN_GPG_PASSPHRASE: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
-                run: |
-                    export TZ="Europe/Berlin"
-                    ./mvnw release:prepare release:perform -B -Pcentral-publish -DreleaseVersion=${{ inputs.releaseversion }} -Dgpg.keyname=${{ env.OSS_SONATYPE_GPG_KEYID }} -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }} -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}"
-                    # write version info
-                    cat <<EOF >target/config.json
-                    {
-                      "version": "${{ inputs.releaseversion }}"
-                    }
-                    EOF
+      - name: Generate Changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --tag v${{ inputs.releaseversion }} --prepend CHANGELOG.md --unreleased
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-            -   name: Conventional Changelog Action
-                uses: TriPSs/conventional-changelog-action@v6
-                with:
-                    input-file: CHANGELOG.md
-                    github-token: ${{ steps.app-token.outputs.token }}
-                    version-file: target/config.json
-                    pre-release: true
-                    skip-bump: true
-                    skip-tag: true
-                    skip-on-empty: true
-                    tag-prefix: "v"
+      - name: Commit Changelog
+        run: |
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "chore(release): update changelog for v${{ inputs.releaseversion }}"
+          git push
 
-            -   run: cd sdk && npm run clean && npm run build
-            -   name: Publish npm package
-                run: |
-                    cd sdk
-                    npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
-                    npm publish
+      - run: cd sdk && npm run clean && npm run build
+      - name: Publish npm package
+        run: |
+          cd sdk
+          npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
+          npm publish
 
-            -   name: Prepare release artifacts
-                run: |
-                    # rename files
-                    cp spi/target/keycloak-auditor-spi.jar keycloak-auditor-spi.jar
+      - name: Prepare release artifacts
+        run: |
+          # rename file
+          cp target/dependency-bom.xml keycloak-auditor-dependency-bom.xml
+          cp target/dependency-bom.json keycloak-auditor-dependency-bom.json
+          cp spi/target/keycloak-auditor-spi.jar keycloak-auditor-spi.jar
 
-            -   name: Create GH release
-                uses: softprops/action-gh-release@v3
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                with:
-                    token: ${{ secrets.GITHUB_TOKEN }}
-                    name: ${{ github.event.inputs.releaseversion }}
-                    tag_name: v${{ github.event.inputs.releaseversion }}
-                    draft: true
-                    files: |
-                        keycloak-auditor-spi.jar
+      - name: Create GH release
+        uses: softprops/action-gh-release@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ github.event.inputs.releaseversion }}
+          tag_name: v${{ github.event.inputs.releaseversion }}
+          draft: true
+          files: |
+            keycloak-auditor-dependency-bom.xml
+            keycloak-auditor-dependency-bom.json
+            keycloak-auditor-spi.jar

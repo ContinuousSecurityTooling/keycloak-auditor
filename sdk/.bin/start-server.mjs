@@ -25,8 +25,8 @@ async function startServer () {
   await downloadServer()
 
   console.info('Copying kc auditor extension to server …')
-  fs.createReadStream(path.resolve(DIR_NAME, '../../spi/target/keycloak-auditor-spi.jar'))
-  .pipe(fs.createWriteStream(path.resolve(DIR_NAME, '../tmp/server/providers//keycloak-auditor-spi.jar')));
+  fs.createReadStream(path.resolve(DIR_NAME, '../../spi/target/keycloak-auditor-keycloak-auditor-spi.jar'))
+  .pipe(fs.createWriteStream(path.resolve(DIR_NAME, '../tmp/server/providers/keycloak-auditor-spi.jar')));
 
   console.info('Starting server …')
 
@@ -48,11 +48,19 @@ async function startServer () {
 }
 
 async function downloadServer () {
+  const tag = process.env.KC_VERSION || 'nightly'
+  const sentinelPath = path.join(SERVER_DIR, '.kcversion')
+  const installedVersion = fs.existsSync(sentinelPath) ? fs.readFileSync(sentinelPath, 'utf8').trim() : null
   const directoryExists = fs.existsSync(path.join(SERVER_DIR, `bin/kc${SCRIPT_EXTENSION}`))
 
-  if (directoryExists) {
-    console.info('Server installation found, skipping download.')
+  if (directoryExists && installedVersion === tag) {
+    console.info(`Server installation found for ${tag}, skipping download.`)
     return
+  }
+
+  if (directoryExists && installedVersion !== tag) {
+    console.info(`Installed version (${installedVersion}) differs from requested (${tag}), re-downloading…`)
+    fs.rmSync(SERVER_DIR, { recursive: true, force: true })
   }
 
   console.info('Downloading and extracting server…')
@@ -62,11 +70,12 @@ async function downloadServer () {
   const assetStream = await getAssetAsStream(nightlyAsset)
 
   await extractTarball(assetStream, SERVER_DIR, { strip: 1 })
+  fs.writeFileSync(sentinelPath, tag)
 }
 
 async function getNightlyAsset () {
   const api = new Octokit()
-  const tag = process.env.kcVersion || 'nightly';
+  const tag = process.env.KC_VERSION || 'nightly'
   const release = await api.repos.getReleaseByTag({
     owner: 'keycloak',
     repo: 'keycloak',

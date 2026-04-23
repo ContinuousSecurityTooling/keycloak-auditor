@@ -18,7 +18,8 @@
       "Bash(grep -v '^$')",
       "Bash(xargs cat:*)",
       "Read(//Users/mreinhardt/git/job/keycloak-auditor/NR>1 {missed=$4; covered=$5; total=missed+covered; if\\(total>0\\) pct=int\\(covered*100/total\\); else pct=0; printf \"%s.%s: %d%% \\(%d/**)",
-      "Bash(sort -t: -k2 -n)"
+      "Bash(sort -t: -k2 -n)",
+      "Bash(npm run:*)"
     ]
   }
 }

@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { AuditedClientRepresentation, AuditedUserRepresentation } from './spi.js';
+import { AuditedClientRepresentation, AuditedUserRepresentation } from './keycloak-auditor-spi.js';
 
 export interface Credentials {
   grantType: string;

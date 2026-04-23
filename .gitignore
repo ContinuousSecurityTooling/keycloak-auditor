@@ -54,3 +54,4 @@ target/
 dist/
 etc/
 sdk/src/spi.ts
+sdk/src/keycloak-auditor-spi.ts

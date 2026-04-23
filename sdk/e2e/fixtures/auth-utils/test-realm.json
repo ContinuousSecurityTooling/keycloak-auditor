@@ -373,7 +373,6 @@
   "webAuthnPolicyCreateTimeout" : 0,
   "webAuthnPolicyAvoidSameAuthenticatorRegister" : false,
   "webAuthnPolicyAcceptableAaguids" : [ ],
-  "webAuthnPolicyExtraOrigins" : [ ],
   "webAuthnPolicyPasswordlessRpEntityName" : "keycloak",
   "webAuthnPolicyPasswordlessSignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyPasswordlessRpId" : "",

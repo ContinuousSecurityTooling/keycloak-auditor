@@ -81,11 +81,11 @@
 
         <!-- versions of test dependencies -->
         <jacoco.version>0.8.14</jacoco.version>
-        <junit5.version>5.14.3</junit5.version>
+        <junit5.version>5.14.4</junit5.version>
         <!-- JUnit Platform version aligned with Jupiter 5.x (1.x mirrors the 5.x minor/patch).
              Keycloak 26.6+ BOM injects junit-platform-* at 6.0.x (JUnit 6); override here
              to keep the full stack on JUnit 5 until junit-pioneer gains JUnit 6 support. -->
-        <junit5.platform.version>1.14.3</junit5.platform.version>
+        <junit5.platform.version>1.14.4</junit5.platform.version>
         <version.hamcrest>3.0</version.hamcrest>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>5.23.0</mockito.version>

@@ -41,7 +41,7 @@ public class LoginEventListenerProvider implements EventListenerProvider {
             UserModel user = this.session.users().getUserById(realm, event.getUserId());
 
             if (user != null) {
-                log.info("Updating last login status for user: {} (client: {})", event.getUserId(), event.getClientId());
+                log.debug("Updating last login status for user: {} (client: {})", event.getUserId(), event.getClientId());
                 // Use server time and set timezone for login event
                 String defaultTimeZone = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
                 OffsetDateTime loginTime = OffsetDateTime.now(ZoneId.of(defaultTimeZone));
@@ -58,7 +58,7 @@ public class LoginEventListenerProvider implements EventListenerProvider {
             ClientModel client = this.session.clients().getClientByClientId(realm, event.getClientId());
 
             if (client != null) {
-                log.info("Updating last login status in client {} for user: {}", event.getClientId(), event.getUserId());
+                log.debug("Updating last login status in client {} for user: {}", event.getClientId(), event.getUserId());
                 // Use server time and set timezone for login event
                 String defaultTimeZone = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_TIMEZONE);
                 OffsetDateTime loginTime = OffsetDateTime.now(ZoneId.of(defaultTimeZone));

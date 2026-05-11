@@ -107,7 +107,7 @@
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <plugin.gitflow-maven.version>1.21.0</plugin.gitflow-maven.version>
-        <typescript-generator-maven-plugin.version>4.0.0</typescript-generator-maven-plugin.version>
+        <typescript-generator-maven-plugin.version>4.1.1</typescript-generator-maven-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
 

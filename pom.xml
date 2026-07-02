@@ -69,7 +69,7 @@
         <java.version>17</java.version>
 
         <!-- logging dependencies -->
-        <log4j2.version>2.26.0</log4j2.version>
+        <log4j2.version>2.26.1</log4j2.version>
         <slf4j.version>1.7.33</slf4j.version>
 
         <!-- dependencies: compile and runtime -->

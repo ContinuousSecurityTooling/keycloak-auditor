@@ -9,8 +9,12 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RealmProvider;
 import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.models.utils.PostMigrationEvent;
+import org.keycloak.provider.ProviderEvent;
+import org.keycloak.provider.ProviderEventListener;
 import org.keycloak.userprofile.UserProfileProvider;
 import org.keycloak.representations.userprofile.config.UPConfig;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.util.stream.Stream;
@@ -41,7 +45,23 @@ class LoginEventListenerProviderFactoryTest extends EndpointTest {
     }
 
     @Test
-    void postInitShouldRegisterUserProfileForEachRealm() {
+    void postInitShouldOnlyRegisterListenerAndNotTouchRealmsYet() {
+        // Regression test for #881: postInit() must not access session.realms()/JPA directly,
+        // since that races with AbstractJpaConnectionProviderFactory's EntityManagerFactory
+        // initialization and crashes Keycloak at startup with a NullPointerException.
+        KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
+
+        try (MockedStatic<KeycloakModelUtils> utils = mockStatic(KeycloakModelUtils.class)) {
+            new LoginEventListenerProviderFactory().postInit(factory);
+
+            verify(factory).register(any(ProviderEventListener.class));
+            utils.verifyNoInteractions();
+            verifyNoInteractions(session);
+        }
+    }
+
+    @Test
+    void postInitListenerShouldRegisterUserProfileForEachRealmOnPostMigrationEvent() {
         KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
         RealmModel realm1 = mock(RealmModel.class);
         RealmModel realm2 = mock(RealmModel.class);
@@ -66,14 +86,23 @@ class LoginEventListenerProviderFactoryTest extends EndpointTest {
                  });
             try (MockedStatic<AuditUserProfileRegistrar> reg = mockStatic(AuditUserProfileRegistrar.class)) {
                 new LoginEventListenerProviderFactory().postInit(factory);
+
+                ArgumentCaptor<ProviderEventListener> captor = ArgumentCaptor.forClass(ProviderEventListener.class);
+                verify(factory).register(captor.capture());
+                ProviderEventListener listener = captor.getValue();
+
+                PostMigrationEvent event = mock(PostMigrationEvent.class);
+                listener.onEvent(event);
+
                 reg.verify(() -> AuditUserProfileRegistrar.registerForRealm(session, realm1));
                 reg.verify(() -> AuditUserProfileRegistrar.registerForRealm(session, realm2));
+                verify(factory).unregister(listener);
             }
         }
     }
 
     @Test
-    void postInitShouldSkipNullRealms() {
+    void postInitListenerShouldSkipNullRealms() {
         KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
         RealmModel realm1 = mock(RealmModel.class);
         when(realm1.getId()).thenReturn("id-1");
@@ -90,9 +119,35 @@ class LoginEventListenerProviderFactoryTest extends EndpointTest {
                      return null;
                  });
             try (MockedStatic<AuditUserProfileRegistrar> reg = mockStatic(AuditUserProfileRegistrar.class)) {
-                assertDoesNotThrow(() -> new LoginEventListenerProviderFactory().postInit(factory));
+                LoginEventListenerProviderFactory factoryUnderTest = new LoginEventListenerProviderFactory();
+                assertDoesNotThrow(() -> factoryUnderTest.postInit(factory));
+
+                ArgumentCaptor<ProviderEventListener> captor = ArgumentCaptor.forClass(ProviderEventListener.class);
+                verify(factory).register(captor.capture());
+                ProviderEventListener listener = captor.getValue();
+
+                assertDoesNotThrow(() -> listener.onEvent(mock(PostMigrationEvent.class)));
                 reg.verify(() -> AuditUserProfileRegistrar.registerForRealm(any(), any()), never());
             }
+        }
+    }
+
+    @Test
+    void postInitListenerShouldIgnoreUnrelatedProviderEvents() {
+        KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
+
+        try (MockedStatic<KeycloakModelUtils> utils = mockStatic(KeycloakModelUtils.class)) {
+            new LoginEventListenerProviderFactory().postInit(factory);
+
+            ArgumentCaptor<ProviderEventListener> captor = ArgumentCaptor.forClass(ProviderEventListener.class);
+            verify(factory).register(captor.capture());
+            ProviderEventListener listener = captor.getValue();
+
+            ProviderEvent unrelatedEvent = mock(ProviderEvent.class);
+            listener.onEvent(unrelatedEvent);
+
+            utils.verifyNoInteractions();
+            verify(factory, never()).unregister(any());
         }
     }
 }

@@ -40,6 +40,6 @@
     "tape": "^5.7.0",
     "tar-fs": "^3.0.4",
     "ts-jest": "^29.1.0",
-    "typescript": "^6.0.0"
+    "typescript": "^7.0.0"
   }
 }

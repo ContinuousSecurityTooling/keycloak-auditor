@@ -97,12 +97,16 @@ jobs:
             "version": "${{ inputs.releaseversion }}"
           }
           EOF
+          # Bump sdk version
+          cd sdk
+          npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
+          git add package.json package-lock.json
+          git commit -m "chore(release): bump sdk version to v${{ github.event.inputs.releaseversion }}"
 
       - run: cd sdk && npm run clean && npm run build
       - name: Publish npm package
         run: |
           cd sdk
-          npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
           npm publish
 
       - name: Generate Changelog

@@ -1,6 +1,10 @@
 
 ## [2.2.8](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.7...v2.2.8) (2026-07-22)
 
+### Bug Fixes
+
+* Correcting post init bug ([9ff0663](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/9ff06634c8676b762220dec25e4602dbb5d144c8)) see #881
+
 
 ## [2.2.7](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.6...v2.2.7) (2026-07-17)
 

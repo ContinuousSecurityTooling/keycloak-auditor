@@ -80,7 +80,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         kcVersion:
-          - "23.0.7"
           - "24.0.5"
           - "25.0.6"
           # renovate: datasource=docker depName=quay.io/keycloak/keycloak

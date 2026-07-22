@@ -6,7 +6,7 @@
 
 # Keycloak Auditor
 
-A Keycloak module to store audit data for user logins. The last logins will be saved as user attributes.
+A Keycloak module (needs Keycloak >=24!) to store audit data for user logins. The last logins will be saved as user attributes.
 
 All events created by this listener follow a schema:
 

@@ -116,7 +116,7 @@ jobs:
 
       - name: Build Container Image for End2End Testing
         id: build-image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v3
         with:
           image: continuoussecuritytooling/audited-keycloak
           tags: "end2end ${{ github.sha }}"

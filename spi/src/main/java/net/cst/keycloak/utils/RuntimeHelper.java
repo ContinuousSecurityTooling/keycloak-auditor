@@ -6,7 +6,7 @@ import java.util.Properties;
 public class RuntimeHelper {
 
     private static final String MAVEN_PACKAGE = "net.continuous-security-tools";
-    private static final String MAVEN_ARTIFACT = "spi";
+    private static final String MAVEN_ARTIFACT = "keycloak-auditor-spi";
 
     private RuntimeHelper() {
         // Utility class

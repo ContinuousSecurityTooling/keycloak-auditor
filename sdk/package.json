@@ -41,5 +41,9 @@
     "tar-fs": "^3.0.4",
     "ts-jest": "^29.1.0",
     "typescript": "^6.0.0"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.11.1": true
   }
 }

@@ -83,7 +83,7 @@ jobs:
           - "24.0.5"
           - "25.0.6"
           # renovate: datasource=docker depName=quay.io/keycloak/keycloak
-          - "26.7.0"
+          - "26.7.2"
           - "nightly"
     steps:
       - uses: actions/checkout@v7

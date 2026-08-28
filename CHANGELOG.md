@@ -1,29 +1,66 @@
 
-## [2.3.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.9...v2.3.0) (2026-08-28)
+# [2.3.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.9...v2.3.0) (2026-08-28)
 
+
+### Features
+
+* **Config:** Allow to enable admin edit right ([8ec2f65](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/8ec2f654bf007f1570b2936f8042258b95cb8f2c)), closes [#901](https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues/901)
 
 ## [2.2.9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.8...v2.2.9) (2026-08-19)
 
 
+### Bug Fixes
+
+* Correcting version extract ([6dba9c2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/6dba9c28637971b7990577f5848f631867e73979))
+* **deps:** update dependency org.keycloak:keycloak-parent to v26.7.1 ([220c6b9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/220c6b99e05450b3dda3ce240775ea477c45ee97))
+* **deps:** update keycloak releases ([c1a1b88](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/c1a1b88223c76397f7a6949247bc22fc43d0a1dd))
+
 ## [2.2.8](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.7...v2.2.8) (2026-07-22)
+
 
 ### Bug Fixes
 
-* Correcting post init bug ([9ff0663](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/9ff06634c8676b762220dec25e4602dbb5d144c8)) see #881
-
+* Correcting post init bug ([9ff0663](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/9ff06634c8676b762220dec25e4602dbb5d144c8)), closes [#OSS-76](https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues/OSS-76)
 
 ## [2.2.7](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.6...v2.2.7) (2026-07-17)
 
 
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v26.6.4 ([a19a2a2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a19a2a23d4c3eb756d64d65206fa83359750e038))
+* **deps:** update dependency org.keycloak:keycloak-parent to v26.7.0 ([4c68d98](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/4c68d985e80a39b1116df124c5aab20b249c591a))
+
 ## [2.2.6](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.5...v2.2.6) (2026-06-10)
 
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v26.6.2 ([185baf5](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/185baf5169d7a8eb5093cdbfcb58e84a107c5879))
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.18 ([#832](https://github.com/ContinuousSecurityTooling/keycloak-auditor/issues/832)) ([cd521d6](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/cd521d62af8ea40c8cf74ad62b6b6ea29ac099ef))
+* **deps:** update keycloak releases to v26.6.3 ([a4704d4](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a4704d4c2f028020661d6e84d38f46785cd2fb71))
 
 ## [2.2.5](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.4...v2.2.5) (2026-04-30)
 
 
+### Features
+
+* Adjust test realm for older keycloak versions ([e90ffcf](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/e90ffcfa3d72706884bf6455e9174dd014e20d29))
+* Set log level to debug ([c9e5028](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/c9e5028156338c0fd1e3f0a805c5f540049cf270))
+
+
+### BREAKING CHANGES
+
+* Remove support for keycloak version <23
+
 ## [2.2.4](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.3...v2.2.4) (2026-04-23)
 
-## [2.2.3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.2...v2.2.3) (2026-04-22)
+## [2.2.3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.2...v2.2.3) (2026-04-23)
+
+
+### Bug Fixes
+
+* Add missing dependency ([3331a23](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/3331a230213795bb4efe7d48bf0ace19366d47cc))
+* **npm:** Correcting changed generated spi name ([59af161](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/59af16111038074968b06605c32be130b6f5ce6a))
 
 ## [2.2.2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.1...v2.2.2) (2026-04-22)
 

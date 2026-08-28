@@ -52,7 +52,7 @@ Constants are in `net.cst.keycloak.audit.model.Constants` enum.
 - Called from `LoginEventListenerProviderFactory.postInit()` for all existing realms at startup
 - Called from `LoginEventListenerProvider.onEvent()` for new per-client attributes on first login
 - Creates an `"audit"` attribute group with header "Audit Information"
-- Attributes are: view=`["admin"]`, edit=`[]` (read-only, admin-visible only)
+- Attributes are: view=`["admin"]`, edit=`[]` (read-only, admin-visible only); set `KC_AUD_ALLOW_ADMIN_EDIT=true` to make edit=`["admin"]` so admin-side user updates carrying `aud_usr_last-login*` don't fail with `error-user-attribute-read-only`. `ensureAttribute()` reconciles the edit permission of already-registered attributes on re-registration.
 - Both `registerForRealm()` and `registerClientLoginAttribute()` are **idempotent**
 - Must set `session.getContext().setRealm(realm)` before calling `UserProfileProvider` in background tasks
 

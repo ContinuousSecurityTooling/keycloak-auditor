@@ -1,12 +1,15 @@
 package net.cst.keycloak.userprofile;
 
 import lombok.extern.slf4j.Slf4j;
+import net.cst.keycloak.audit.model.ConfigConstants;
+import net.cst.keycloak.utils.ConfigHelper;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.representations.userprofile.config.UPAttribute;
 import org.keycloak.representations.userprofile.config.UPAttributePermissions;
 import org.keycloak.representations.userprofile.config.UPConfig;
 import org.keycloak.representations.userprofile.config.UPGroup;
+import org.keycloak.userprofile.UserProfileConstants;
 import org.keycloak.userprofile.UserProfileProvider;
 
 import java.util.HashSet;
@@ -23,6 +26,7 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 public class AuditUserProfileRegistrar {
 
     static final String AUDIT_GROUP_NAME = "audit";
+    static final String ADMIN_ROLE = UserProfileConstants.ROLE_ADMIN;
     static final String GLOBAL_ATTR_NAME = USER_EVENT_PREFIX.value() + "_" + LAST_LOGIN_INFIX.value();
 
     private AuditUserProfileRegistrar() {
@@ -80,9 +84,14 @@ public class AuditUserProfileRegistrar {
     }
 
     private static boolean ensureAttribute(UPConfig config, String name, String displayName) {
-        if (config.getAttributes() != null
-                && config.getAttributes().stream().anyMatch(a -> name.equals(a.getName()))) {
-            return false;
+        if (config.getAttributes() != null) {
+            UPAttribute existing = config.getAttributes().stream()
+                    .filter(a -> name.equals(a.getName()))
+                    .findFirst()
+                    .orElse(null);
+            if (existing != null) {
+                return reconcileEditPermission(existing);
+            }
         }
 
         UPAttribute attribute = new UPAttribute();
@@ -91,8 +100,8 @@ public class AuditUserProfileRegistrar {
         attribute.setGroup(AUDIT_GROUP_NAME);
 
         UPAttributePermissions permissions = new UPAttributePermissions();
-        permissions.setView(new HashSet<>(Set.of("admin")));
-        permissions.setEdit(new HashSet<>());
+        permissions.setView(new HashSet<>(Set.of(ADMIN_ROLE)));
+        permissions.setEdit(desiredEditPermission());
         attribute.setPermissions(permissions);
 
         if (config.getAttributes() == null) {
@@ -100,5 +109,38 @@ public class AuditUserProfileRegistrar {
         }
         config.getAttributes().add(attribute);
         return true;
+    }
+
+    /**
+     * Aligns the edit permission of an already-registered attribute with the current
+     * {@code KC_AUD_ALLOW_ADMIN_EDIT} setting. Returns {@code true} if the config was changed.
+     */
+    private static boolean reconcileEditPermission(UPAttribute attribute) {
+        UPAttributePermissions permissions = attribute.getPermissions();
+        if (permissions == null) {
+            permissions = new UPAttributePermissions();
+            permissions.setView(new HashSet<>(Set.of(ADMIN_ROLE)));
+            attribute.setPermissions(permissions);
+        }
+
+        Set<String> desired = desiredEditPermission();
+        Set<String> current = permissions.getEdit() == null ? new HashSet<>() : permissions.getEdit();
+        if (current.equals(desired)) {
+            return false;
+        }
+        permissions.setEdit(desired);
+        return true;
+    }
+
+    /**
+     * Empty by default (attribute stays read-only). When {@code KC_AUD_ALLOW_ADMIN_EDIT=true},
+     * admins are granted edit rights so admin-side user updates that carry these attributes
+     * are not rejected with {@code error-user-attribute-read-only}.
+     */
+    private static Set<String> desiredEditPermission() {
+        if (ConfigHelper.getConfigToggle(ConfigConstants.ALLOW_ADMIN_EDIT)) {
+            return new HashSet<>(Set.of(ADMIN_ROLE));
+        }
+        return new HashSet<>();
     }
 }

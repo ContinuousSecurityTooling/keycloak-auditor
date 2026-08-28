@@ -112,6 +112,8 @@ The Keycloak server will now be available on <http://localhost:8080>. You can lo
 * `KC_AUD_DISABLE_ROLE_CHECK` - To disable realm access check set value to `true`. Defaults to `false`
 * `KC_AUD_DEFAULT_ROLE` - Set the role the client needs to have. Defaults to `admin`
 * `KC_AUD_GLOBAL_MASTER_ACCESS` - Enable client in master account to iterate to over realms, Default o `false`.
+* `KC_AUD_DEFAULT_TIMEZONE` - Timezone used when formatting timestamps. Defaults to `UTC`.
+* `KC_AUD_ALLOW_ADMIN_EDIT` - Grant the `admin` role edit rights on the audit last-login user-profile attributes. Set to `true` if admin-side user updates (admin console, provisioning, `keycloak-config-cli`, federation sync) fail with `error-user-attribute-read-only` because they carry the `aud_usr_last-login*` attributes. Defaults to `false` (attributes are read-only). The change is applied to existing realms on the next startup.
 
 You can also the NPM package `@continuoussecuritytooling/keycloak-auditor` to directly use the rest endpoint:
 

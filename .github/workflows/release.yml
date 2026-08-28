@@ -129,6 +129,8 @@ jobs:
           cp target/dependency-bom.xml keycloak-auditor-dependency-bom.xml
           cp target/dependency-bom.json keycloak-auditor-dependency-bom.json
           cp spi/target/keycloak-auditor-spi.jar keycloak-auditor-spi.jar
+          cp spi/target/openapi/openapi.yaml keycloak-auditor-openapi.yaml
+          cp spi/target/openapi/openapi.json keycloak-auditor-openapi.json
 
       - name: Create GH release
         uses: softprops/action-gh-release@v3
@@ -143,3 +145,5 @@ jobs:
             keycloak-auditor-dependency-bom.xml
             keycloak-auditor-dependency-bom.json
             keycloak-auditor-spi.jar
+            keycloak-auditor-openapi.yaml
+            keycloak-auditor-openapi.json

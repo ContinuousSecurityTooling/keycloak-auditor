@@ -101,6 +101,7 @@
         <animal-sniffer-maven-plugin.version>1.16</animal-sniffer-maven-plugin.version>
         <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
         <maven-build-helper-plugin.version>1.9.1</maven-build-helper-plugin.version>
+        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <maven-bundle-plugin.version>2.5.3</maven-bundle-plugin.version>
         <maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
         <maven-processor-plugin.version>2.2.4</maven-processor-plugin.version>
@@ -108,6 +109,8 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <plugin.gitflow-maven.version>1.21.0</plugin.gitflow-maven.version>
         <typescript-generator-maven-plugin.version>4.1.1</typescript-generator-maven-plugin.version>
+        <smallrye-open-api-maven-plugin.version>4.3.5</smallrye-open-api-maven-plugin.version>
+        <microprofile-openapi-api.version>4.1.1</microprofile-openapi-api.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
 

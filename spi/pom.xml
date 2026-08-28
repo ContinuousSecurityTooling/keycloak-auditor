@@ -92,6 +92,13 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
     </dependency>
+    <!-- OpenAPI documentation annotations; not bundled in the fat-jar (build-time only) -->
+    <dependency>
+      <groupId>org.eclipse.microprofile.openapi</groupId>
+      <artifactId>microprofile-openapi-api</artifactId>
+      <version>${microprofile-openapi-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- logging dependencies -->
     <dependency>
@@ -198,6 +205,41 @@
           </jackson2Configuration>
         </configuration>
       </plugin>
+      <!-- Generates an OpenAPI 3.1 document from the JAX-RS annotations on AuditEndpoint -->
+      <plugin>
+        <groupId>io.smallrye</groupId>
+        <artifactId>smallrye-open-api-maven-plugin</artifactId>
+        <version>${smallrye-open-api-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>generate-openapi</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>generate-schema</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirectory>${project.build.directory}/openapi</outputDirectory>
+          <schemaFilename>openapi</schemaFilename>
+          <outputFileTypeFilter>ALL</outputFileTypeFilter>
+          <!-- Index provided deps (keycloak-core) so inherited UserRepresentation /
+               ClientRepresentation fields are resolved into the schemas... -->
+          <includeDependenciesScopes>compile,provided</includeDependenciesScopes>
+          <!-- ...but never treat Keycloak's own classes as scannable REST resources -->
+          <scanExcludePackages>org.keycloak.services,org.keycloak.protocol,org.keycloak.admin</scanExcludePackages>
+          <infoTitle>Keycloak Auditor REST API</infoTitle>
+          <infoVersion>${project.version}</infoVersion>
+          <infoDescription>Query last-login audit data for users and clients recorded by the
+            keycloak-auditor SPI. Served under /realms/{realm}/auditing/.</infoDescription>
+          <infoLicenseName>MIT</infoLicenseName>
+          <!-- AuditEndpoint is a Keycloak RealmResourceProvider sub-resource and carries no
+               class-level @Path; map it here so the scanner knows the base path. -->
+          <scanResourceClasses>
+            <net.cst.keycloak.resources.AuditEndpoint>/auditing</net.cst.keycloak.resources.AuditEndpoint>
+          </scanResourceClasses>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.5.0</version>
@@ -216,6 +258,70 @@
                   <filtering>true</filtering>
                 </resource>
               </resources>
+            </configuration>
+          </execution>
+          <!-- Publish the generated OpenAPI document next to the generated TS types -->
+          <execution>
+            <id>copy-openapi-to-sdk</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/../sdk</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/openapi</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!-- Bundle the OpenAPI document into the jar under META-INF/ -->
+          <execution>
+            <id>copy-openapi-to-jar</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/openapi</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Attach the generated OpenAPI document as secondary artifacts (classifier "openapi")
+           so it is GPG-signed and deployed to Maven Central / GitHub Packages next to the jar -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-openapi</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/openapi/openapi.yaml</file>
+                  <type>yaml</type>
+                  <classifier>openapi</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/openapi/openapi.json</file>
+                  <type>json</type>
+                  <classifier>openapi</classifier>
+                </artifact>
+              </artifacts>
             </configuration>
           </execution>
         </executions>

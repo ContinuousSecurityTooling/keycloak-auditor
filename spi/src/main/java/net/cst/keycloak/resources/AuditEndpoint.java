@@ -13,6 +13,18 @@ import net.cst.keycloak.audit.model.AuditedClientRepresentation;
 import net.cst.keycloak.audit.model.AuditedUserRepresentation;
 import net.cst.keycloak.audit.model.ConfigConstants;
 import net.cst.keycloak.utils.ConfigHelper;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.servers.Server;
+import org.eclipse.microprofile.openapi.annotations.servers.ServerVariable;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.keycloak.authorization.util.Tokens;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
@@ -31,6 +43,17 @@ import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
 import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
 
 @Slf4j
+@Tag(name = "Auditing", description = "Query last-login audit data for users and clients")
+@Server(url = "{keycloakBaseUrl}/realms/{realm}", variables = {
+        @ServerVariable(name = "keycloakBaseUrl", defaultValue = "http://localhost:8080",
+                description = "Base URL of the Keycloak server"),
+        @ServerVariable(name = "realm", defaultValue = "master",
+                description = "Realm whose auditing resource is being called")
+})
+@SecurityScheme(securitySchemeName = "bearerAuth", type = SecuritySchemeType.HTTP,
+        scheme = "bearer", bearerFormat = "JWT",
+        description = "Keycloak admin access token. Unless KC_AUD_DISABLE_ROLE_CHECK=true, the token must carry "
+                + "the realm role configured via KC_AUD_DEFAULT_ROLE (default: view-users).")
 public class AuditEndpoint {
 
     private final boolean disableExternalAccess;
@@ -102,8 +125,23 @@ public class AuditEndpoint {
     @Path("users")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(operationId = "listUsers", summary = "List audited users",
+            description = "Returns users with their global and per-client last-login timestamps. Non-master callers "
+                    + "only see their own realm unless KC_AUD_GLOBAL_MASTER_ACCESS=true; master-realm tokens are "
+                    + "auto-scoped to all realms.")
+    @SecurityRequirement(name = "bearerAuth")
+    @APIResponse(responseCode = "200", description = "Audited users",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = SchemaType.ARRAY, implementation = AuditedUserRepresentation.class)))
+    @APIResponse(responseCode = "401", description = "Missing or invalid bearer token")
+    @APIResponse(responseCode = "403", description = "Token lacks the required realm role, or external access is disabled")
     public List<AuditedUserRepresentation> listUsers(@Context HttpHeaders headers,
+                                                     @Parameter(description = "Use `current-realm` to force "
+                                                             + "single-realm results even for master tokens. Omit or "
+                                                             + "use `all-realms` for the default behaviour.")
                                                      @QueryParam("scope") String scope,
+                                                     @Parameter(description = "When the caller has all-realm access, "
+                                                             + "restrict results to this realm only.")
                                                      @QueryParam("realm") String realmFilter) {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
@@ -141,8 +179,20 @@ public class AuditEndpoint {
     @Path("clients")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(operationId = "listClients", summary = "List audited clients",
+            description = "Returns clients with their last-login timestamp. Scoping rules match `listUsers`.")
+    @SecurityRequirement(name = "bearerAuth")
+    @APIResponse(responseCode = "200", description = "Audited clients",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = SchemaType.ARRAY, implementation = AuditedClientRepresentation.class)))
+    @APIResponse(responseCode = "401", description = "Missing or invalid bearer token")
+    @APIResponse(responseCode = "403", description = "Token lacks the required realm role, or external access is disabled")
     public List<AuditedClientRepresentation> listClients(@Context HttpHeaders headers,
+                                                         @Parameter(description = "Use `current-realm` to force "
+                                                                 + "single-realm results even for master tokens.")
                                                          @QueryParam("scope") String scope,
+                                                         @Parameter(description = "When the caller has all-realm "
+                                                                 + "access, restrict results to this realm only.")
                                                          @QueryParam("realm") String realmFilter) {
         this.checkAccessRights(headers);
         String realmName = auth.getIssuer().substring(auth.getIssuer().lastIndexOf('/') + 1);
@@ -181,8 +231,17 @@ public class AuditEndpoint {
     @Path("users/csv")
     @GET
     @Produces("text/csv")
+    @Operation(operationId = "downloadUsersCsv", summary = "Download audited users as CSV",
+            description = "Same data as `listUsers`, returned as a CSV attachment.")
+    @SecurityRequirement(name = "bearerAuth")
+    @APIResponse(responseCode = "200", description = "CSV report (Content-Disposition: attachment)",
+            content = @Content(mediaType = "text/csv", schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    @APIResponse(responseCode = "401", description = "Missing or invalid bearer token")
+    @APIResponse(responseCode = "403", description = "Token lacks the required realm role, or external access is disabled")
     public Response downloadUsersCsv(@Context HttpHeaders headers,
+                                     @Parameter(description = "Use `current-realm` to force single-realm results.")
                                      @QueryParam("scope") String scope,
+                                     @Parameter(description = "Restrict results to this realm only.")
                                      @QueryParam("realm") String realmFilter) {
         List<AuditedUserRepresentation> users = listUsers(headers, scope, realmFilter);
         StringBuilder csv = new StringBuilder("username,email,firstName,lastName,realm,lastLogin\n");
@@ -202,8 +261,17 @@ public class AuditEndpoint {
     @Path("clients/csv")
     @GET
     @Produces("text/csv")
+    @Operation(operationId = "downloadClientsCsv", summary = "Download audited clients as CSV",
+            description = "Same data as `listClients`, returned as a CSV attachment.")
+    @SecurityRequirement(name = "bearerAuth")
+    @APIResponse(responseCode = "200", description = "CSV report (Content-Disposition: attachment)",
+            content = @Content(mediaType = "text/csv", schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    @APIResponse(responseCode = "401", description = "Missing or invalid bearer token")
+    @APIResponse(responseCode = "403", description = "Token lacks the required realm role, or external access is disabled")
     public Response downloadClientsCsv(@Context HttpHeaders headers,
+                                       @Parameter(description = "Use `current-realm` to force single-realm results.")
                                        @QueryParam("scope") String scope,
+                                       @Parameter(description = "Restrict results to this realm only.")
                                        @QueryParam("realm") String realmFilter) {
         List<AuditedClientRepresentation> clients = listClients(headers, scope, realmFilter);
         StringBuilder csv = new StringBuilder("clientId,name,realm,lastLogin\n");
@@ -221,6 +289,11 @@ public class AuditEndpoint {
     @Path("download")
     @GET
     @Produces(MediaType.TEXT_HTML)
+    @Operation(operationId = "downloadPage", summary = "Audit reporting download page",
+            description = "Self-contained HTML page with buttons that call the JSON/CSV endpoints. Served without "
+                    + "authentication; the page itself prompts for a bearer token.")
+    @APIResponse(responseCode = "200", description = "HTML page",
+            content = @Content(mediaType = MediaType.TEXT_HTML, schema = @Schema(type = SchemaType.STRING)))
     public Response downloadPage() {
         RealmModel currentRealm = keycloakSession.getContext().getRealm();
         String currentRealmName = currentRealm != null ? currentRealm.getName() : "unknown";

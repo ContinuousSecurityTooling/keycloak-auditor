@@ -60,6 +60,22 @@ Constants are in `net.cst.keycloak.audit.model.Constants` enum.
 
 Base path: `/realms/{realm}/auditing/`
 
+### OpenAPI spec
+
+`AuditEndpoint` methods carry MicroProfile OpenAPI annotations (`@Operation`, `@APIResponse`,
+`@Parameter`, plus class-level `@Tag` / `@Server` / `@SecurityScheme`). The
+`smallrye-open-api-maven-plugin` runs at `process-classes` and writes
+`spi/target/openapi/openapi.{yaml,json}`, which are then copied to `sdk/openapi.{yaml,json}`
+(git-ignored) and bundled into the JAR under `META-INF/`. The class has **no class-level
+`@Path`** (it's a Keycloak sub-resource); the scanner base path comes from the plugin's
+`<scanResourceClasses>` mapping. `microprofile-openapi-api` is `provided` scope only — not
+shipped in the fat-jar.
+
+On release the spec is also shipped two ways: `build-helper-maven-plugin` attaches it as
+secondary Maven artifacts (`...-openapi.yaml` / `...-openapi.json`, classifier `openapi`) that
+are GPG-signed and deployed to Maven Central / GitHub Packages alongside the jar, and
+`release.yml` uploads `keycloak-auditor-openapi.{yaml,json}` to the GitHub release.
+
 | Method | Path | Auth required | Description |
 |--------|------|--------------|-------------|
 | GET | `users` | Bearer | JSON list of users with last-login |
@@ -130,3 +146,4 @@ mvn test -Dtest=SomeTest  # single test class
 
 Final JAR: `spi/target/keycloak-auditor-spi.jar` (fat-jar with dependencies via assembly plugin).
 TypeScript types are generated from model classes into `sdk/src/spi.ts` during `process-classes`.
+The OpenAPI document is generated in the same phase into `spi/target/openapi/` and copied to `sdk/openapi.{yaml,json}`.

@@ -55,3 +55,7 @@ dist/
 etc/
 sdk/src/spi.ts
 sdk/src/keycloak-auditor-spi.ts
+
+# generated OpenAPI document (built by spi/ smallrye-open-api-maven-plugin)
+sdk/openapi.yaml
+sdk/openapi.json

@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>ContinuousSecurityTooling/renovate-config"
+    "github>m13tLabs/renovate-config#v0.2.0"
   ],
   "packageRules": [
     {

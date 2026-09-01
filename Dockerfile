@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:26.7.2
+FROM quay.io/keycloak/keycloak:26.7.3
 COPY spi/target/keycloak-auditor-spi.jar /opt/keycloak/providers/
 
 # Enable health and metrics support

@@ -54,7 +54,7 @@ jobs:
         with:
           distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
           java-package: "jdk"
-          java-version: "21"
+          java-version: "20.0.2+9"
           check-latest: true
           cache: "maven"
 

@@ -98,11 +98,20 @@ The `/download` page shows a per-realm table: master realm gets an "All Realms" 
 
 ## Admin console integration
 
-**There is no admin sidebar entry.** `UiPageProviderFactory` requires a corresponding JavaScript/React extension bundle to render a usable page; without it KC shows a broken "Create item" generic UI. The `AdminUiPage` class and its service registration have been removed.
+**There is no admin sidebar entry.** `UiPageProviderFactory` was tried (again) and removed
+(again): it only renders a generic list/detail CRUD form (an "Add item" page with plain
+text/boolean/list fields) — there's no field type that renders as a clickable link, and the page
+can't be positioned inside an existing admin console page (e.g. as a Realm Settings tab); it's
+always its own standalone top-level nav item. It cannot deliver an actual link no matter how it's
+configured.
 
 **Access audit reports** directly via: `<keycloak-url>/realms/{realm}/auditing/download`
 
-Do not re-introduce `UiPageProviderFactory` registration unless a full Vite+React extension bundle is also built and packaged with the JAR.
+The only way to get a real clickable link inside the admin console would be forking/rebuilding
+parts of Keycloak's own compiled admin-console frontend, or DOM-injecting a link via a custom
+admin theme override script — both out of scope unless explicitly requested, since the latter is
+fragile across Keycloak upgrades. Do not re-introduce `UiPageProviderFactory` for this purpose —
+it has been tried twice and doesn't solve the problem.
 
 ## Test patterns
 

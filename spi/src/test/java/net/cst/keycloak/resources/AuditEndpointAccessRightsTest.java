@@ -12,11 +12,16 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.keycloak.authorization.util.Tokens;
 import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.RoleModel;
+import org.keycloak.models.UserModel;
 import org.keycloak.representations.AccessToken;
+import org.keycloak.services.managers.AuthenticationManager;
 import org.mockito.MockedStatic;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -112,6 +117,119 @@ class AuditEndpointAccessRightsTest {
             };
 
             assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers, null, null));
+        }
+    }
+
+    @Test
+    void shouldAuthenticateViaSessionCookieWhenBearerMissingAndRoleGranted() {
+        HttpHeaders headers = headersWith("X-Audit-Use-Session", "1");
+        when(headers.getRequestHeader("x-forwarded-host")).thenReturn(List.of());
+
+        RealmModel realm = mock(RealmModel.class);
+        when(realm.getName()).thenReturn("master");
+        RoleModel role = mock(RoleModel.class);
+        String roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
+        when(realm.getRole(roleName)).thenReturn(role);
+
+        UserModel user = mock(UserModel.class);
+        when(user.hasRole(role)).thenReturn(true);
+
+        KeycloakContext context = mock(KeycloakContext.class);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(context.getRealm()).thenReturn(realm);
+        KeycloakSession session = mock(KeycloakSession.class);
+        when(session.getContext()).thenReturn(context);
+
+        org.keycloak.models.RealmProvider realmProvider = mock(org.keycloak.models.RealmProvider.class);
+        when(realmProvider.getRealmByName("master")).thenReturn(realm);
+        when(session.realms()).thenReturn(realmProvider);
+
+        org.keycloak.models.UserProvider userProvider = mock(org.keycloak.models.UserProvider.class);
+        when(userProvider.searchForUserStream(eq(realm), anyMap())).thenReturn(java.util.stream.Stream.empty());
+        when(session.users()).thenReturn(userProvider);
+
+        AccessToken cookieToken = new AccessToken();
+        cookieToken.issuer("http://localhost/realms/master");
+        AuthenticationManager.AuthResult authResult =
+                new AuthenticationManager.AuthResult(user, null, cookieToken, null);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class);
+             MockedStatic<AuthenticationManager> authManagerMock = mockStatic(AuthenticationManager.class)) {
+            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(null);
+            authManagerMock.when(() -> AuthenticationManager.authenticateIdentityCookie(session, realm, true))
+                    .thenReturn(authResult);
+
+            AuditEndpoint endpoint = new AuditEndpoint(session) {
+                @Override
+                public void authenticate() {
+                    // no-op for unit tests
+                }
+            };
+
+            assertDoesNotThrow(() -> endpoint.listUsers(headers, null, null));
+        }
+    }
+
+    @Test
+    void shouldRejectSessionCookieUserWithoutRequiredRole() {
+        HttpHeaders headers = headersWith("X-Audit-Use-Session", "1");
+        when(headers.getRequestHeader("x-forwarded-host")).thenReturn(List.of());
+
+        RealmModel realm = mock(RealmModel.class);
+        when(realm.getName()).thenReturn("master");
+        RoleModel role = mock(RoleModel.class);
+        String roleName = ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE);
+        when(realm.getRole(roleName)).thenReturn(role);
+
+        UserModel user = mock(UserModel.class);
+        when(user.hasRole(role)).thenReturn(false);
+
+        KeycloakContext context = mock(KeycloakContext.class);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(context.getRealm()).thenReturn(realm);
+        KeycloakSession session = mock(KeycloakSession.class);
+        when(session.getContext()).thenReturn(context);
+
+        AccessToken cookieToken = new AccessToken();
+        cookieToken.issuer("http://localhost/realms/master");
+        AuthenticationManager.AuthResult authResult =
+                new AuthenticationManager.AuthResult(user, null, cookieToken, null);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class);
+             MockedStatic<AuthenticationManager> authManagerMock = mockStatic(AuthenticationManager.class)) {
+            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(null);
+            authManagerMock.when(() -> AuthenticationManager.authenticateIdentityCookie(session, realm, true))
+                    .thenReturn(authResult);
+
+            AuditEndpoint endpoint = new AuditEndpoint(session) {
+                @Override
+                public void authenticate() {
+                    // no-op for unit tests
+                }
+            };
+
+            assertThrows(ForbiddenException.class, () -> endpoint.listUsers(headers, null, null));
+        }
+    }
+
+    @Test
+    void shouldNotAttemptSessionCookieFallbackWithoutOptInHeader() {
+        HttpHeaders headers = headersWithout("x-forwarded-host");
+        KeycloakSession session = sessionWithContextHeaders(headers);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class);
+             MockedStatic<AuthenticationManager> authManagerMock = mockStatic(AuthenticationManager.class)) {
+            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(null);
+
+            AuditEndpoint endpoint = new AuditEndpoint(session) {
+                @Override
+                public void authenticate() {
+                    // no-op for unit tests
+                }
+            };
+
+            assertThrows(NotAuthorizedException.class, () -> endpoint.listUsers(headers, null, null));
+            authManagerMock.verifyNoInteractions();
         }
     }
 }

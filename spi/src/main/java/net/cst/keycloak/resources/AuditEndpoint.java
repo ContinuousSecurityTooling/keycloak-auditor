@@ -29,10 +29,12 @@ import org.keycloak.authorization.util.Tokens;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.services.managers.AppAuthManager;
+import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.managers.RealmManager;
 
 import java.util.ArrayList;
@@ -56,6 +58,14 @@ import static net.cst.keycloak.audit.model.Constants.USER_EVENT_PREFIX;
                 + "the realm role configured via KC_AUD_DEFAULT_ROLE (default: view-users).")
 public class AuditEndpoint {
 
+    /**
+     * Sent by the download page's own JS to opt in to falling back to the caller's existing
+     * Keycloak SSO session cookie when no Bearer token is supplied. Only same-origin requests
+     * can set a custom header without tripping CORS, so this also keeps the fallback from being
+     * triggered by simple cross-site requests (forms, images, top-level navigation).
+     */
+    private static final String SESSION_AUTH_HEADER = "X-Audit-Use-Session";
+
     private final boolean disableExternalAccess;
 
     private final boolean disableRoleCheck;
@@ -69,7 +79,7 @@ public class AuditEndpoint {
      */
     @Getter(AccessLevel.PROTECTED)
     private final KeycloakSession keycloakSession;
-    private final AccessToken auth;
+    private AccessToken auth;
 
     public AuditEndpoint(KeycloakSession keycloakSession) {
         this.keycloakSession = keycloakSession;
@@ -341,11 +351,11 @@ public class AuditEndpoint {
                   <h2>Authentication</h2>
                   <div class="field-row">
                     <label for="token">Bearer Token</label>
-                    <input type="password" id="token" placeholder="Paste your Admin Bearer token here" />
-                    <button onclick="autoDetect()">Auto-detect</button>
+                    <input type="password" id="token" placeholder="Optional if you're already logged into this admin console" />
                   </div>
                   <p class="hint">
-                    Obtain your token via:
+                    If you're logged into the Keycloak admin console in this browser, downloads below will use that
+                    session automatically — no token needed. Otherwise, paste an Admin Bearer token, obtained via:
                     <code>curl -s -d 'client_id=admin-cli&amp;username=admin&amp;password=&lt;pw&gt;&amp;grant_type=password'
                     .../realms/master/protocol/openid-connect/token | jq -r .access_token</code>
                   </p>
@@ -370,42 +380,50 @@ public class AuditEndpoint {
 
                   <script>
                     const base = window.location.href.replace(/\\/download$/, '');
+                    const SESSION_HEADER = 'X-Audit-Use-Session';
 
-                    function autoDetect() {
-                      let found = null;
-                      for (const key of Object.keys(sessionStorage)) {
-                        const val = sessionStorage.getItem(key);
-                        if (val && val.split('.').length === 3 && val.length > 100) {
-                          found = val; break;
-                        }
-                      }
-                      if (!found && window.keycloak) found = window.keycloak.token;
-                      if (found) {
-                        document.getElementById('token').value = found;
-                        document.getElementById('status').textContent = 'Token detected.';
-                      } else {
-                        document.getElementById('status').textContent = 'Could not auto-detect token \u2014 please paste it manually.';
-                      }
+                    function authHeaders(accept) {
+                      const token = document.getElementById('token').value.trim();
+                      const headers = { Accept: accept, [SESSION_HEADER]: '1' };
+                      if (token) headers.Authorization = 'Bearer ' + token;
+                      return headers;
                     }
 
+                    async function checkSession() {
+                      try {
+                        const resp = await fetch(`${base}/users?scope=current-realm`, { headers: authHeaders('application/json') });
+                        const status = document.getElementById('status');
+                        if (resp.ok) {
+                          status.style.color = '#080';
+                          status.textContent = 'Using your current Keycloak admin session \u2014 no token needed.';
+                        }
+                      } catch (e) { /* ignore; user can still paste a token */ }
+                    }
+                    checkSession();
+
                     async function dl(type, fmt, filename, realm) {
-                      const token = document.getElementById('token').value.trim();
-                      if (!token) { document.getElementById('status').textContent = 'Please provide a Bearer token.'; return; }
                       const path = fmt === 'csv' ? `${base}/${type}/csv` : `${base}/${type}`;
                       const params = new URLSearchParams();
                       if (realm === 'all') params.set('scope', 'all-realms');
                       else params.set('realm', realm);
                       const url = path + '?' + params.toString();
                       const accept = fmt === 'csv' ? 'text/csv' : 'application/json';
-                      document.getElementById('status').textContent = 'Downloading\u2026';
+                      const status = document.getElementById('status');
+                      status.style.color = '#c00';
+                      status.textContent = 'Downloading\u2026';
                       try {
-                        const resp = await fetch(url, { headers: { Authorization: 'Bearer ' + token, Accept: accept } });
-                        if (!resp.ok) { document.getElementById('status').textContent = 'Error ' + resp.status + ': ' + await resp.text(); return; }
+                        const resp = await fetch(url, { headers: authHeaders(accept) });
+                        if (!resp.ok) {
+                          status.textContent = resp.status === 401
+                            ? 'Not signed in \u2014 please paste a Bearer token above or log into the admin console in this browser.'
+                            : 'Error ' + resp.status + ': ' + await resp.text();
+                          return;
+                        }
                         const blob = await resp.blob();
                         const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
                         a.click(); URL.revokeObjectURL(a.href);
-                        document.getElementById('status').textContent = '';
-                      } catch (e) { document.getElementById('status').textContent = 'Download failed: ' + e; }
+                        status.textContent = '';
+                      } catch (e) { status.textContent = 'Download failed: ' + e; }
                     }
                   </script>
                 </body>
@@ -444,6 +462,15 @@ public class AuditEndpoint {
     protected void checkAccessRights(HttpHeaders headers) {
         this.authenticate();
 
+        UserModel sessionCookieUser = null;
+        if (this.auth == null) {
+            AuthenticationManager.AuthResult sessionAuth = authenticateViaSessionCookie(headers);
+            if (sessionAuth != null) {
+                this.auth = sessionAuth.getToken();
+                sessionCookieUser = sessionAuth.getUser();
+            }
+        }
+
         if (disableExternalAccess && !headers.getRequestHeader("x-forwarded-host").isEmpty()) {
             log.error("No external access allowed");
             throw new ForbiddenException();
@@ -452,12 +479,42 @@ public class AuditEndpoint {
         if (this.auth == null) {
             log.error("Empty authentication details");
             throw new NotAuthorizedException("Bearer");
-        } else if (!disableRoleCheck && (
-                this.auth.getRealmAccess() == null || !this.auth.getRealmAccess().isUserInRole(roleName)
-        )) {
+        } else if (!disableRoleCheck && !hasRequiredRole(sessionCookieUser)) {
             log.error("No access to realm with auth {}", this.auth);
             throw new ForbiddenException("Don't have realm access");
         }
         log.debug("Got user with id {}", this.auth.getId());
+    }
+
+    /**
+     * Falls back to the caller's existing Keycloak SSO session (the KEYCLOAK_IDENTITY cookie set
+     * when they're already logged into the admin console in this browser) so the download page
+     * doesn't require pasting a Bearer token by hand. Only attempted when the request opts in via
+     * {@link #SESSION_AUTH_HEADER}; the identity cookie itself carries no realm roles, so the role
+     * check for this path is done separately against the resolved user in {@link #hasRequiredRole}.
+     */
+    private AuthenticationManager.AuthResult authenticateViaSessionCookie(HttpHeaders headers) {
+        List<String> marker = headers.getRequestHeader(SESSION_AUTH_HEADER);
+        if (marker == null || marker.isEmpty()) {
+            return null;
+        }
+        RealmModel realm = keycloakSession.getContext().getRealm();
+        if (realm == null) {
+            return null;
+        }
+        AuthenticationManager.AuthResult result = AuthenticationManager.authenticateIdentityCookie(keycloakSession, realm, true);
+        if (result != null) {
+            log.debug("Authenticated via existing Keycloak session cookie for user {}", result.getUser().getId());
+        }
+        return result;
+    }
+
+    private boolean hasRequiredRole(UserModel sessionCookieUser) {
+        if (sessionCookieUser != null) {
+            RealmModel realm = keycloakSession.getContext().getRealm();
+            RoleModel role = realm != null ? realm.getRole(roleName) : null;
+            return role != null && sessionCookieUser.hasRole(role);
+        }
+        return this.auth.getRealmAccess() != null && this.auth.getRealmAccess().isUserInRole(roleName);
     }
 }

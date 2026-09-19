@@ -338,7 +338,7 @@
           </execution>
         </executions>
         <configuration>
-          <finalName>keycloak-auditor-${project.artifactId}</finalName>
+          <finalName>${project.build.finalName}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>

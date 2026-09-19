@@ -68,9 +68,61 @@ class AuditEndpointDownloadTest extends EndpointTest {
         }
     }
 
+    @Test
+    void downloadPageShouldHandleMissingRealmGracefully() {
+        KeycloakContext context = mock(KeycloakContext.class);
+        when(context.getRealm()).thenReturn(null);
+        when(session.getContext()).thenReturn(context);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
+            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(null);
+
+            AuditEndpoint endpoint = new AuditEndpoint(session) {
+                @Override
+                public void authenticate() { /* no-op */ }
+            };
+
+            Response response = endpoint.downloadPage();
+
+            assertEquals(200, response.getStatus());
+            String html = (String) response.getEntity();
+            assertTrue(html.contains("unknown"), "Missing realm should fall back to 'unknown'");
+            assertFalse(html.contains("All Realms"), "A realm-less request isn't the master realm");
+        }
+    }
+
     // -----------------------------------------------------------------------
     // CSV downloads
     // -----------------------------------------------------------------------
+
+    @Test
+    void downloadUsersCsvShouldEscapeValuesContainingSpecialCharacters() {
+        HttpHeaders headers = headersWithAuth();
+        RealmModel masterRealm = mock(RealmModel.class);
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        UserProvider userProvider = mock(UserProvider.class);
+
+        UserModel user = UserModelHelper.buildUser("1");
+        when(user.getUsername()).thenReturn("doe, john");
+        when(user.getEmail()).thenReturn("quote\"user@example.com");
+        when(user.getFirstName()).thenReturn("multi\nline");
+
+        when(userProvider.searchForUserStream(masterRealm, Map.of(UserModel.SEARCH, "*")))
+                .thenReturn(Stream.of(user));
+        when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
+        setupSessionContext(headers, masterRealm, realmProvider);
+        when(session.users()).thenReturn(userProvider);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
+            auditEndpoint = mockAccessTokenEndpoint(tokenMock);
+            Response response = auditEndpoint.downloadUsersCsv(headers, "current-realm", null);
+
+            String body = (String) response.getEntity();
+            assertTrue(body.contains("\"doe, john\""), "Comma-containing value should be quoted");
+            assertTrue(body.contains("\"quote\"\"user@example.com\""), "Quote character should be doubled and quoted");
+            assertTrue(body.contains("\"multi\nline\""), "Newline-containing value should be quoted");
+        }
+    }
 
     @Test
     void downloadUsersCsvShouldReturnCsvWithDispositionHeader() {

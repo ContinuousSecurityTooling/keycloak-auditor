@@ -25,7 +25,7 @@ async function startServer () {
   await downloadServer()
 
   console.info('Copying kc auditor extension to server …')
-  fs.createReadStream(path.resolve(DIR_NAME, '../../spi/target/keycloak-auditor-keycloak-auditor-spi.jar'))
+  fs.createReadStream(path.resolve(DIR_NAME, '../../spi/target/keycloak-auditor-spi.jar'))
   .pipe(fs.createWriteStream(path.resolve(DIR_NAME, '../tmp/server/providers/keycloak-auditor-spi.jar')));
 
   console.info('Starting server …')

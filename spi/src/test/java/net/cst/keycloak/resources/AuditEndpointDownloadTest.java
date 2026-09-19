@@ -59,7 +59,8 @@ class AuditEndpointDownloadTest extends EndpointTest {
             assertTrue(html.contains("dl('clients'"), "Clients download JS call missing");
             assertTrue(html.contains("'csv'"), "CSV format missing");
             assertTrue(html.contains("'json'"), "JSON format missing");
-            assertTrue(html.contains("autoDetect"), "Auto-detect JS function missing");
+            assertTrue(html.contains("checkSession"), "Session auto-login JS function missing");
+            assertTrue(html.contains("X-Audit-Use-Session"), "Session auth opt-in header missing");
             assertTrue(html.contains("/csv"), "CSV path pattern missing in JS");
             assertTrue(html.contains("all-realms"), "all-realms scope missing");
             assertTrue(html.contains("testrealm"), "Per-realm row missing");

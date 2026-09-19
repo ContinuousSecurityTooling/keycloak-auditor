@@ -90,4 +90,10 @@ class LoginEventListenerProviderTest {
         assertEquals(1, client.getAttributes().size());
         assertNotNull(client.getAttributes().get("aud_cls_last-login"));
     }
+
+    @Test
+    void adminEventAndCloseShouldBeNoOps() {
+        assertDoesNotThrow(() -> provider.onEvent(mock(org.keycloak.events.admin.AdminEvent.class), true));
+        assertDoesNotThrow(() -> provider.close());
+    }
 }

@@ -1,5 +1,6 @@
 package net.cst.keycloak.utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -17,21 +18,42 @@ public class RuntimeHelper {
         try (InputStream is = RuntimeHelper.class
                 .getResourceAsStream(
                         "/META-INF/maven/" + MAVEN_PACKAGE + "/" + MAVEN_ARTIFACT + "/pom.properties")) {
-            if (is != null) {
-                Properties p = new Properties();
-                p.load(is);
-                String version = p.getProperty("version", "").trim();
-                if (!version.isEmpty()) {
-                    return version;
-                }
+            String version = parseVersion(is);
+            if (version != null) {
+                return version;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // Ignore
         }
 
         // Fallback to using Java API to get version from MANIFEST.MF
+        return fallbackVersion(RuntimeHelper.class.getPackage());
+    }
+
+    /**
+     * @return the trimmed {@code version} property from {@code is}, or {@code null} if it's
+     * absent, blank, or the stream can't be read as a properties file.
+     */
+    static String parseVersion(InputStream is) {
+        if (is == null) {
+            return null;
+        }
+        try {
+            Properties p = new Properties();
+            p.load(is);
+            String version = p.getProperty("version", "").trim();
+            return version.isEmpty() ? null : version;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return the trimmed implementation/specification version from {@code pkg}, or
+     * {@code "unknown"} if neither is present.
+     */
+    static String fallbackVersion(Package pkg) {
         String version = null;
-        Package pkg = RuntimeHelper.class.getPackage();
         if (pkg != null) {
             version = pkg.getImplementationVersion();
             if (version == null) {

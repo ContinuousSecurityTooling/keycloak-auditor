@@ -11,6 +11,9 @@ import org.keycloak.models.UserModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AuditEndpointTest extends EndpointTest {
 
@@ -42,4 +45,18 @@ class AuditEndpointTest extends EndpointTest {
         assertNotNull(user.getClientLogins());
         assertEquals(user.getId(), source.getId());
     }
+
+    @Test
+    void shouldConvertToAuditedUserRepresentationWithNullAttributes() {
+        UserModel source = mock(UserModel.class);
+        when(source.getId()).thenReturn("1");
+        when(source.getAttributes()).thenReturn(null);
+
+        AuditedUserRepresentation user = AuditEndpoint.toBriefRepresentation(source, "master");
+
+        assertNotNull(user);
+        assertNull(user.getLastLogin());
+        assertNull(user.getClientLogins());
+    }
+
 }

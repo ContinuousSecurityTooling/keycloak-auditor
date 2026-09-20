@@ -1,6 +1,20 @@
 
-## [2.4.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.3.0...v2.4.0) (2026-09-20)
+# [2.4.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.3.0...v2.4.0) (2026-09-20)
 
+
+### Bug Fixes
+
+* **deps:** update dependency org.keycloak:keycloak-parent to v26.7.4 ([283431e](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/283431e6c02413af5ff9ee7dd47a4850de05100e))
+* **deps:** update dependency org.projectlombok:lombok to v1.18.48 ([5b2306f](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/5b2306f9425fe4125c5c64b348b59ade09bf1398))
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.19 ([bac0316](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/bac0316e1ba4afed0278a18e8776cd1b3d4fead9))
+* **deps:** update keycloak releases to v26.7.3 ([295f811](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/295f811b02ecdf6ebeacaa541c0b5be81c6c501b))
+* **e2e:** update start-server.mjs to the corrected SPI jar filename ([c385864](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/c38586497890161d8d3739e2f7219b8ec5badc4a))
+
+
+### Features
+
+* **API:** Adding OpenAPI spec ([78ed698](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/78ed6986c1cb35e3b7282ee41b8cf00edc4c3185))
+* **Reporting:** Re-use existing admin token ([a571839](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a571839dd6b99fb948db06e4589743af8058ea31))
 
 # [2.3.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.2.9...v2.3.0) (2026-08-28)
 

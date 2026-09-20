@@ -39,6 +39,7 @@ import org.keycloak.services.managers.RealmManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import static net.cst.keycloak.audit.model.Constants.LAST_LOGIN_INFIX;
@@ -444,12 +445,25 @@ public class AuditEndpoint {
                 + "      </tr>\n";
     }
 
+    /**
+     * Characters that Excel/LibreOffice/Sheets treat as the start of a formula (or, for
+     * tab/CR, as a way to smuggle one past naive delimiter checks) when a cell begins with
+     * them. Left unescaped, a user-controlled field (e.g. firstName) containing a payload like
+     * {@code =HYPERLINK("http://evil/",A1)} would execute as a live formula the moment an
+     * admin opens the exported report — see OWASP's CSV Injection guidance.
+     */
+    private static final Set<Character> CSV_FORMULA_TRIGGERS = Set.of('=', '+', '-', '@', '\t', '\r');
+
     private String escapeCsv(String value) {
         if (value == null) return "";
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            return "\"" + value.replace("\"", "\"\"") + "\"";
+        String sanitized = value;
+        if (!sanitized.isEmpty() && CSV_FORMULA_TRIGGERS.contains(sanitized.charAt(0))) {
+            sanitized = "'" + sanitized;
         }
-        return value;
+        if (sanitized.contains(",") || sanitized.contains("\"") || sanitized.contains("\n")) {
+            return "\"" + sanitized.replace("\"", "\"\"") + "\"";
+        }
+        return sanitized;
     }
 
     private List<ClientModel> readClients(RealmModel realm) {

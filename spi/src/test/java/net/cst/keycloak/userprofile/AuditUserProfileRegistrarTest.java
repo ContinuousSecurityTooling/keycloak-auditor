@@ -99,6 +99,25 @@ class AuditUserProfileRegistrarTest {
     }
 
     @Test
+    void registerForRealmAddsAuditGroupAlongsideAnUnrelatedExistingGroup() {
+        // Regression guard for the config.getGroups() != null branch: a non-null group list
+        // that simply doesn't contain "audit" yet must still get the group added.
+        UPConfig config = freshConfig();
+        org.keycloak.representations.userprofile.config.UPGroup other =
+                new org.keycloak.representations.userprofile.config.UPGroup();
+        other.setName("some-other-group");
+        config.setGroups(new ArrayList<>(List.of(other)));
+
+        AuditUserProfileRegistrar.registerForRealm(session, realm);
+
+        assertEquals(2, config.getGroups().size(), "Existing group must be preserved");
+        assertTrue(config.getGroups().stream()
+                        .anyMatch(g -> AuditUserProfileRegistrar.AUDIT_GROUP_NAME.equals(g.getName())),
+                "Audit group must still be added");
+        assertTrue(config.getGroups().stream().anyMatch(g -> "some-other-group".equals(g.getName())));
+    }
+
+    @Test
     void globalAttributeBelongsToAuditGroup() {
         UPConfig config = freshConfig();
 

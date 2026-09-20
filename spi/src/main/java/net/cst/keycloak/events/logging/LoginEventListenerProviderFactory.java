@@ -57,8 +57,16 @@ public class LoginEventListenerProviderFactory implements EventListenerProviderF
                     .toList();
             for (String realmId : realmIds) {
                 RealmModel realm = session.realms().getRealm(realmId);
-                if (realm != null) {
+                if (realm == null) {
+                    continue;
+                }
+                try {
                     AuditUserProfileRegistrar.registerForRealm(session, realm);
+                } catch (RuntimeException e) {
+                    // One realm's user-profile config shouldn't block audit registration for
+                    // every other realm at startup - see issue #881 for the kind of startup
+                    // failure this class already had to be hardened against once before.
+                    log.error("Failed to register audit user profile attributes for realm '{}'", realmId, e);
                 }
             }
         });

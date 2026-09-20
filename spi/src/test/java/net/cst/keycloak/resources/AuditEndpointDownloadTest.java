@@ -125,6 +125,42 @@ class AuditEndpointDownloadTest extends EndpointTest {
     }
 
     @Test
+    void downloadUsersCsvShouldNeutralizeFormulaInjectionPayloads() {
+        // OWASP CSV Injection: a cell starting with =, +, -, @, tab or CR is interpreted as a
+        // live formula by Excel/LibreOffice the moment the report is opened.
+        HttpHeaders headers = headersWithAuth();
+        RealmModel masterRealm = mock(RealmModel.class);
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        UserProvider userProvider = mock(UserProvider.class);
+
+        UserModel user = UserModelHelper.buildUser("1");
+        when(user.getUsername()).thenReturn("=HYPERLINK(\"http://evil/\",\"click\")");
+        when(user.getFirstName()).thenReturn("+1234");
+        when(user.getLastName()).thenReturn("@SUM(1,1)");
+        when(user.getEmail()).thenReturn("-1+1");
+
+        when(userProvider.searchForUserStream(masterRealm, Map.of(UserModel.SEARCH, "*")))
+                .thenReturn(Stream.of(user));
+        when(realmProvider.getRealmByName("master")).thenReturn(masterRealm);
+        setupSessionContext(headers, masterRealm, realmProvider);
+        when(session.users()).thenReturn(userProvider);
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
+            auditEndpoint = mockAccessTokenEndpoint(tokenMock);
+            Response response = auditEndpoint.downloadUsersCsv(headers, "current-realm", null);
+
+            String body = (String) response.getEntity();
+            assertTrue(body.contains("'=HYPERLINK"), "Leading '=' should be neutralized with a quote prefix");
+            assertTrue(body.contains("'+1234"), "Leading '+' should be neutralized with a quote prefix");
+            assertTrue(body.contains("'@SUM(1,1)") || body.contains("\"'@SUM(1,1)\""),
+                    "Leading '@' should be neutralized with a quote prefix");
+            assertTrue(body.contains("'-1+1"), "Leading '-' should be neutralized with a quote prefix");
+            assertFalse(body.contains(",=HYPERLINK") || body.contains("\n=HYPERLINK"),
+                    "Raw formula payload must never reach the CSV unescaped");
+        }
+    }
+
+    @Test
     void downloadUsersCsvShouldReturnCsvWithDispositionHeader() {
         Response response = getUsersCsvViaEndpoint();
 

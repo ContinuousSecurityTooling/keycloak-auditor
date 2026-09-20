@@ -133,6 +133,47 @@ class LoginEventListenerProviderFactoryTest extends EndpointTest {
     }
 
     @Test
+    void postInitListenerShouldContinueWithOtherRealmsWhenOneRealmRegistrationFails() {
+        // One misconfigured/unlucky realm must not block audit registration for every other
+        // realm at startup (this class was already hardened once for a related startup crash -
+        // see issue #881 referenced in postInit()).
+        KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
+        RealmModel realm1 = mock(RealmModel.class);
+        RealmModel realm2 = mock(RealmModel.class);
+        when(realm1.getId()).thenReturn("id-1");
+        when(realm2.getId()).thenReturn("id-2");
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        when(realmProvider.getRealmsStream()).thenReturn(Stream.of(realm1, realm2));
+        when(realmProvider.getRealm("id-1")).thenReturn(realm1);
+        when(realmProvider.getRealm("id-2")).thenReturn(realm2);
+        when(session.realms()).thenReturn(realmProvider);
+
+        try (MockedStatic<KeycloakModelUtils> utils = mockStatic(KeycloakModelUtils.class)) {
+            utils.when(() -> KeycloakModelUtils.runJobInTransaction(eq(factory), any()))
+                 .thenAnswer(inv -> {
+                     org.keycloak.models.KeycloakSessionTask task = inv.getArgument(1);
+                     task.run(session);
+                     return null;
+                 });
+            try (MockedStatic<AuditUserProfileRegistrar> reg = mockStatic(AuditUserProfileRegistrar.class)) {
+                reg.when(() -> AuditUserProfileRegistrar.registerForRealm(session, realm1))
+                   .thenThrow(new RuntimeException("boom"));
+
+                new LoginEventListenerProviderFactory().postInit(factory);
+
+                ArgumentCaptor<ProviderEventListener> captor = ArgumentCaptor.forClass(ProviderEventListener.class);
+                verify(factory).register(captor.capture());
+                ProviderEventListener listener = captor.getValue();
+
+                assertDoesNotThrow(() -> listener.onEvent(mock(PostMigrationEvent.class)));
+
+                reg.verify(() -> AuditUserProfileRegistrar.registerForRealm(session, realm1));
+                reg.verify(() -> AuditUserProfileRegistrar.registerForRealm(session, realm2));
+            }
+        }
+    }
+
+    @Test
     void postInitListenerShouldIgnoreUnrelatedProviderEvents() {
         KeycloakSessionFactory factory = mock(KeycloakSessionFactory.class);
 

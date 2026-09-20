@@ -476,6 +476,42 @@ class AuditEndpointAccessRightsTest {
     }
 
     @Test
+    void listUsersShouldReturnEmptyListWhenRealmFilterMatchesNoRealm() {
+        // Pins current behavior: an unknown ?realm= silently yields no results rather than a
+        // 404/error, since shouldIncludeAllRealms() takes the filtered branch but
+        // getRealmByName() returns null and the "if (targetRealm != null)" guard just skips it.
+        HttpHeaders headers = headersWithout("x-forwarded-host");
+        RealmModel masterRealm = mock(RealmModel.class);
+        KeycloakContext context = mock(KeycloakContext.class);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(context.getRealm()).thenReturn(masterRealm);
+        KeycloakSession session = mock(KeycloakSession.class);
+        when(session.getContext()).thenReturn(context);
+
+        RealmProvider realmProvider = mock(RealmProvider.class);
+        when(realmProvider.getRealmByName("does-not-exist")).thenReturn(null);
+        when(session.realms()).thenReturn(realmProvider);
+
+        AccessToken token = new AccessToken();
+        token.issuer("http://localhost/realms/master");
+        token.setRealmAccess(new AccessToken.Access().addRole(ConfigHelper.getConfigValue(ConfigConstants.DEFAULT_ROLE)));
+
+        try (MockedStatic<Tokens> tokenMock = mockStatic(Tokens.class)) {
+            tokenMock.when(() -> Tokens.getAccessToken(session)).thenReturn(token);
+
+            AuditEndpoint endpoint = new AuditEndpoint(session) {
+                @Override
+                public void authenticate() {
+                    // no-op for unit tests
+                }
+            };
+
+            List<AuditedUserRepresentation> users = endpoint.listUsers(headers, null, "does-not-exist");
+            assertEquals(0, users.size(), "Unknown realm filter should yield an empty list, not an error");
+        }
+    }
+
+    @Test
     void listClientsShouldTreatBlankRealmFilterAsNoFilter() {
         HttpHeaders headers = headersWithout("x-forwarded-host");
         RealmModel masterRealm = mock(RealmModel.class);

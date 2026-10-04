@@ -71,10 +71,19 @@ Base path: `/realms/{realm}/auditing/`
 `<scanResourceClasses>` mapping. `microprofile-openapi-api` is `provided` scope only — not
 shipped in the fat-jar.
 
-On release the spec is also shipped two ways: `build-helper-maven-plugin` attaches it as
-secondary Maven artifacts (`...-openapi.yaml` / `...-openapi.json`, classifier `openapi`) that
-are GPG-signed and deployed to Maven Central / GitHub Packages alongside the jar, and
-`release.yml` uploads `keycloak-auditor-openapi.{yaml,json}` to the GitHub release.
+On release, `release.yml` also copies `spi/target/openapi/openapi.{yaml,json}` to
+`keycloak-auditor-openapi.{yaml,json}` and uploads them as GitHub release assets.
+
+**Do not** also attach them as secondary Maven artifacts (e.g. via `build-helper-maven-plugin`
+classifier `openapi`) for deployment to Maven Central: this was tried and broke the
+`central-publishing-maven-plugin` release (v2.4.1, 2026-10-04) — Central Portal's bundle
+validator rejected the whole multi-module deployment ("Bundle has content that does NOT have a
+.pom file", naming *both* `keycloak-auditor` and `keycloak-auditor-spi`, i.e. the aggregated
+bundle for the whole reactor, not just the new files) as soon as the non-standard `yaml`/`json`
+classified artifacts were added — the jar/pom/sources/javadoc-only shape is what's proven to
+work. If Central distribution of the spec is wanted again, wrap it in a `.jar` (a type Central's
+validator definitely recognizes) rather than raw `.yaml`/`.json`, and test a real deployment
+before relying on it.
 
 | Method | Path | Auth required | Description |
 |--------|------|--------------|-------------|

@@ -296,36 +296,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Attach the generated OpenAPI document as secondary artifacts (classifier "openapi")
-           so it is GPG-signed and deployed to Maven Central / GitHub Packages next to the jar -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>${build-helper-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-openapi</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/openapi/openapi.yaml</file>
-                  <type>yaml</type>
-                  <classifier>openapi</classifier>
-                </artifact>
-                <artifact>
-                  <file>${project.build.directory}/openapi/openapi.json</file>
-                  <type>json</type>
-                  <classifier>openapi</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <!-- any other plugins -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

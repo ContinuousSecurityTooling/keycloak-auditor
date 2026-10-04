@@ -1,4 +1,7 @@
 
+## [2.4.3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.4.2...v2.4.3) (2026-10-04)
+
+
 # [2.4.0](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.3.0...v2.4.0) (2026-09-20)
 
 

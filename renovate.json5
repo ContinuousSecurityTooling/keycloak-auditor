@@ -24,6 +24,15 @@
         "/^keycloak$/"
       ],
       "minimumReleaseAge": "2 days"
+    },
+    {
+      // Maven 3.10.0 switched to Resolver 2.x and broke central-publishing-maven-plugin:0.11.0
+      // deploys ("Bundle has content that does NOT have a .pom file"), see release v2.4.1/v2.4.2
+      // incidents (2026-10-04). Re-enable once that's confirmed fixed upstream.
+      "matchManagers": [
+        "maven-wrapper"
+      ],
+      "allowedVersions": "<3.10.0"
     }
   ]
 }

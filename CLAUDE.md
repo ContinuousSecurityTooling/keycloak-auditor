@@ -74,16 +74,27 @@ shipped in the fat-jar.
 On release, `release.yml` also copies `spi/target/openapi/openapi.{yaml,json}` to
 `keycloak-auditor-openapi.{yaml,json}` and uploads them as GitHub release assets.
 
-**Do not** also attach them as secondary Maven artifacts (e.g. via `build-helper-maven-plugin`
-classifier `openapi`) for deployment to Maven Central: this was tried and broke the
-`central-publishing-maven-plugin` release (v2.4.1, 2026-10-04) — Central Portal's bundle
-validator rejected the whole multi-module deployment ("Bundle has content that does NOT have a
-.pom file", naming *both* `keycloak-auditor` and `keycloak-auditor-spi`, i.e. the aggregated
-bundle for the whole reactor, not just the new files) as soon as the non-standard `yaml`/`json`
-classified artifacts were added — the jar/pom/sources/javadoc-only shape is what's proven to
-work. If Central distribution of the spec is wanted again, wrap it in a `.jar` (a type Central's
-validator definitely recognizes) rather than raw `.yaml`/`.json`, and test a real deployment
-before relying on it.
+Not currently attached as secondary Maven artifacts for Central deployment (e.g. via
+`build-helper-maven-plugin` classifier `openapi`) — tried once and ruled out as a suspect during
+the v2.4.1/v2.4.2 incident below, but removing it didn't fix the underlying issue, so it's just
+left out rather than re-added without re-testing. If Central distribution of the spec is wanted,
+prefer wrapping it in a `.jar` (a type Central's validator definitely recognizes) over raw
+`.yaml`/`.json`, and test a real deployment before relying on it.
+
+### 2026-10-04 incident: Central Portal deploy failing ("Bundle has content that does NOT have a .pom file")
+
+`net.continuous-security-tools:keycloak-auditor` (root) + `keycloak-auditor-spi` releases
+started failing at the `central-publishing-maven-plugin:0.11.0:publish` step for both v2.4.1 and
+v2.4.2, with Central Portal rejecting the aggregated two-module bundle. The real cause: a
+Renovate commit bumped `.mvn/wrapper/maven-wrapper.properties` from Maven **3.9.16 → 3.10.0** on
+2026-10-03, the day before the first failure — Maven 3.10.0 switched to Resolver 2.x (a near
+rewrite of the dependency/artifact engine), which `central-publishing-maven-plugin:0.11.0`
+doesn't handle correctly for this reactor shape. Removing the openapi-spec Maven attachment
+(the first suspect, see above) did **not** fix it, which is what isolated the Maven version as
+the actual cause. Fix: pinned the wrapper back to 3.9.16 and added a Renovate `packageRule`
+(`matchManagers: ["maven-wrapper"]`, `allowedVersions: "<3.10.0"`) so it won't silently re-bump.
+Remove that rule once a `central-publishing-maven-plugin` release confirmed compatible with
+Maven 3.10.x+ is in use.
 
 | Method | Path | Auth required | Description |
 |--------|------|--------------|-------------|

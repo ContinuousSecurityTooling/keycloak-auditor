@@ -109,7 +109,7 @@
         <plugin.gitflow-maven.version>1.21.0</plugin.gitflow-maven.version>
         <typescript-generator-maven-plugin.version>4.2.1</typescript-generator-maven-plugin.version>
         <smallrye-open-api-maven-plugin.version>4.3.5</smallrye-open-api-maven-plugin.version>
-        <microprofile-openapi-api.version>4.1.1</microprofile-openapi-api.version>
+        <microprofile-openapi-api.version>4.2</microprofile-openapi-api.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
 

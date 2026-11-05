@@ -93,7 +93,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: "temurin" # See 'Supported distributions' for available options
-          java-version: "17.0.21+9"
+          java-version: "25.0.5+8.0.LTS"
 
       - name: Build SPI
         run: |

@@ -380,4 +380,42 @@ class AuditUserProfileRegistrarTest {
 
         assertEquals(Set.of(ADMIN), stale.getPermissions().getEdit());
     }
+
+    // --- annotations (Keycloak SCIM NPE guard) ---------------------------------
+
+    @Test
+    void newAttributesHaveNonNullAnnotations() {
+        UPConfig config = freshConfig();
+
+        AuditUserProfileRegistrar.registerForRealm(session, realm);
+        AuditUserProfileRegistrar.registerClientLoginAttribute(session, realm, "jira");
+
+        assertNotNull(attribute(config, GLOBAL_ATTR).getAnnotations(),
+                "KC SCIM (UserExtensionModelSchema) NPEs on null annotations");
+        assertNotNull(attribute(config, GLOBAL_ATTR + "_jira").getAnnotations(),
+                "KC SCIM (UserExtensionModelSchema) NPEs on null annotations");
+    }
+
+    @Test
+    void existingAttributeWithNullAnnotationsIsRepaired() {
+        UPConfig config = freshConfig();
+        UPAttribute stale = existingGlobalAttribute(config, Set.of());
+        assertNull(stale.getAnnotations());
+
+        AuditUserProfileRegistrar.registerForRealm(session, realm);
+
+        verify(upp).setConfiguration(config);
+        assertNotNull(stale.getAnnotations());
+    }
+
+    @Test
+    void existingAnnotationsArePreserved() {
+        UPConfig config = freshConfig();
+        UPAttribute existing = existingGlobalAttribute(config, Set.of());
+        existing.setAnnotations(new java.util.HashMap<>(java.util.Map.of("inputType", "text")));
+
+        AuditUserProfileRegistrar.registerForRealm(session, realm);
+
+        assertEquals(java.util.Map.of("inputType", "text"), existing.getAnnotations());
+    }
 }

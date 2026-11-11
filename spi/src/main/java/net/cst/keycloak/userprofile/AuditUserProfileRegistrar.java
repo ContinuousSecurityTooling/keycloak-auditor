@@ -12,6 +12,7 @@ import org.keycloak.representations.userprofile.config.UPGroup;
 import org.keycloak.userprofile.UserProfileConstants;
 import org.keycloak.userprofile.UserProfileProvider;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,7 +91,9 @@ public class AuditUserProfileRegistrar {
                     .findFirst()
                     .orElse(null);
             if (existing != null) {
-                return reconcileEditPermission(existing);
+                boolean changed = ensureAnnotations(existing);
+                changed |= reconcileEditPermission(existing);
+                return changed;
             }
         }
 
@@ -98,6 +101,7 @@ public class AuditUserProfileRegistrar {
         attribute.setName(name);
         attribute.setDisplayName(displayName);
         attribute.setGroup(AUDIT_GROUP_NAME);
+        attribute.setAnnotations(new HashMap<>());
 
         UPAttributePermissions permissions = new UPAttributePermissions();
         permissions.setView(new HashSet<>(Set.of(ADMIN_ROLE)));
@@ -108,6 +112,20 @@ public class AuditUserProfileRegistrar {
             config.setAttributes(new java.util.ArrayList<>());
         }
         config.getAttributes().add(attribute);
+        return true;
+    }
+
+    /**
+     * Keycloak's SCIM API ({@code UserExtensionModelSchema.getModelAttributeNames}, KC 26.8.x)
+     * dereferences {@code UPAttribute.getAnnotations()} without a null check, so any attribute
+     * with {@code annotations == null} breaks SCIM sync. Always store an (empty) map, and repair
+     * attributes registered by earlier versions of this plugin. Returns {@code true} if changed.
+     */
+    private static boolean ensureAnnotations(UPAttribute attribute) {
+        if (attribute.getAnnotations() != null) {
+            return false;
+        }
+        attribute.setAnnotations(new HashMap<>());
         return true;
     }
 

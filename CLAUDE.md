@@ -71,8 +71,28 @@ Base path: `/realms/{realm}/auditing/`
 `<scanResourceClasses>` mapping. `microprofile-openapi-api` is `provided` scope only — not
 shipped in the fat-jar.
 
-On release, `release.yml` also copies `spi/target/openapi/openapi.{yaml,json}` to
-`keycloak-auditor-openapi.{yaml,json}` and uploads them as GitHub release assets.
+On release, the `publish` job of `release.yml` also copies `spi/target/openapi/openapi.{yaml,json}`
+to `keycloak-auditor-openapi.{yaml,json}` and uploads them as GitHub release assets.
+
+### Release workflow
+
+`.github/workflows/release.yml` (manual, `patch` / `minor` / `major` / `custom`) calls the shared
+`m13tLabs/gh-actions-templates` `maven-release.yml` template (docs: its `.github/DEVELOPER.md`).
+`maven-release-plugin` and `.bin/release.sh` are no longer used for releasing.
+
+- `release` job (template): `versions:set` to the release version, `bump_command` sets the same
+  version in `sdk/package.json` / `package-lock.json`, git-cliff `CHANGELOG.md`, `mvn clean deploy
+  -Pcentral-publish -DskipTests -DskipITs`, then the next `X.Y.(Z+1)-SNAPSHOT`, push to `develop`
+  and a (draft) GitHub release. Nothing is pushed or tagged until the deploy succeeded.
+- `publish` job (here): checks out the template's `release_sha` output (a draft release has no
+  tag yet), rebuilds, runs `npm publish` for the SDK (npm trusted publishing via `id-token`,
+  configured on npmjs for `release.yml`) and uploads SPI jar, OpenAPI spec and CycloneDX BOMs to
+  the release.
+- Version base is the pom version minus `-SNAPSHOT`: `patch` releases it as is.
+- The template lives in another org, so `secrets: inherit` doesn't work: every secret is mapped
+  explicitly. Needs `vars.CI_CLIENT_ID` (GitHub App client ID), `CI_PRIVATE_KEY` and the
+  `OSS_SONATYPE_*` secrets.
+- Keep the Maven wrapper below 3.10 (see the incident below); the template uses `./mvnw`.
 
 Not currently attached as secondary Maven artifacts for Central deployment (e.g. via
 `build-helper-maven-plugin` classifier `openapi`) — tried once and ruled out as a suspect during

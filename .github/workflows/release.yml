@@ -1,47 +1,73 @@
-name: Create release # You may choose a different name
-run-name: ${{ inputs.releaseversion }} # Enumerates entries in the "workflow runs" view
+name: Create release
+run-name: Release ${{ inputs.release_type == 'custom' && inputs.custom_version || inputs.release_type }}
+
 on:
   workflow_dispatch:
     inputs:
-      releaseversion:
-        description: "Release version"
-        required: true
+      release_type:
+        description: 'Type of release to build (base: the pom version without -SNAPSHOT)'
+        type: choice
+        default: patch
+        options: [patch, minor, major, custom]
+      custom_version:
+        description: "Version to release (only used when release_type is 'custom', e.g. 1.2.3)"
         type: string
-        default: "X.Y.Z"
+        required: false
+      draft_release:
+        description: 'Create the GitHub release as a draft'
+        type: boolean
+        default: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  release: # Arbitrarily chosen
-    name: Release
+  # Version bump (pom + sdk/package.json), changelog, signed deploy to Maven Central,
+  # next -SNAPSHOT, push and GitHub release.
+  release:
+    uses: m13tLabs/gh-actions-templates/.github/workflows/maven-release.yml@main
+    with:
+      release_type: ${{ inputs.release_type }}
+      custom_version: ${{ inputs.custom_version }}
+      client_id: ${{ vars.CI_CLIENT_ID }}
+      default_branch: develop
+      java_version: '21.0.13+100000002.0.LTS'
+      maven_args: '-Pcentral-publish -DskipTests -DskipITs'
+      bump_command: |
+        cd sdk
+        npm version --no-git-tag-version --allow-same-version "$RELEASE_VERSION"
+        grep -q "\"version\": \"$RELEASE_VERSION\"" package.json
+      draft_release: ${{ inputs.draft_release }}
+    # `secrets: inherit` doesn't cross organizations (template lives in m13tLabs)
+    secrets:
+      CI_PRIVATE_KEY: ${{ secrets.CI_PRIVATE_KEY }}
+      OSS_SONATYPE_USER: ${{ secrets.OSS_SONATYPE_USER }}
+      OSS_SONATYPE_PASS: ${{ secrets.OSS_SONATYPE_PASS }}
+      OSS_SONATYPE_GPG_PRIVATE_KEY: ${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}
+      OSS_SONATYPE_GPG_PASSPHRASE: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
+
+  # Built from the release commit: the draft release has no tag yet, and the branch head
+  # is already the next -SNAPSHOT.
+  publish:
+    name: Publish SDK and release assets
+    needs: release
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
-      attestations: write
-      id-token: write
+      contents: write # upload release assets
+      id-token: write # npm trusted publishing / provenance
     steps:
-      - uses: actions/create-github-app-token@v3
-        id: app-token
-        with:
-          app-id: ${{ vars.CI_APP_ID }}
-          private-key: ${{ secrets.CI_PRIVATE_KEY }}
-
-      - name: Checkout
+      - name: Checkout release commit
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
-          ref: ${{ github.head_ref }}
+          ref: ${{ needs.release.outputs.release_sha }}
 
-      - name: Get GitHub App User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Configure Git author
-        run: |
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>'
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: "temurin"
+          java-version: "21.0.13+100000002.0.LTS"
+          cache: "maven"
 
       - name: Setup NodeJS
         uses: actions/setup-node@v7
@@ -49,101 +75,31 @@ jobs:
           node-version: "26"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: "temurin" # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
-          java-package: "jdk"
-          java-version: "21.0.13+100000002.0.LTS"
-          check-latest: true
-          cache: "maven"
-
-      - name: Setup settings.xml
-        uses: s4u/maven-settings-action@v4.1.0
-        with:
-          override: true
-          servers: |
-            [{
-                "id": "central",
-                "username": "${{ secrets.OSS_SONATYPE_USER }}",
-                "password": "${{ secrets.OSS_SONATYPE_PASS }}"
-            },{
-                "id":"github",
-                "username": "ci-bot",
-                "password": "${{ secrets.GITHUB_TOKEN }}"
-            }]
-
-      - id: install-secret-key
-        name: Install gpg secret key
+      - name: Build SPI, OpenAPI and SBOM
         run: |
-          # Install gpg secret key
-          cat <(echo -e "${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}") | gpg --batch --import
-          # Verify gpg secret key
-          gpg --list-secret-keys --keyid-format LONG
+          ./mvnw -B -ntp clean package -DskipTests -DskipITs
+          ./mvnw -B -ntp cyclonedx:makeAggregateBom
 
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          MAVEN_GPG_KEY: ${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
-        run: |
-          export TZ="Europe/Berlin"
-          ./mvnw release:prepare release:perform -B -Pcentral-publish -DreleaseVersion=${{ inputs.releaseversion }} -Dgpg.keyname=${{ env.OSS_SONATYPE_GPG_KEYID }} -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }} -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true -Dgpg.passphrase=${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}"
-          # Create SBOM
-          mvn cyclonedx:makeAggregateBom
-          # write version info
-          cat <<EOF >target/config.json
-          {
-            "version": "${{ inputs.releaseversion }}"
-          }
-          EOF
-          # Bump sdk version
-          cd sdk
-          npm version --no-git-tag-version ${{ github.event.inputs.releaseversion }}
-          git add package.json package-lock.json
-          git commit -m "chore(release): bump sdk version to v${{ github.event.inputs.releaseversion }}"
-
-      - run: cd sdk && npm run clean && npm run build
       - name: Publish npm package
+        working-directory: sdk
         run: |
-          cd sdk
+          npm run clean
+          npm run build
           npm publish
 
-      - name: Generate Changelog
-        uses: orhun/git-cliff-action@v4
-        with:
-          config: cliff.toml
-          args: --tag v${{ inputs.releaseversion }} --prepend CHANGELOG.md --unreleased
+      - name: Upload release assets
         env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Commit Changelog
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.release.outputs.release_version }}
         run: |
-          git add CHANGELOG.md
-          git diff --staged --quiet || git commit -m "chore(release): update changelog for v${{ inputs.releaseversion }}"
-          git push
-
-      - name: Prepare release artifacts
-        run: |
-          # rename file
           cp target/dependency-bom.xml keycloak-auditor-dependency-bom.xml
           cp target/dependency-bom.json keycloak-auditor-dependency-bom.json
           cp spi/target/keycloak-auditor-spi.jar keycloak-auditor-spi.jar
           cp spi/target/openapi/openapi.yaml keycloak-auditor-openapi.yaml
           cp spi/target/openapi/openapi.json keycloak-auditor-openapi.json
-
-      - name: Create GH release
-        uses: softprops/action-gh-release@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: ${{ github.event.inputs.releaseversion }}
-          tag_name: v${{ github.event.inputs.releaseversion }}
-          draft: true
-          files: |
-            keycloak-auditor-dependency-bom.xml
-            keycloak-auditor-dependency-bom.json
-            keycloak-auditor-spi.jar
-            keycloak-auditor-openapi.yaml
+          gh release upload "v$RELEASE_VERSION" --clobber \
+            keycloak-auditor-dependency-bom.xml \
+            keycloak-auditor-dependency-bom.json \
+            keycloak-auditor-spi.jar \
+            keycloak-auditor-openapi.yaml \
             keycloak-auditor-openapi.json

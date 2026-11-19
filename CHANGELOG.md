@@ -1,4 +1,77 @@
 
+## [2.4.5](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.4.4...v2.4.5) (2026-11-19)
+
+### Bug Fixes
+
+* **deps:** Update dependency org.keycloak:keycloak-parent to v26.8.1 ([4a3b561](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/4a3b5615138c8a7501383a0cc104b1e4be63600c))
+
+* **deps:** Update dependency org.eclipse.microprofile.openapi:microprofile-openapi-api to v4.2 ([dfe463b](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/dfe463b6180b10f68ec1ba887264f8b9660a9965))
+
+* **deps:** Update keycloak releases ([f0a7c34](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/f0a7c34a28d0edabd7d30c32e4857d5bed66c0e6))
+
+* **UserProfile:** Improve map handling ([3dc6f8c](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/3dc6f8c7e0549779eab17f30655b910f5d95c815))
+
+
+
+### Dependency Updates
+
+* **deps:** Update dependency ts-jest to v29.4.15 ([5510309](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/551030946c0ef33ddb4600d8cc656192c3e3c23c))
+
+* **deps:** Update s4u/maven-settings-action action to v4.1.0 ([dd02444](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/dd024441fac007f0a42630771ca7f0263e219c1c))
+
+* **deps:** Update dependency cz.habarta.typescript-generator:typescript-generator-maven-plugin to v4.2.1 ([6cf9fec](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/6cf9feccc7d023ef2fa02e1040f033bf1f117110))
+
+* **deps:** Update typescript-eslint monorepo to v8.72.0 (#956) ([0b9721a](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/0b9721aa18944a1f86e1a64b0c02dfc818426dbe))
+
+* **deps:** Update mysql docker tag to v26.10.0 ([17aeb52](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/17aeb52e3c2ce1236eaaa79e3a5cd0dfd6309d2d))
+
+* **deps:** Update dependency eslint to v10.13.0 ([709fa97](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/709fa97f3d6cb15c3672c978289fe5cd16f3e6b5))
+
+* **deps:** Update dependency java-jdk to v21.0.13+9.0.lts ([995d624](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/995d62404b965fce590e9b50a5e26d9ce0c8c0bd))
+
+* **deps:** Update dependency java-jdk to v17.0.21+9 ([7cb5f72](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/7cb5f7262124a38f453d76da1eaa4f328ba21232))
+
+* **deps:** Update dependency org.apache.maven.plugins:maven-surefire-plugin to v3.6.1 ([1b58a72](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/1b58a7205c15599a6f8d2e407235e947b1a8add6))
+
+* **deps:** Update dependency org.jacoco:jacoco-maven-plugin to v0.8.16 ([2209ba9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/2209ba96166799ff66760f59c258c4ff7ce72dd2))
+
+* **deps:** Update typescript-eslint monorepo to v8.72.1 ([a1ef485](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a1ef48599b1b36135ed6021c59a1de6812f6df31))
+
+* **deps:** Update dependency eslint to v10.14.0 ([8359e61](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/8359e61efaa59d8cea98535d212993e46b080fea))
+
+* **deps:** Update dependency org.apache.maven.plugins:maven-enforcer-plugin to v3.7.0 (#966) ([688b9d9](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/688b9d9dd56cdfb754c75012242b315420d21059))
+
+* **deps:** Update dependency io.smallrye:smallrye-open-api-maven-plugin to v4.4.0 ([634ae45](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/634ae451d4b7d8cc790898631052a09f105df0f2))
+
+* **deps:** Update dependency io.smallrye:smallrye-open-api-maven-plugin to v4.4.1 ([7fb0394](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/7fb03941dc498d7a66f0d3e2690fe3f9e22d835d))
+
+* **deps:** Update dependency node to v26 ([a3c49e2](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a3c49e2837bda619bebad841e21a6a6370c7a7a8))
+
+* **deps:** Update quay.io/keycloak/keycloak docker tag to v26.8.2 ([420730f](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/420730fb493cdbff2e9aa6f5fee54c8f608c572d))
+
+* **deps:** Update dependency org.codehaus.mojo:versions-maven-plugin to v2.24.0 ([0f98289](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/0f98289fb8ba1887d5ce98b50f5232f63a9e8419))
+
+* **deps:** Update typescript-eslint monorepo to v8.72.2 ([f26c97c](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/f26c97c3bf0404b5e622f7aaf1999ee6be968755))
+
+* **deps:** Update dependency org.codehaus.mojo:versions-maven-plugin to v2.25.0 ([9bd0182](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/9bd01820a1cd3d75f58e432c33945f412a2fbf48))
+
+* **deps:** Update dependency org.codehaus.mojo:versions-maven-plugin to v2.25.1 ([a07f2da](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/a07f2da077b07e4ecafd2bf9a6c3ccf5f52bdf53))
+
+* **deps:** Update dependency eslint to v10.15.0 ([4fdf071](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/4fdf071fd6748b00bd75f4052131be576939b80c))
+
+* **deps:** Update dependency org.codehaus.mojo:versions-maven-plugin to v2.25.2 ([4b771bd](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/4b771bd92b316a8d91f26043cd14a30866d14060))
+
+* **deps:** Update typescript-eslint monorepo to v8.73.0 ([048b5cb](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/048b5cb9116221552ed4727a271e4cdba8032703))
+
+* **deps:** Update dependency java-jdk to v21.0.13+100000002.0.lts ([b5e4d4d](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/b5e4d4d4dcfe3563400974753943e5b570bec9c1))
+
+* **deps:** Update dependency java-jdk to v17.0.21+100000002 ([ac7ddb3](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/ac7ddb3393f58211b46877621ab3e54fe3c69018))
+
+* **deps:** Update dependency tape to v5.11.0 ([fc6ef7f](https://github.com/ContinuousSecurityTooling/keycloak-auditor/commit/fc6ef7f626d19ed1bc225679bdaea3e1927a8490))
+
+
+
+
 ## [2.4.4](https://github.com/ContinuousSecurityTooling/keycloak-auditor/compare/v2.4.3...v2.4.4) (2026-10-15)
 
 
